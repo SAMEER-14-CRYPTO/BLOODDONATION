@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Find blood banks near you with real-time stock status. LifeLink blood bank directory.">
+  <title>Blood Banks – LifeLink</title>
+  <!-- Leaflet.js – Free Maps -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    .map-ph-chips { display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px; }
+    .map-ph-chip  { background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);
+                    padding:4px 10px;font-size:0.8rem;display:flex;align-items:center;gap:6px; }
+    .map-ph-dot   { width:8px;height:8px;border-radius:50%;display:inline-block; }
+    .map-ph-icon  { font-size:2.5rem; }
+    .map-ph-sub   { font-size:0.82rem;color:var(--text-secondary); }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-brand">
+        <div class="logo-icon">🩸</div>
+        <span>Life<span class="text-primary">Link</span></span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="search.html">Find Donors</a>
+        <a href="emergency.html">Emergency</a>
+        <a href="hospitals.html">Hospitals</a>
+        <a href="blood-banks.html" class="active">Blood Banks</a>
+        <a href="about.html">About</a>
+      </div>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌙</button>
+        <a href="login.html" class="btn btn-sm btn-outline auth-btn">Login</a>
+        <a href="dashboard.html" class="btn btn-sm btn-primary user-btn" style="display:none">Dashboard</a>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="container">
+      <span class="badge badge-primary">🏦 Blood Supply</span>
+      <h1>Blood Bank <span class="text-primary">Directory</span></h1>
+      <div class="breadcrumb"><a href="index.html">Home</a><span>/</span><span>Blood Banks</span></div>
+    </div>
+  </div>
+
+  <section class="section" style="padding-top:40px">
+    <div class="container">
+
+      <!-- Map -->
+      <div id="bloodBankMap" class="map-container" style="height:360px;margin-bottom:32px"></div>
+
+      <!-- Search + locate -->
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:24px;flex-wrap:wrap">
+        <input type="text" id="bbSearch" class="form-input" style="flex:1;min-width:200px"
+               placeholder="Search blood bank by name or city…">
+        <button class="btn btn-primary" id="bbSearchBtn">🔍 Search</button>
+        <button class="btn btn-outline" id="bbGeoBtn">📍 Near Me</button>
+      </div>
+
+      <div id="bloodBankList" class="flex flex-col gap-3"></div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom"><span>© 2026 LifeLink. All rights reserved.</span></div>
+    </div>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/maps.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    let allBanks = [];
+
+    function renderBanks(banks) {
+      const container = document.getElementById('bloodBankList');
+      if (banks.length === 0) {
+        container.innerHTML = '<div class="text-center" style="padding:40px"><p>No blood banks found.</p></div>';
+        return;
+      }
+      container.innerHTML = banks.map(b => {
+        const stockBars = Object.entries(b.stocks || {}).map(([g, c]) => {
+          const pct   = Math.min(c / 60 * 100, 100);
+          const color = pct > 50 ? 'var(--success)' : pct > 20 ? 'var(--warning)' : 'var(--danger)';
+          return `<div style="flex:1;min-width:80px">
+            <div style="display:flex;justify-content:space-between;font-size:0.8rem;font-weight:600;margin-bottom:4px">
+              <span>${g}</span><span>${c} units</span>
+            </div>
+            <div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden">
+              <div style="height:100%;width:${pct}%;background:${color};border-radius:4px;transition:width 0.5s"></div>
+            </div>
+          </div>`;
+        }).join('');
+
+        return `
+          <div class="card" style="padding:28px" id="bb-${b.id}">
+            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+              <div>
+                <h3 style="margin-bottom:4px">🏦 ${b.name}</h3>
+                <p style="font-size:0.85rem;margin-bottom:2px">📍 ${b.address}</p>
+                <p style="font-size:0.85rem">📞 ${b.contact}</p>
+              </div>
+              <div style="display:flex;gap:8px">
+                <a href="tel:${b.contact}" class="btn btn-sm btn-primary">📞 Contact</a>
+                ${b.lat ? `<button class="btn btn-sm btn-outline" onclick="focusBank('${b.id}')">📍 Map</button>` : ''}
+              </div>
+            </div>
+            <h4 style="margin-bottom:12px;font-size:0.9rem">Blood Stock Status</h4>
+            <div style="display:flex;flex-wrap:wrap;gap:16px">${stockBars}</div>
+          </div>`;
+      }).join('');
+    }
+
+    function focusBank(id) {
+      const b = allBanks.find(x => x.id === id);
+      if (b && b.lat && b.lng) Maps.setCenter({ lat: b.lat, lng: b.lng }, 15);
+    }
+
+    function filterBanks() {
+      const q = document.getElementById('bbSearch').value.toLowerCase();
+      const list = allBanks.filter(b =>
+        !q || b.name.toLowerCase().includes(q) || b.address.toLowerCase().includes(q)
+      );
+      renderBanks(list);
+      Maps.clearMarkers();
+      Maps.addBloodBankMarkers(list);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Add lat/lng to blood banks for demo (data.js doesn't have them)
+      DemoData.getBloodBanks().then(banks => {
+        allBanks = banks.map((b, i) => ({
+          ...b,
+          lat: b.lat || [19.059, 28.637, 23.033, 12.938, 17.434][i] || null,
+          lng: b.lng || [72.835, 77.078, 72.615, 77.565, 78.506][i] || null
+        }));
+
+        LeafletLoader.load(() => {
+          Maps.init('bloodBankMap', {
+            center: LIFELINK_CONFIG.defaultCenter,
+            zoom: 5,
+            onMapReady: () => Maps.addBloodBankMarkers(allBanks)
+          });
+        });
+
+        renderBanks(allBanks);
+      });
+
+      document.getElementById('bbSearchBtn').addEventListener('click', filterBanks);
+      document.getElementById('bbSearch').addEventListener('keyup', e => {
+        if (e.key === 'Enter') filterBanks();
+      });
+
+      document.getElementById('bbGeoBtn').addEventListener('click', () => {
+        const btn = document.getElementById('bbGeoBtn');
+        btn.textContent = '⏳ Locating…'; btn.disabled = true;
+        Maps.getUserLocation(coords => {
+          btn.disabled = false;
+          if (!coords) { btn.textContent = '📍 Near Me'; return; }
+          Maps.setCenter(coords, 12);
+          Maps.addUserLocationMarker(coords.lat, coords.lng);
+          btn.textContent = '✅ Located';
+          App.showToast('Showing blood banks near your location', 'success');
+        });
+      });
+    });
+  </script>
+</body>
+</html>

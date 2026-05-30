@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile – LifeLink</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+  <nav class="navbar"><div class="container"><a href="index.html" class="nav-brand"><div class="logo-icon">🩸</div><span>Life<span class="text-primary">Link</span></span></a><div class="nav-links" id="navLinks"><a href="index.html">Home</a><a href="search.html">Find Donors</a><a href="emergency.html">Emergency</a></div><div class="nav-actions"><button class="theme-toggle" id="themeToggle">🌙</button><button class="btn btn-sm btn-outline" onclick="Auth.logout()">Logout</button><button class="hamburger" id="hamburger"><span></span><span></span><span></span></button></div></div></nav>
+
+  <div class="dashboard-layout">
+    <aside class="sidebar">
+      <div class="sidebar-section">Main</div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="sidebar-link"><span>📊</span> Dashboard</a>
+        <a href="profile.html" class="sidebar-link active"><span>👤</span> My Profile</a>
+        <a href="search.html" class="sidebar-link"><span>🔍</span> Find Donors</a>
+        <a href="emergency.html" class="sidebar-link"><span>🚨</span> Emergency</a>
+        <a href="request-history.html" class="sidebar-link"><span>📋</span> My Requests</a>
+        <a href="#" class="sidebar-link" onclick="Auth.logout()"><span>🚪</span> Logout</a>
+      </nav>
+    </aside>
+
+    <main class="dashboard-main">
+      <h2 style="margin-bottom:32px">My <span class="text-primary">Profile</span></h2>
+
+      <div class="grid grid-2 gap-3">
+        <!-- Profile Display -->
+        <div class="profile-card">
+          <div class="profile-avatar" id="profileAvatar">?</div>
+          <div class="profile-name" id="profileName"></div>
+          <p id="profileEmail" style="font-size:0.85rem"></p>
+          <div class="profile-blood" id="profileBlood"></div>
+          <div class="profile-details" style="margin-top:24px">
+            <div class="profile-detail"><div class="label">Phone</div><div class="value" id="profilePhone">-</div></div>
+            <div class="profile-detail"><div class="label">Gender</div><div class="value" id="profileGender">-</div></div>
+            <div class="profile-detail"><div class="label">Age</div><div class="value" id="profileAge">-</div></div>
+            <div class="profile-detail"><div class="label">City</div><div class="value" id="profileCity">-</div></div>
+            <div class="profile-detail"><div class="label">Last Donation</div><div class="value" id="profileLastDonation">-</div></div>
+            <div class="profile-detail"><div class="label">Status</div><div class="value" id="profileStatus">-</div></div>
+          </div>
+        </div>
+
+        <!-- Edit Profile Form -->
+        <div class="card" style="padding:32px">
+          <h3 style="margin-bottom:24px">✏️ Edit Profile</h3>
+          <form id="profileForm">
+            <div class="form-group"><label>Full Name</label><input type="text" id="editName" class="form-input" required></div>
+            <div class="form-group"><label>Phone</label><input type="tel" id="editPhone" class="form-input"></div>
+            <div class="grid grid-2 gap-2">
+              <div class="form-group"><label>Blood Group</label>
+                <select id="editBlood" class="form-input"><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select>
+              </div>
+              <div class="form-group"><label>Gender</label>
+                <select id="editGender" class="form-input"><option>Male</option><option>Female</option><option>Other</option></select>
+              </div>
+            </div>
+            <div class="grid grid-2 gap-2">
+              <div class="form-group"><label>Age</label><input type="number" id="editAge" class="form-input" min="18" max="65"></div>
+              <div class="form-group"><label>City</label><input type="text" id="editCity" class="form-input"></div>
+            </div>
+            <div class="form-group"><label>Last Donation Date</label><input type="date" id="editLastDonation" class="form-input"></div>
+            <button type="submit" class="btn btn-primary btn-lg" style="width:100%">Save Changes</button>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script><script src="js/data.js"></script><script src="js/auth.js"></script><script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      Auth.requireAuth((u) => {
+        // Display
+        document.getElementById('profileAvatar').textContent = (u.displayName||'?').charAt(0);
+        document.getElementById('profileName').textContent = u.displayName || 'User';
+        document.getElementById('profileEmail').textContent = u.email || '';
+        
+        // Fetch additional user info from firestore if not in demo mode
+        if (!DEMO_MODE) {
+          db.collection('users').doc(u.uid).get().then(doc => {
+            if (doc.exists) {
+              const data = doc.data();
+              populateProfileForm(data);
+            }
+          });
+        } else {
+          populateProfileForm(u);
+        }
+
+        function populateProfileForm(userData) {
+          document.getElementById('profileBlood').textContent = userData.bloodGroup || 'N/A';
+          document.getElementById('profilePhone').textContent = userData.phone || '-';
+          document.getElementById('profileGender').textContent = userData.gender || '-';
+          document.getElementById('profileAge').textContent = userData.age || '-';
+          document.getElementById('profileCity').textContent = userData.city || '-';
+          document.getElementById('profileLastDonation').textContent = userData.lastDonation || 'Never';
+          document.getElementById('profileStatus').textContent = userData.availability ? '🟢 Available' : '🔴 Unavailable';
+          // Pre-fill form
+          document.getElementById('editName').value = u.displayName || userData.displayName || '';
+          document.getElementById('editPhone').value = userData.phone || '';
+          document.getElementById('editBlood').value = userData.bloodGroup || 'O+';
+          document.getElementById('editGender').value = userData.gender || 'Male';
+          document.getElementById('editAge').value = userData.age || '';
+          document.getElementById('editCity').value = userData.city || '';
+          document.getElementById('editLastDonation').value = userData.lastDonation || '';
+        }
+
+        // Save
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          await Auth.updateProfile({
+            displayName: document.getElementById('editName').value,
+            phone: document.getElementById('editPhone').value,
+            bloodGroup: document.getElementById('editBlood').value,
+            gender: document.getElementById('editGender').value,
+            age: parseInt(document.getElementById('editAge').value),
+            city: document.getElementById('editCity').value,
+            lastDonation: document.getElementById('editLastDonation').value
+          });
+          setTimeout(() => location.reload(), 1000);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

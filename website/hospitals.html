@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Find hospitals near you with real-time blood availability status. LifeLink hospital directory across India.">
+  <title>Hospitals – LifeLink</title>
+  <!-- Leaflet.js – Free Maps -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    .map-ph-chips { display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px; }
+    .map-ph-chip  { background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);
+                    padding:4px 10px;font-size:0.8rem;display:flex;align-items:center;gap:6px; }
+    .map-ph-dot   { width:8px;height:8px;border-radius:50%;display:inline-block; }
+    .map-ph-icon  { font-size:2.5rem; }
+    .map-ph-sub   { font-size:0.82rem;color:var(--text-secondary); }
+
+    /* Hospital search bar */
+    .hosp-search {
+      display: flex; gap: 12px; align-items: center; margin-bottom: 24px; flex-wrap: wrap;
+    }
+    .hosp-search input {
+      flex: 1; min-width: 200px;
+      padding: 12px 18px; border-radius: var(--radius);
+      border: 2px solid var(--border); background: var(--bg);
+      color: var(--text); font-size: 0.95rem; transition: var(--transition);
+    }
+    .hosp-search input:focus { border-color: var(--primary); outline: none; }
+
+    /* Blood level indicators */
+    .stock-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .stock-item {
+      padding: 3px 10px; border-radius: 50px; font-size: 0.75rem; font-weight: 700;
+      border: 1px solid;
+    }
+    .stock-high { background:rgba(67,160,71,.12); color:#43A047; border-color:rgba(67,160,71,.3); }
+    .stock-low  { background:rgba(251,140,0,.12);  color:#FB8C00; border-color:rgba(251,140,0,.3); }
+    .stock-none { background:rgba(229,57,53,.12);  color:#E53935; border-color:rgba(229,57,53,.3); }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-brand">
+        <div class="logo-icon">🩸</div>
+        <span>Life<span class="text-primary">Link</span></span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="search.html">Find Donors</a>
+        <a href="emergency.html">Emergency</a>
+        <a href="hospitals.html" class="active">Hospitals</a>
+        <a href="blood-banks.html">Blood Banks</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌙</button>
+        <a href="login.html" class="btn btn-sm btn-outline auth-btn">Login</a>
+        <a href="register.html" class="btn btn-sm btn-primary auth-btn">Register</a>
+        <a href="dashboard.html" class="btn btn-sm btn-primary user-btn" style="display:none">Dashboard</a>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="container">
+      <span class="badge badge-primary">🏥 Hospital Network</span>
+      <h1>Hospital <span class="text-primary">Directory</span></h1>
+      <div class="breadcrumb"><a href="index.html">Home</a><span>/</span><span>Hospitals</span></div>
+    </div>
+  </div>
+
+  <section class="section" style="padding-top:40px">
+    <div class="container">
+
+      <!-- Search bar for hospitals -->
+      <div class="hosp-search">
+        <input type="text" id="hospCityFilter" placeholder="Search by hospital name or city…">
+        <select id="hospBloodFilter" class="form-input" style="max-width:160px">
+          <option value="all">All Blood Groups</option>
+          <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+          <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+        </select>
+        <button class="btn btn-primary" id="hospSearchBtn">🔍 Search</button>
+        <button class="btn btn-outline" id="hospGeoBtn" title="Find hospitals near me">📍 Near Me</button>
+      </div>
+
+      <!-- Map -->
+      <div id="hospitalMap" class="map-container" style="height:420px;margin-bottom:32px"></div>
+
+      <!-- Hospital Cards -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+        <h3>🏥 <span id="hospCount">0</span> Partner Hospitals</h3>
+        <span class="badge badge-success">🟢 Live Availability</span>
+      </div>
+      <div id="hospitalList" class="grid grid-2 gap-3"></div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom"><span>© 2026 LifeLink. All rights reserved.</span></div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/maps.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    let allHospitals = [];
+
+    function renderHospitals(hospitals) {
+      const container = document.getElementById('hospitalList');
+      document.getElementById('hospCount').textContent = hospitals.length;
+
+      if (hospitals.length === 0) {
+        container.innerHTML = '<div class="text-center" style="padding:40px;grid-column:1/-1"><p>No hospitals found.</p></div>';
+        return;
+      }
+
+      container.innerHTML = hospitals.map(h => {
+        const stocks = Object.entries(h.bloodAvailability || {}).map(([g, c]) => {
+          const cls = c > 5 ? 'stock-high' : c > 0 ? 'stock-low' : 'stock-none';
+          return `<span class="stock-item ${cls}">${g}: ${c}</span>`;
+        }).join('');
+
+        return `
+          <div class="card" style="padding:24px" id="hosp-${h.id}">
+            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px">
+              <div>
+                <h3 style="margin-bottom:4px">🏥 ${h.name}</h3>
+                <p style="font-size:0.85rem;margin-bottom:2px">📍 ${h.address}</p>
+                <p style="font-size:0.85rem">📞 ${h.contact}</p>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <a href="tel:${h.contact}" class="btn btn-sm btn-primary">Call</a>
+                <button class="btn btn-sm btn-outline" onclick="focusHospital('${h.id}')">📍 Map</button>
+              </div>
+            </div>
+            <div>
+              <p style="font-size:0.78rem;font-weight:600;margin-bottom:8px;color:var(--text)">Blood Availability:</p>
+              <div class="stock-grid">${stocks}</div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function focusHospital(id) {
+      const h = allHospitals.find(x => x.id === id);
+      if (h && h.lat && h.lng) Maps.setCenter({ lat: h.lat, lng: h.lng }, 15);
+    }
+
+    function filterHospitals() {
+      const query = document.getElementById('hospCityFilter').value.toLowerCase();
+      const blood = document.getElementById('hospBloodFilter').value;
+      let list = allHospitals.filter(h => {
+        const matchText = !query ||
+          h.name.toLowerCase().includes(query) ||
+          h.address.toLowerCase().includes(query);
+        const matchBlood = blood === 'all' || (h.bloodAvailability && h.bloodAvailability[blood] > 0);
+        return matchText && matchBlood;
+      });
+      renderHospitals(list);
+      Maps.clearMarkers();
+      Maps.addHospitalMarkers(list);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      DemoData.getHospitals().then(hospitals => {
+        allHospitals = hospitals;
+
+        LeafletLoader.load(() => {
+          Maps.init('hospitalMap', {
+            center: LIFELINK_CONFIG.defaultCenter,
+            zoom: 5,
+            onMapReady: () => Maps.addHospitalMarkers(allHospitals)
+          });
+        });
+
+        renderHospitals(allHospitals);
+      });
+
+      document.getElementById('hospSearchBtn').addEventListener('click', filterHospitals);
+      document.getElementById('hospCityFilter').addEventListener('keyup', e => {
+        if (e.key === 'Enter') filterHospitals();
+      });
+      document.getElementById('hospBloodFilter').addEventListener('change', filterHospitals);
+
+      document.getElementById('hospGeoBtn').addEventListener('click', () => {
+        const btn = document.getElementById('hospGeoBtn');
+        btn.textContent = '⏳ Locating…'; btn.disabled = true;
+        Maps.getUserLocation(coords => {
+          btn.disabled = false;
+          if (!coords) { btn.textContent = '📍 Near Me'; return; }
+          Maps.setCenter(coords, 12);
+          Maps.addUserLocationMarker(coords.lat, coords.lng);
+          btn.textContent = '✅ Located';
+          App.showToast('Showing hospitals near your location', 'success');
+        });
+      });
+    });
+  </script>
+</body>
+</html>

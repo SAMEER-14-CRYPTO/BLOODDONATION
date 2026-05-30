@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Login to your LifeLink account. Access your donor dashboard, manage requests, and stay connected.">
+  <title>Login – LifeLink</title>
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    body {
+      background-color: #111422 !important;
+      background-image: radial-gradient(circle at 10% 20%, rgba(229,57,53,0.06) 0%, transparent 40%), 
+                        radial-gradient(circle at 90% 80%, rgba(30,136,229,0.06) 0%, transparent 40%) !important;
+      color: #ffffff !important;
+    }
+    .navbar {
+      background: rgba(17, 20, 34, 0.8) !important;
+      border-bottom: 1px solid #1c2035 !important;
+    }
+    .navbar .nav-links a {
+      color: #8c90aa !important;
+    }
+    .navbar .nav-links a:hover, .navbar .nav-links a.active {
+      color: #ffffff !important;
+      background: rgba(229, 57, 53, 0.15) !important;
+    }
+    .card {
+      background: #191c2e !important;
+      border: 1px solid #242942 !important;
+      border-radius: 24px !important;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4) !important;
+    }
+    .text-center h2 {
+      color: #ffffff !important;
+      font-size: 2.2rem !important;
+      font-weight: 800 !important;
+      letter-spacing: -0.03em !important;
+      margin-bottom: 6px !important;
+    }
+    .text-center p {
+      color: #8c90aa !important;
+      font-size: 1rem !important;
+    }
+    
+    /* Tabs styling from the image */
+    .tabs {
+      background: #111422 !important;
+      border: 1px solid #242942 !important;
+      border-radius: 50px !important;
+      padding: 6px !important;
+      display: flex !important;
+      gap: 0 !important;
+      width: 100% !important;
+      margin-bottom: 30px !important;
+    }
+    .tab {
+      padding: 14px 24px !important;
+      border-radius: 50px !important;
+      font-weight: 600 !important;
+      font-size: 0.95rem !important;
+      cursor: pointer !important;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      color: #8c90aa !important;
+      flex: 1 !important;
+      text-align: center !important;
+      background: transparent !important;
+      border: none !important;
+    }
+    .tab.active {
+      background: #e53935 !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 15px rgba(229, 57, 53, 0.35) !important;
+    }
+    .tab:not(.active):hover {
+      color: #ffffff !important;
+    }
+
+    /* Labels and inputs styling */
+    .form-group label {
+      color: #ffffff !important;
+      font-weight: 600 !important;
+      font-size: 0.9rem !important;
+      margin-bottom: 10px !important;
+      display: block !important;
+      text-align: left !important;
+    }
+    .form-input {
+      background: #111422 !important;
+      border: 1px solid #242942 !important;
+      border-radius: 12px !important;
+      color: #ffffff !important;
+      padding: 16px 20px !important;
+      font-size: 0.95rem !important;
+      transition: all 0.2s ease !important;
+    }
+    .form-input:focus {
+      border-color: #e53935 !important;
+      box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.2) !important;
+      background: #151829 !important;
+    }
+    .form-input::placeholder {
+      color: #494c63 !important;
+    }
+
+    /* Primary Login Button */
+    .btn-primary {
+      background: #e53935 !important;
+      border: none !important;
+      color: #ffffff !important;
+      border-radius: 50px !important;
+      padding: 16px !important;
+      font-weight: 700 !important;
+      font-size: 1.05rem !important;
+      box-shadow: 0 4px 15px rgba(229, 57, 53, 0.35) !important;
+      transition: all 0.3s ease !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+    .btn-primary:hover {
+      background: #d32f2f !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 8px 20px rgba(229, 57, 53, 0.5) !important;
+    }
+
+    /* Don't have an account? Register here */
+    .tab-content p {
+      color: #8c90aa !important;
+    }
+    .tab-content a {
+      color: #e53935 !important;
+      font-weight: 700 !important;
+    }
+    .tab-content a:hover {
+      text-decoration: underline !important;
+    }
+
+    /* Demo Login Buttons */
+    .demo-login-container {
+      text-align: center !important;
+      margin-top: 24px !important;
+      padding-top: 24px !important;
+      border-top: 1px solid #242942 !important;
+    }
+    .demo-login-title {
+      font-size: 0.85rem !important;
+      color: #535670 !important;
+      margin-bottom: 12px !important;
+      font-weight: 600 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.05em !important;
+    }
+    .demo-btn-container {
+      display: flex !important;
+      gap: 12px !important;
+      justify-content: center !important;
+    }
+    .btn-demo-outline {
+      background: #111422 !important;
+      border: 1px solid #e53935 !important;
+      color: #ffffff !important;
+      border-radius: 50px !important;
+      padding: 12px 24px !important;
+      font-size: 0.9rem !important;
+      font-weight: 600 !important;
+      transition: all 0.2s ease !important;
+      flex: 1 !important;
+      cursor: pointer !important;
+    }
+    .btn-demo-outline:hover {
+      background: #e53935 !important;
+      color: #ffffff !important;
+      transform: translateY(-1px) !important;
+      box-shadow: 0 4px 12px rgba(229, 57, 53, 0.2) !important;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar"><div class="container"><a href="index.html" class="nav-brand"><div class="logo-icon">🩸</div><span>Life<span class="text-primary">Link</span></span></a><div class="nav-links" id="navLinks"><a href="index.html">Home</a><a href="search.html">Find Donors</a><a href="emergency.html">Emergency</a><a href="hospitals.html">Hospitals</a><a href="about.html">About</a></div><div class="nav-actions"><button class="theme-toggle" id="themeToggle">🌙</button><button class="hamburger" id="hamburger"><span></span><span></span><span></span></button></div></div></nav>
+
+  <section class="section" style="min-height:100vh;display:flex;align-items:center;padding-top:120px">
+    <div class="container" style="max-width:460px">
+      <div class="card" style="padding:40px">
+        <div class="text-center" style="margin-bottom:32px">
+          <div style="font-size:3rem;margin-bottom:12px">🩸</div>
+          <h2>Welcome Back</h2>
+          <p>Login to your LifeLink account</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+          <div class="tab active" data-tab="loginTab">Login</div>
+          <div class="tab" data-tab="forgotTab">Forgot Password</div>
+        </div>
+
+        <!-- Login Form -->
+        <div id="loginTab" class="tab-content">
+          <form id="loginForm">
+            <div class="form-group">
+              <label for="loginEmail">Email Address</label>
+              <input type="email" id="loginEmail" class="form-input" placeholder="you@email.com" required>
+            </div>
+            <div class="form-group">
+              <label for="loginPassword">Password</label>
+              <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%">Login</button>
+          </form>
+          <p style="text-align:center;margin-top:20px;font-size:0.9rem">
+            Don't have an account? <a href="register.html">Register here</a>
+          </p>
+          
+          <!-- Demo Login Buttons matching style in the image -->
+          <div class="demo-login-container">
+            <p class="demo-login-title">Demo Login</p>
+            <div class="demo-btn-container">
+              <button type="button" class="btn-demo-outline" onclick="document.getElementById('loginEmail').value='rahul@demo.com';document.getElementById('loginPassword').value='demo123'">Donor Login</button>
+              <button type="button" class="btn-demo-outline" onclick="document.getElementById('loginEmail').value='admin@lifelink.com';document.getElementById('loginPassword').value='admin123'">Admin Login</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Forgot Password -->
+        <div id="forgotTab" class="tab-content" style="display:none">
+          <form id="forgotForm">
+            <div class="form-group">
+              <label for="forgotEmail">Email Address</label>
+              <input type="email" id="forgotEmail" class="form-input" placeholder="Enter your registered email" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%">Send Reset Link</button>
+          </form>
+          <p style="text-align:center;margin-top:20px;font-size:0.9rem">
+            Remember your password? <a href="#" onclick="document.querySelector('[data-tab=loginTab]').click()">Back to Login</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      App.initTabs('.tabs');
+      document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        await Auth.login(email, password);
+      });
+      document.getElementById('forgotForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await Auth.forgotPassword(document.getElementById('forgotEmail').value);
+      });
+    });
+  </script>
+</body>
+</html>

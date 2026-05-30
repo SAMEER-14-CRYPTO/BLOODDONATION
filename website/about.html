@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="About LifeLink – Our mission to connect blood donors with those in need and save lives.">
+  <title>About – LifeLink</title>
+  <link rel="stylesheet" href="css/main.css">
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="container"><a href="index.html" class="nav-brand">
+        <div class="logo-icon">🩸</div><span>Life<span class="text-primary">Link</span></span>
+      </a>
+      <div class="nav-links" id="navLinks"><a href="index.html">Home</a><a href="search.html">Find Donors</a><a
+          href="emergency.html">Emergency</a><a href="hospitals.html">Hospitals</a><a href="about.html"
+          class="active">About</a><a href="contact.html">Contact</a></div>
+      <div class="nav-actions"><button class="theme-toggle" id="themeToggle">🌙</button><a href="login.html"
+          class="btn btn-sm btn-outline auth-btn">Login</a><button class="hamburger"
+          id="hamburger"><span></span><span></span><span></span></button></div>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="container">
+      <h1>About <span class="text-primary">LifeLink</span></h1>
+      <div class="breadcrumb"><a href="index.html">Home</a><span>/</span><span>About</span></div>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container" style="max-width:800px">
+      <div class="animate-on-scroll">
+        <span class="badge badge-primary" style="margin-bottom:16px">Our Mission</span>
+        <h2 style="margin-bottom:16px">Bridging the Gap Between <span class="text-primary">Donors & Lives</span></h2>
+        <p style="font-size:1.05rem;line-height:1.9;margin-bottom:24px">LifeLink is a smart blood donor finder platform
+          that connects blood donors, seekers, hospitals, and blood banks in one unified ecosystem. Our mission is to
+          ensure that no one loses their life waiting for blood during an emergency.</p>
+        <p style="font-size:1.05rem;line-height:1.9;margin-bottom:40px">Founded in 2025, LifeLink uses location-based
+          technology, real-time alerts, and verified donor profiles to create the fastest and most reliable blood
+          donation network. We believe that every drop of blood donated is a step toward saving a life.</p>
+      </div>
+
+      <div class="grid grid-3 gap-3" style="margin-bottom:60px">
+        <div class="card text-center animate-on-scroll" style="padding:32px">
+          <div style="font-size:2.5rem;margin-bottom:12px">🎯</div>
+          <h3>Our Vision</h3>
+          <p>A world where no one dies due to lack of blood availability during emergencies.</p>
+        </div>
+        <div class="card text-center animate-on-scroll delay-1" style="padding:32px">
+          <div style="font-size:2.5rem;margin-bottom:12px">❤️</div>
+          <h3>Our Values</h3>
+          <p>Compassion, reliability, transparency, and community-driven healthcare support.</p>
+        </div>
+        <div class="card text-center animate-on-scroll delay-2" style="padding:32px">
+          <div style="font-size:2.5rem;margin-bottom:12px">🤝</div>
+          <h3>Our Impact</h3>
+          <p>12,500+ donors, 3,800+ lives saved, 250+ partner hospitals across 48 cities.</p>
+        </div>
+      </div>
+
+      <div class="animate-on-scroll">
+        <h2 style="margin-bottom:24px">Meet Our <span class="text-primary">Team</span></h2>
+        <div class="grid grid-3 gap-3">
+          <div class="card text-center" style="padding:24px">
+            <div class="profile-avatar" style="margin:0 auto 12px;width:70px;height:70px;font-size:1.5rem">AK</div>
+            <h4>Arun Kumar</h4>
+            <p style="font-size:0.85rem">Founder & CEO</p>
+          </div>
+          <div class="card text-center" style="padding:24px">
+            <div class="profile-avatar" style="margin:0 auto 12px;width:70px;height:70px;font-size:1.5rem">SM</div>
+            <h4>sameer</h4>
+            <p style="font-size:0.85rem">CTO</p>
+          </div>
+          <div class="card text-center" style="padding:24px">
+            <div class="profile-avatar" style="margin:0 auto 12px;width:70px;height:70px;font-size:1.5rem">DR</div>
+            <h4>Dr.guruvardhan</h4>
+            <p style="font-size:0.85rem">Medical Advisor</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="container">
+      <h2>Join Our Mission</h2>
+      <p>Become a donor today and help us save more lives.</p><a href="register.html"
+        class="btn btn-white btn-lg">Register Now</a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom"><span>© 2026 LifeLink. All rights reserved.</span></div>
+    </div>
+  </footer>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="LifeLink Location System Test – Verify donor addresses, GPS coordinates, maps, and geolocation features.">
+  <title>Location Test – LifeLink</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --test-pass: #43A047;
+      --test-fail: #E53935;
+      --test-warn: #FB8C00;
+      --test-info: #1E88E5;
+      --test-bg: #f8f9fc;
+    }
+    [data-theme="dark"] {
+      --test-bg: #1a1a2e;
+    }
+
+    body { font-family: 'Inter', sans-serif; }
+    .test-hero {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      padding: 120px 0 50px;
+      color: #fff;
+      text-align: center;
+    }
+    .test-hero h1 { color: #fff; font-size: 2.2rem; margin-bottom: 8px; }
+    .test-hero p { color: rgba(255,255,255,0.7); max-width: 600px; margin: 0 auto; }
+    .test-hero .badge { background: rgba(229,57,53,0.2); color: #FF6B6B; border: 1px solid rgba(255,107,107,0.3); }
+
+    .test-dashboard {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    @media(max-width:900px) { .test-dashboard { grid-template-columns: 1fr 1fr; } }
+    @media(max-width:500px) { .test-dashboard { grid-template-columns: 1fr; } }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+    .stat-card .stat-icon { font-size: 2rem; margin-bottom: 8px; }
+    .stat-card .stat-value { font-size: 2rem; font-weight: 800; color: var(--primary); }
+    .stat-card .stat-label { font-size: 0.82rem; color: var(--text-secondary); font-weight: 500; }
+
+    /* Test Sections */
+    .test-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 24px;
+      transition: all 0.3s ease;
+    }
+    .test-section:hover { box-shadow: var(--shadow-lg); }
+    .test-section h2 {
+      font-size: 1.2rem;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .test-section h2 .test-badge {
+      font-size: 0.72rem;
+      padding: 3px 10px;
+      border-radius: 50px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-pass { background: rgba(67,160,71,0.12); color: var(--test-pass); }
+    .badge-fail { background: rgba(229,57,53,0.12); color: var(--test-fail); }
+    .badge-warn { background: rgba(251,140,0,0.12); color: var(--test-warn); }
+    .badge-pending { background: rgba(30,136,229,0.12); color: var(--test-info); }
+
+    /* Log Output */
+    .test-log {
+      background: #1e1e2e;
+      color: #cdd6f4;
+      border-radius: 12px;
+      padding: 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.7;
+      max-height: 400px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .test-log .log-pass { color: #a6e3a1; }
+    .test-log .log-fail { color: #f38ba8; }
+    .test-log .log-warn { color: #fab387; }
+    .test-log .log-info { color: #89b4fa; }
+    .test-log .log-dim  { color: #6c7086; }
+    .test-log .log-head { color: #cba6f7; font-weight: 600; }
+
+    /* Data Table */
+    .data-table-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .data-table th {
+      background: var(--bg);
+      padding: 12px 16px;
+      text-align: left;
+      font-weight: 700;
+      color: var(--text);
+      border-bottom: 2px solid var(--border);
+      position: sticky;
+      top: 0;
+      white-space: nowrap;
+    }
+    .data-table td {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .data-table tr:hover td { background: rgba(229,57,53,0.04); }
+    .data-table .cell-pass { color: var(--test-pass); font-weight: 600; }
+    .data-table .cell-fail { color: var(--test-fail); font-weight: 600; }
+    .data-table .cell-mono { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
+    .data-table .cell-addr { max-width: 250px; line-height: 1.4; }
+    .data-table .cell-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    /* Map Test */
+    #testMap {
+      height: 400px;
+      border-radius: 12px;
+      border: 2px solid var(--border);
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    /* Control Buttons */
+    .test-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .test-btn {
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: 2px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .test-btn:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-1px); }
+    .test-btn:active { transform: translateY(0); }
+    .test-btn.btn-run { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .test-btn.btn-run:hover { opacity: 0.9; }
+    .test-btn.btn-reset { background: rgba(229,57,53,0.08); color: var(--primary); border-color: rgba(229,57,53,0.2); }
+
+    /* Summary Bar */
+    .summary-bar {
+      display: flex;
+      gap: 16px;
+      padding: 20px 24px;
+      background: linear-gradient(135deg, rgba(229,57,53,0.06), rgba(30,136,229,0.06));
+      border-radius: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .summary-item { font-weight: 600; font-size: 0.9rem; }
+    .summary-item .num { font-size: 1.3rem; font-weight: 800; }
+
+    /* Pulse animation for running tests */
+    @keyframes testPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .test-running { animation: testPulse 1s ease-in-out infinite; }
+
+    /* Map placeholder styles for when Google Maps isn't loaded */
+    .map-ph-chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 8px; }
+    .map-ph-chip  { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+                    padding: 4px 10px; font-size: 0.8rem; display: flex; align-items: center; gap: 6px; }
+    .map-ph-dot   { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .map-ph-icon  { font-size: 2.5rem; }
+    .map-ph-sub   { font-size: 0.82rem; color: var(--text-secondary); }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-brand">
+        <div class="logo-icon">🩸</div>
+        <span>Life<span class="text-primary">Link</span></span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="search.html">Find Donors</a>
+        <a href="emergency.html">Emergency</a>
+        <a href="hospitals.html">Hospitals</a>
+        <a href="blood-banks.html">Blood Banks</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌙</button>
+        <a href="login.html" class="btn btn-sm btn-outline auth-btn">Login</a>
+        <a href="register.html" class="btn btn-sm btn-primary auth-btn">Register</a>
+        <a href="dashboard.html" class="btn btn-sm btn-primary user-btn" style="display:none">Dashboard</a>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <div class="test-hero">
+    <div class="container">
+      <span class="badge">🧪 System Test</span>
+      <h1>Location & Address <span style="color:#FF6B6B">Test Suite</span></h1>
+      <p>Comprehensive testing of all donor addresses, GPS coordinates, map rendering, and geolocation features.</p>
+    </div>
+  </div>
+
+  <section class="section" style="padding-top:32px">
+    <div class="container">
+
+      <!-- Quick Stats Dashboard -->
+      <div class="test-dashboard" id="statsDashboard">
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-value" id="statDonors">-</div>
+          <div class="stat-label">Total Donors</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📍</div>
+          <div class="stat-value" id="statWithCoords">-</div>
+          <div class="stat-label">With GPS Coords</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🏠</div>
+          <div class="stat-value" id="statWithAddr">-</div>
+          <div class="stat-label">With Addresses</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🗺️</div>
+          <div class="stat-value" id="statMapsApi">-</div>
+          <div class="stat-label">Maps API</div>
+        </div>
+      </div>
+
+      <!-- Control Panel -->
+      <div class="test-actions">
+        <button class="test-btn btn-run" id="runAllTestsBtn">🚀 Run All Tests</button>
+        <button class="test-btn" id="testDonorsBtn">👥 Test Donors</button>
+        <button class="test-btn" id="testHospitalsBtn">🏥 Test Hospitals</button>
+        <button class="test-btn" id="testBanksBtn">🩸 Test Blood Banks</button>
+        <button class="test-btn" id="testMapBtn">🗺️ Test Map</button>
+        <button class="test-btn" id="testGeoBtn">📍 Test Geolocation</button>
+        <button class="test-btn" id="testDistanceBtn">📏 Test Distance Calc</button>
+        <button class="test-btn btn-reset" id="resetDataBtn">🔄 Reset Data</button>
+      </div>
+
+      <!-- Test Summary -->
+      <div class="summary-bar" id="testSummary">
+        <div class="summary-item">Tests: <span class="num" id="summaryTotal">0</span></div>
+        <div class="summary-item" style="color:var(--test-pass)">✅ Passed: <span class="num" id="summaryPass">0</span></div>
+        <div class="summary-item" style="color:var(--test-fail)">❌ Failed: <span class="num" id="summaryFail">0</span></div>
+        <div class="summary-item" style="color:var(--test-warn)">⚠️ Warnings: <span class="num" id="summaryWarn">0</span></div>
+      </div>
+
+      <!-- Section 1: Donor Location Data -->
+      <div class="test-section" id="section-donors">
+        <h2>
+          👥 Donor Location Data
+          <span class="test-badge badge-pending" id="badge-donors">PENDING</span>
+        </h2>
+        <div class="data-table-wrap" style="max-height:500px;overflow-y:auto">
+          <table class="data-table" id="donorTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Blood</th>
+                <th>City</th>
+                <th>Address</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="donorTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Section 2: Hospital Location Data -->
+      <div class="test-section" id="section-hospitals">
+        <h2>
+          🏥 Hospital Location Data
+          <span class="test-badge badge-pending" id="badge-hospitals">PENDING</span>
+        </h2>
+        <div class="data-table-wrap" style="max-height:400px;overflow-y:auto">
+          <table class="data-table" id="hospitalTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Address</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+                <th>Contact</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="hospitalTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Section 3: Blood Bank Location Data -->
+      <div class="test-section" id="section-banks">
+        <h2>
+          🩸 Blood Bank Location Data
+          <span class="test-badge badge-pending" id="badge-banks">PENDING</span>
+        </h2>
+        <div class="data-table-wrap" style="max-height:400px;overflow-y:auto">
+          <table class="data-table" id="bankTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Address</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+                <th>Contact</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="bankTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Section 4: Map Rendering Test -->
+      <div class="test-section" id="section-map">
+        <h2>
+          🗺️ Map Rendering Test
+          <span class="test-badge badge-pending" id="badge-map">PENDING</span>
+        </h2>
+        <div id="testMap"></div>
+        <div class="test-actions" style="margin-bottom:0">
+          <button class="test-btn" id="showDonorsOnMap">👥 Show Donors</button>
+          <button class="test-btn" id="showHospitalsOnMap">🏥 Show Hospitals</button>
+          <button class="test-btn" id="showBanksOnMap">🩸 Show Blood Banks</button>
+          <button class="test-btn" id="showAllOnMap">📌 Show All</button>
+          <button class="test-btn" id="clearMapBtn">🗑 Clear Map</button>
+        </div>
+      </div>
+
+      <!-- Section 5: Geolocation Test -->
+      <div class="test-section" id="section-geo">
+        <h2>
+          📍 Geolocation Test
+          <span class="test-badge badge-pending" id="badge-geo">PENDING</span>
+        </h2>
+        <div class="test-actions">
+          <button class="test-btn btn-run" id="runGeoTest">📍 Get My Location</button>
+        </div>
+        <div id="geoResult" style="padding:16px;background:var(--bg);border-radius:12px;font-size:0.9rem;line-height:1.6;min-height:60px">
+          <span style="color:var(--text-secondary)">Click "Get My Location" to test browser geolocation…</span>
+        </div>
+      </div>
+
+      <!-- Section 6: Distance Calculation Test -->
+      <div class="test-section" id="section-distance">
+        <h2>
+          📏 Distance Calculation Test
+          <span class="test-badge badge-pending" id="badge-distance">PENDING</span>
+        </h2>
+        <div id="distanceResults" class="test-log"></div>
+      </div>
+
+      <!-- Section 7: Full Test Log -->
+      <div class="test-section" id="section-log">
+        <h2>📋 Complete Test Log</h2>
+        <div class="test-log" id="testLog" style="min-height:200px"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom"><span>© 2026 LifeLink. All rights reserved.</span></div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/maps.js"></script>
+  <script src="js/donors.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // ─── Location Test Suite ──────────────────────────────────────────
+    const LocationTest = {
+      results: { total: 0, pass: 0, fail: 0, warn: 0 },
+      logLines: [],
+
+      // ── Logging ──
+      log(msg, type = 'info') {
+        const cls = `log-${type}`;
+        const prefix = { pass: '  ✅ ', fail: '  ❌ ', warn: '  ⚠️ ', info: '  ℹ️ ', head: '\n══ ', dim: '     ' }[type] || '  ';
+        const suffix = type === 'head' ? ' ══' : '';
+        this.logLines.push(`<span class="${cls}">${prefix}${msg}${suffix}</span>`);
+        this.updateLogDisplay();
+      },
+
+      updateLogDisplay() {
+        const el = document.getElementById('testLog');
+        if (el) {
+          el.innerHTML = this.logLines.join('\n');
+          el.scrollTop = el.scrollHeight;
+        }
+      },
+
+      record(pass, msg) {
+        this.results.total++;
+        if (pass) {
+          this.results.pass++;
+          this.log(msg, 'pass');
+        } else {
+          this.results.fail++;
+          this.log(msg, 'fail');
+        }
+        this.updateSummary();
+      },
+
+      warn(msg) {
+        this.results.total++;
+        this.results.warn++;
+        this.log(msg, 'warn');
+        this.updateSummary();
+      },
+
+      updateSummary() {
+        document.getElementById('summaryTotal').textContent = this.results.total;
+        document.getElementById('summaryPass').textContent = this.results.pass;
+        document.getElementById('summaryFail').textContent = this.results.fail;
+        document.getElementById('summaryWarn').textContent = this.results.warn;
+      },
+
+      setBadge(id, status) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const map = {
+          pass: ['PASSED', 'badge-pass'],
+          fail: ['FAILED', 'badge-fail'],
+          warn: ['WARNING', 'badge-warn'],
+          pending: ['PENDING', 'badge-pending'],
+          running: ['RUNNING…', 'badge-pending']
+        };
+        const [text, cls] = map[status] || ['UNKNOWN', 'badge-pending'];
+        el.textContent = text;
+        el.className = 'test-badge ' + cls;
+        if (status === 'running') el.classList.add('test-running');
+      },
+
+      resetResults() {
+        this.results = { total: 0, pass: 0, fail: 0, warn: 0 };
+        this.logLines = [];
+        this.updateSummary();
+        this.updateLogDisplay();
+        ['badge-donors', 'badge-hospitals', 'badge-banks', 'badge-map', 'badge-geo', 'badge-distance']
+          .forEach(id => this.setBadge(id, 'pending'));
+      },
+
+      // ── Quick Stats ──
+      updateStats() {
+        const donors = DemoData.getUsers().filter(u => u.role === 'donor');
+        const donorsWithCoords = donors.filter(d => d.lat != null && d.lng != null);
+        const donorsWithAddr = donors.filter(d => d.address && d.address.trim());
+        const mapsReady = GoogleMapsLoader.isReady();
+
+        document.getElementById('statDonors').textContent = donors.length;
+        document.getElementById('statWithCoords').textContent = donorsWithCoords.length;
+        document.getElementById('statWithAddr').textContent = donorsWithAddr.length;
+        document.getElementById('statMapsApi').textContent = mapsReady ? '✅ ON' : '⚠️ OFF';
+        document.getElementById('statMapsApi').style.color = mapsReady ? 'var(--test-pass)' : 'var(--test-warn)';
+      },
+
+      // ─────────────────────────────────────
+      // TEST: Donor Location Data
+      // ─────────────────────────────────────
+      testDonors() {
+        this.setBadge('badge-donors', 'running');
+        this.log('DONOR LOCATION DATA TESTS', 'head');
+
+        const donors = DemoData.getUsers().filter(u => u.role === 'donor');
+        this.log(`Found ${donors.length} donors in data store`, 'info');
+
+        let allPass = true;
+        let missingCoords = 0;
+        let missingAddr = 0;
+        const tbody = document.getElementById('donorTableBody');
+        tbody.innerHTML = '';
+
+        donors.forEach((d, i) => {
+          const hasLat = d.lat != null && !isNaN(d.lat);
+          const hasLng = d.lng != null && !isNaN(d.lng);
+          const hasCoords = hasLat && hasLng;
+          const hasAddr = d.address && d.address.trim().length > 0;
+          const hasCity = d.city && d.city.trim().length > 0;
+          const validLat = hasLat && d.lat >= -90 && d.lat <= 90;
+          const validLng = hasLng && d.lng >= -180 && d.lng <= 180;
+          const inIndia = hasCoords && d.lat >= 6 && d.lat <= 37 && d.lng >= 68 && d.lng <= 98;
+
+          if (!hasCoords) missingCoords++;
+          if (!hasAddr) missingAddr++;
+
+          // Table row
+          const statusParts = [];
+          if (hasCoords && validLat && validLng && inIndia) statusParts.push('<span class="cell-badge" style="background:rgba(67,160,71,0.12);color:#43A047">📍 GPS OK</span>');
+          else if (hasCoords) statusParts.push('<span class="cell-badge" style="background:rgba(251,140,0,0.12);color:#FB8C00">📍 Invalid</span>');
+          else statusParts.push('<span class="cell-badge" style="background:rgba(229,57,53,0.12);color:#E53935">📍 Missing</span>');
+
+          if (hasAddr) statusParts.push('<span class="cell-badge" style="background:rgba(67,160,71,0.12);color:#43A047">🏠 Addr OK</span>');
+          else statusParts.push('<span class="cell-badge" style="background:rgba(229,57,53,0.12);color:#E53935">🏠 No Addr</span>');
+
+          tbody.innerHTML += `<tr>
+            <td>${i + 1}</td>
+            <td><strong>${d.displayName}</strong></td>
+            <td><span style="background:rgba(229,57,53,0.1);color:#E53935;padding:2px 8px;border-radius:50px;font-weight:700;font-size:0.82rem">${d.bloodGroup}</span></td>
+            <td>${d.city || '<em style="color:var(--test-fail)">—</em>'}</td>
+            <td class="cell-addr">${hasAddr ? d.address : '<em style="color:var(--test-fail)">No address</em>'}</td>
+            <td class="cell-mono ${hasLat && validLat ? 'cell-pass' : 'cell-fail'}">${hasLat ? d.lat.toFixed(4) : '—'}</td>
+            <td class="cell-mono ${hasLng && validLng ? 'cell-pass' : 'cell-fail'}">${hasLng ? d.lng.toFixed(4) : '—'}</td>
+            <td>${statusParts.join(' ')}</td>
+          </tr>`;
+
+          // Log checks
+          if (!hasCoords) {
+            this.record(false, `${d.displayName}: Missing GPS coordinates`);
+            allPass = false;
+          } else if (!validLat || !validLng) {
+            this.record(false, `${d.displayName}: Invalid coords (${d.lat}, ${d.lng})`);
+            allPass = false;
+          } else if (!inIndia) {
+            this.warn(`${d.displayName}: Coords outside India (${d.lat}, ${d.lng})`);
+          } else {
+            this.record(true, `${d.displayName}: GPS ✓ (${d.lat.toFixed(4)}, ${d.lng.toFixed(4)})`);
+          }
+
+          if (!hasAddr) {
+            this.record(false, `${d.displayName}: Missing address`);
+            allPass = false;
+          } else {
+            this.record(true, `${d.displayName}: Address ✓ "${d.address.substring(0, 50)}…"`);
+          }
+        });
+
+        this.log(`Summary: ${donors.length - missingCoords}/${donors.length} have GPS | ${donors.length - missingAddr}/${donors.length} have addresses`, 'dim');
+        this.setBadge('badge-donors', allPass ? 'pass' : (missingCoords > 0 || missingAddr > 0) ? 'fail' : 'warn');
+      },
+
+      // ─────────────────────────────────────
+      // TEST: Hospital Location Data
+      // ─────────────────────────────────────
+      testHospitals() {
+        this.setBadge('badge-hospitals', 'running');
+        this.log('HOSPITAL LOCATION DATA TESTS', 'head');
+
+        const hospitals = DemoData.getHospitals();
+        this.log(`Found ${hospitals.length} hospitals`, 'info');
+
+        let allPass = true;
+        const tbody = document.getElementById('hospitalTableBody');
+        tbody.innerHTML = '';
+
+        hospitals.forEach((h, i) => {
+          const hasCoords = h.lat != null && h.lng != null;
+          const hasAddr = h.address && h.address.trim().length > 0;
+          const valid = hasCoords && h.lat >= 6 && h.lat <= 37 && h.lng >= 68 && h.lng <= 98;
+
+          const status = hasCoords && valid && hasAddr
+            ? '<span class="cell-badge" style="background:rgba(67,160,71,0.12);color:#43A047">✅ All OK</span>'
+            : '<span class="cell-badge" style="background:rgba(229,57,53,0.12);color:#E53935">❌ Issues</span>';
+
+          tbody.innerHTML += `<tr>
+            <td>${i + 1}</td>
+            <td><strong>${h.name}</strong></td>
+            <td class="cell-addr">${h.address || '—'}</td>
+            <td class="cell-mono ${hasCoords ? 'cell-pass' : 'cell-fail'}">${hasCoords ? h.lat.toFixed(4) : '—'}</td>
+            <td class="cell-mono ${hasCoords ? 'cell-pass' : 'cell-fail'}">${hasCoords ? h.lng.toFixed(4) : '—'}</td>
+            <td>${h.contact || '—'}</td>
+            <td>${status}</td>
+          </tr>`;
+
+          if (!hasCoords) {
+            this.record(false, `${h.name}: Missing GPS coordinates`);
+            allPass = false;
+          } else if (!valid) {
+            this.warn(`${h.name}: Coords may be outside India`);
+          } else {
+            this.record(true, `${h.name}: GPS ✓ (${h.lat.toFixed(4)}, ${h.lng.toFixed(4)})`);
+          }
+          if (hasAddr) {
+            this.record(true, `${h.name}: Address ✓`);
+          } else {
+            this.record(false, `${h.name}: Missing address`);
+            allPass = false;
+          }
+        });
+
+        this.setBadge('badge-hospitals', allPass ? 'pass' : 'fail');
+      },
+
+      // ─────────────────────────────────────
+      // TEST: Blood Bank Location Data
+      // ─────────────────────────────────────
+      testBloodBanks() {
+        this.setBadge('badge-banks', 'running');
+        this.log('BLOOD BANK LOCATION DATA TESTS', 'head');
+
+        const banks = DemoData.getBloodBanks();
+        this.log(`Found ${banks.length} blood banks`, 'info');
+
+        let allPass = true;
+        const tbody = document.getElementById('bankTableBody');
+        tbody.innerHTML = '';
+
+        banks.forEach((b, i) => {
+          const hasCoords = b.lat != null && b.lng != null;
+          const hasAddr = b.address && b.address.trim().length > 0;
+          const valid = hasCoords && b.lat >= 6 && b.lat <= 37 && b.lng >= 68 && b.lng <= 98;
+
+          const status = hasCoords && valid && hasAddr
+            ? '<span class="cell-badge" style="background:rgba(67,160,71,0.12);color:#43A047">✅ All OK</span>'
+            : '<span class="cell-badge" style="background:rgba(229,57,53,0.12);color:#E53935">❌ Issues</span>';
+
+          tbody.innerHTML += `<tr>
+            <td>${i + 1}</td>
+            <td><strong>${b.name}</strong></td>
+            <td class="cell-addr">${b.address || '—'}</td>
+            <td class="cell-mono ${hasCoords ? 'cell-pass' : 'cell-fail'}">${hasCoords ? b.lat.toFixed(4) : '—'}</td>
+            <td class="cell-mono ${hasCoords ? 'cell-pass' : 'cell-fail'}">${hasCoords ? b.lng.toFixed(4) : '—'}</td>
+            <td>${b.contact || '—'}</td>
+            <td>${status}</td>
+          </tr>`;
+
+          if (!hasCoords) {
+            this.record(false, `${b.name}: Missing GPS coordinates`);
+            allPass = false;
+          } else {
+            this.record(true, `${b.name}: GPS ✓ (${b.lat.toFixed(4)}, ${b.lng.toFixed(4)})`);
+          }
+          if (hasAddr) {
+            this.record(true, `${b.name}: Address ✓`);
+          } else {
+            this.record(false, `${b.name}: Missing address`);
+            allPass = false;
+          }
+        });
+
+        this.setBadge('badge-banks', allPass ? 'pass' : 'fail');
+      },
+
+      // ─────────────────────────────────────
+      // TEST: Map Rendering
+      // ─────────────────────────────────────
+      testMap() {
+        this.setBadge('badge-map', 'running');
+        this.log('MAP RENDERING TESTS', 'head');
+
+        const mapsReady = GoogleMapsLoader.isReady();
+        this.log(`Google Maps API loaded: ${mapsReady}`, 'info');
+
+        if (!mapsReady) {
+          this.warn('Google Maps API not loaded — running in placeholder mode');
+          this.log('Maps will show a static placeholder. Add your API key in config.js to enable live maps.', 'dim');
+          this.setBadge('badge-map', 'warn');
+
+          // Still test that the Maps module exists and works gracefully
+          this.record(typeof Maps === 'object', 'Maps module exists');
+          this.record(typeof Maps.init === 'function', 'Maps.init() function exists');
+          this.record(typeof Maps.addDonorMarkers === 'function', 'Maps.addDonorMarkers() exists');
+          this.record(typeof Maps.addHospitalMarkers === 'function', 'Maps.addHospitalMarkers() exists');
+          this.record(typeof Maps.addBloodBankMarkers === 'function', 'Maps.addBloodBankMarkers() exists');
+          this.record(typeof Maps.calculateDistance === 'function', 'Maps.calculateDistance() exists');
+          this.record(typeof Maps.geocodeAddress === 'function', 'Maps.geocodeAddress() exists');
+          this.record(typeof Maps.getUserLocation === 'function', 'Maps.getUserLocation() exists');
+
+          // Init placeholder
+          Maps.init('testMap', {
+            type: 'all locations',
+            city: 'India',
+            markers: DemoData.getUsers().filter(u => u.role === 'donor').slice(0, 6)
+              .map(d => ({ name: `${d.displayName} (${d.bloodGroup})`, color: d.availability ? '#43A047' : '#9E9E9E' }))
+          });
+          return;
+        }
+
+        // Google Maps is available
+        this.record(true, 'Google Maps API loaded successfully');
+
+        // Init map and add markers
+        Maps.init('testMap', {
+          center: LIFELINK_CONFIG.defaultCenter,
+          zoom: 5,
+          onMapReady: () => {
+            this.record(!!Maps.map, 'Map instance created');
+
+            const donors = DemoData.getUsers().filter(u => u.role === 'donor');
+            Maps.addDonorMarkers(donors);
+            this.record(Maps.markers.length > 0, `${Maps.markers.length} donor markers placed on map`);
+
+            this.setBadge('badge-map', 'pass');
+          }
+        });
+      },
+
+      // ─────────────────────────────────────
+      // TEST: Geolocation
+      // ─────────────────────────────────────
+      testGeolocation() {
+        this.setBadge('badge-geo', 'running');
+        this.log('GEOLOCATION TESTS', 'head');
+
+        const resultEl = document.getElementById('geoResult');
+
+        this.record(!!navigator.geolocation, 'Browser supports Geolocation API');
+
+        if (!navigator.geolocation) {
+          resultEl.innerHTML = '<span style="color:var(--test-fail);font-weight:600">❌ Browser does not support Geolocation API</span>';
+          this.setBadge('badge-geo', 'fail');
+          return;
+        }
+
+        resultEl.innerHTML = '<span class="test-running" style="color:var(--test-info);font-weight:600">⏳ Requesting location permission…</span>';
+
+        navigator.geolocation.getCurrentPosition(
+          pos => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            const acc = pos.coords.accuracy;
+
+            this.record(true, `Location obtained: ${lat.toFixed(6)}, ${lng.toFixed(6)} (accuracy: ${acc.toFixed(0)}m)`);
+            this.setBadge('badge-geo', 'pass');
+
+            // Find nearest donors
+            const donors = DemoData.getUsers().filter(u => u.role === 'donor' && u.lat && u.lng);
+            const withDist = donors.map(d => ({
+              ...d,
+              distance: Maps.calculateDistance(lat, lng, d.lat, d.lng)
+            })).sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance));
+
+            const nearestList = withDist.slice(0, 5).map(d =>
+              `<div style="padding:8px 12px;background:var(--bg);border-radius:8px;margin-top:6px;display:flex;justify-content:space-between;align-items:center">
+                <span><strong>${d.displayName}</strong> <span style="color:var(--primary);font-weight:700">${d.bloodGroup}</span> — ${d.city}</span>
+                <span class="dist-badge">📏 ${d.distance} km</span>
+              </div>`
+            ).join('');
+
+            resultEl.innerHTML = `
+              <div style="margin-bottom:12px">
+                <span style="color:var(--test-pass);font-weight:700;font-size:1.1rem">✅ Location Found!</span>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
+                <div style="padding:12px;background:var(--bg);border-radius:10px;text-align:center">
+                  <div style="font-size:0.75rem;color:var(--text-secondary);font-weight:500">Latitude</div>
+                  <div style="font-weight:700;font-family:monospace">${lat.toFixed(6)}</div>
+                </div>
+                <div style="padding:12px;background:var(--bg);border-radius:10px;text-align:center">
+                  <div style="font-size:0.75rem;color:var(--text-secondary);font-weight:500">Longitude</div>
+                  <div style="font-weight:700;font-family:monospace">${lng.toFixed(6)}</div>
+                </div>
+                <div style="padding:12px;background:var(--bg);border-radius:10px;text-align:center">
+                  <div style="font-size:0.75rem;color:var(--text-secondary);font-weight:500">Accuracy</div>
+                  <div style="font-weight:700;font-family:monospace">${acc.toFixed(0)}m</div>
+                </div>
+              </div>
+              <div style="font-weight:600;margin-bottom:6px">🏥 Nearest Donors:</div>
+              ${nearestList}`;
+
+            // Show on map if Google Maps is active
+            if (GoogleMapsLoader.isReady() && Maps.map) {
+              Maps.setCenter({ lat, lng }, 11);
+              Maps.addUserLocationMarker(lat, lng);
+            }
+          },
+          err => {
+            const msgs = {
+              1: 'Permission denied — please allow location access in your browser.',
+              2: 'Position unavailable — try again.',
+              3: 'Request timed out — check your connection.'
+            };
+            this.record(false, `Geolocation failed: ${msgs[err.code] || err.message}`);
+            resultEl.innerHTML = `<span style="color:var(--test-fail);font-weight:600">❌ ${msgs[err.code] || err.message}</span>`;
+            this.setBadge('badge-geo', 'fail');
+          },
+          { timeout: 10000, enableHighAccuracy: true }
+        );
+      },
+
+      // ─────────────────────────────────────
+      // TEST: Distance Calculations
+      // ─────────────────────────────────────
+      testDistanceCalc() {
+        this.setBadge('badge-distance', 'running');
+        this.log('DISTANCE CALCULATION TESTS', 'head');
+
+        const el = document.getElementById('distanceResults');
+        const lines = [];
+
+        // Known distances (approximate) between Indian cities
+        const pairs = [
+          { from: 'Mumbai',    fLat: 19.076, fLng: 72.877,  to: 'Delhi',     tLat: 28.613, tLng: 77.209,  expected: 1150, tolerance: 100 },
+          { from: 'Mumbai',    fLat: 19.076, fLng: 72.877,  to: 'Pune',      tLat: 18.520, tLng: 73.856,  expected: 120,  tolerance: 30 },
+          { from: 'Delhi',     fLat: 28.613, fLng: 77.209,  to: 'Bangalore', tLat: 12.971, tLng: 77.594,  expected: 1740, tolerance: 100 },
+          { from: 'Chennai',   fLat: 13.082, fLng: 80.270,  to: 'Hyderabad', tLat: 17.385, tLng: 78.486,  expected: 520,  tolerance: 50 },
+          { from: 'Kolkata',   fLat: 22.551, fLng: 88.352,  to: 'Mumbai',    tLat: 19.076, tLng: 72.877,  expected: 1650, tolerance: 100 },
+          { from: 'Same Point',fLat: 20.0,   fLng: 78.0,    to: 'Same Point',tLat: 20.0,   tLng: 78.0,    expected: 0,    tolerance: 0.1 }
+        ];
+
+        let allPass = true;
+        lines.push('<span class="log-head">══ Haversine Distance Calculations ══</span>\n');
+
+        pairs.forEach(p => {
+          const dist = parseFloat(Maps.calculateDistance(p.fLat, p.fLng, p.tLat, p.tLng));
+          const diff = Math.abs(dist - p.expected);
+          const pass = diff <= p.tolerance;
+
+          if (!pass) allPass = false;
+          this.record(pass, `${p.from} → ${p.to}: ${dist} km (expected ~${p.expected} km, diff ${diff.toFixed(1)} km)`);
+
+          lines.push(`<span class="${pass ? 'log-pass' : 'log-fail'}">  ${pass ? '✅' : '❌'} ${p.from} → ${p.to}</span>`);
+          lines.push(`<span class="log-dim">     Calculated: ${dist} km  |  Expected: ~${p.expected} km  |  Δ ${diff.toFixed(1)} km</span>\n`);
+        });
+
+        // Test with donor data
+        lines.push('<span class="log-head">\n══ Distance Matrix (Donor-to-Donor) ══</span>\n');
+        const donors = DemoData.getUsers().filter(u => u.role === 'donor' && u.lat && u.lng).slice(0, 5);
+        donors.forEach(a => {
+          donors.forEach(b => {
+            if (a.uid === b.uid) return;
+            const d = Maps.calculateDistance(a.lat, a.lng, b.lat, b.lng);
+            lines.push(`<span class="log-info">  📏 ${a.displayName} (${a.city}) → ${b.displayName} (${b.city}): <strong>${d} km</strong></span>`);
+          });
+        });
+
+        el.innerHTML = lines.join('\n');
+        this.setBadge('badge-distance', allPass ? 'pass' : 'fail');
+      },
+
+      // ─────────────────────────────────────
+      // RUN ALL TESTS
+      // ─────────────────────────────────────
+      runAll() {
+        this.resetResults();
+        this.log('LIFELINK LOCATION TEST SUITE v2.0', 'head');
+        this.log(`Running at: ${new Date().toLocaleString()}`, 'dim');
+        this.log(`Maps API key configured: ${LIFELINK_CONFIG.googleMapsApiKey !== 'YOUR_GOOGLE_MAPS_API_KEY'}`, 'dim');
+        this.log(`Google Maps loaded: ${GoogleMapsLoader.isReady()}`, 'dim');
+
+        this.updateStats();
+        this.testDonors();
+        this.testHospitals();
+        this.testBloodBanks();
+        this.testMap();
+        this.testDistanceCalc();
+        // Geolocation is manual — requires user permission
+
+        this.log('\n──────────────────────────────────────', 'dim');
+        this.log(`Tests complete. Total: ${this.results.total} | Pass: ${this.results.pass} | Fail: ${this.results.fail} | Warn: ${this.results.warn}`, 'info');
+      }
+    };
+
+    // ── Page Init ────────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+      // Load Google Maps then run
+      GoogleMapsLoader.load(() => {
+        LocationTest.updateStats();
+
+        // Auto-init map
+        Maps.init('testMap', {
+          type: 'all locations',
+          city: 'India',
+          center: LIFELINK_CONFIG.defaultCenter,
+          zoom: 5,
+          markers: DemoData.getUsers().filter(u => u.role === 'donor').slice(0, 7)
+            .map(d => ({ name: `${d.displayName} (${d.bloodGroup})`, color: d.availability ? '#43A047' : '#9E9E9E' }))
+        });
+      });
+
+      // Button bindings
+      document.getElementById('runAllTestsBtn').addEventListener('click', () => LocationTest.runAll());
+      document.getElementById('testDonorsBtn').addEventListener('click', () => { LocationTest.testDonors(); LocationTest.updateStats(); });
+      document.getElementById('testHospitalsBtn').addEventListener('click', () => LocationTest.testHospitals());
+      document.getElementById('testBanksBtn').addEventListener('click', () => LocationTest.testBloodBanks());
+      document.getElementById('testMapBtn').addEventListener('click', () => LocationTest.testMap());
+      document.getElementById('testGeoBtn').addEventListener('click', () => LocationTest.testGeolocation());
+      document.getElementById('testDistanceBtn').addEventListener('click', () => LocationTest.testDistanceCalc());
+      document.getElementById('runGeoTest').addEventListener('click', () => LocationTest.testGeolocation());
+
+      document.getElementById('resetDataBtn').addEventListener('click', () => {
+        DemoData.resetData();
+        LocationTest.resetResults();
+        LocationTest.updateStats();
+        App.showToast('Data reset to defaults', 'success');
+      });
+
+      // Map control buttons
+      document.getElementById('showDonorsOnMap')?.addEventListener('click', () => {
+        const donors = DemoData.getUsers().filter(u => u.role === 'donor');
+        Maps.addDonorMarkers(donors);
+        App.showToast(`Showing ${donors.length} donors on map`, 'info');
+      });
+      document.getElementById('showHospitalsOnMap')?.addEventListener('click', () => {
+        const hospitals = DemoData.getHospitals();
+        Maps.addHospitalMarkers(hospitals);
+        App.showToast(`Showing ${hospitals.length} hospitals on map`, 'info');
+      });
+      document.getElementById('showBanksOnMap')?.addEventListener('click', () => {
+        const banks = DemoData.getBloodBanks();
+        Maps.addBloodBankMarkers(banks);
+        App.showToast(`Showing ${banks.length} blood banks on map`, 'info');
+      });
+      document.getElementById('showAllOnMap')?.addEventListener('click', () => {
+        Maps.clearMarkers();
+        const donors = DemoData.getUsers().filter(u => u.role === 'donor');
+        Maps.addDonorMarkers(donors);
+        const hospitals = DemoData.getHospitals();
+        Maps.addHospitalMarkers(hospitals);
+        const banks = DemoData.getBloodBanks();
+        Maps.addBloodBankMarkers(banks);
+        App.showToast('Showing all locations on map', 'info');
+      });
+      document.getElementById('clearMapBtn')?.addEventListener('click', () => {
+        Maps.clearMarkers();
+        App.showToast('Map cleared', 'info');
+      });
+
+      // Auto-run tests after a short delay
+      setTimeout(() => LocationTest.runAll(), 500);
+    });
+  </script>
+</body>
+</html>

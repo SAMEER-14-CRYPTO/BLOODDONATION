@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="LifeLink – Smart Blood Donor Finder. Find nearby blood donors quickly during emergencies. Save lives with instant donor matching.">
+  <title>LifeLink – Smart Blood Donor Finder</title>
+  <!-- Leaflet.js – Free Open Source Maps (No API Key Needed) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-brand">
+        <div class="logo-icon">🩸</div>
+        <span>Life<span class="text-primary">Link</span></span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html" class="active">Home</a>
+        <a href="search.html">Find Donors</a>
+        <a href="emergency.html">Emergency</a>
+        <a href="hospitals.html">Hospitals</a>
+        <a href="blood-banks.html">Blood Banks</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌙</button>
+        <a href="login.html" class="btn btn-sm btn-outline auth-btn">Login</a>
+        <a href="register.html" class="btn btn-sm btn-primary auth-btn">Register</a>
+        <a href="dashboard.html" class="btn btn-sm btn-primary user-btn" style="display:none">Dashboard</a>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <span class="badge badge-primary">🚑 #1 Blood Donor Platform</span>
+        <h1>Every Drop <span class="text-primary">Saves</span> a Life</h1>
+        <p>Connect with verified blood donors near you in seconds. LifeLink uses smart matching and real-time alerts to ensure no one waits for blood during emergencies.</p>
+        <div class="hero-buttons">
+          <a href="search.html" class="btn btn-primary btn-lg">Find Donors Now</a>
+          <a href="register.html" class="btn btn-outline btn-lg">Become a Donor</a>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="number" data-count="12500" data-suffix="+">0</div>
+            <div class="label">Registered Donors</div>
+          </div>
+          <div class="hero-stat">
+            <div class="number" data-count="3800" data-suffix="+">0</div>
+            <div class="label">Lives Saved</div>
+          </div>
+          <div class="hero-stat">
+            <div class="number" data-count="250" data-suffix="+">0</div>
+            <div class="label">Partner Hospitals</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-image">
+        <div style="width:100%;max-width:420px;height:400px;border-radius:var(--radius-lg);background:linear-gradient(135deg,#FFEBEE,#FFCDD2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;box-shadow:var(--shadow-lg)">
+          <div style="font-size:5rem">🩸</div>
+          <div style="font-size:1.5rem;font-weight:800;color:var(--primary)">LifeLink</div>
+          <div style="font-size:0.9rem;color:var(--text-secondary)">Donate Blood, Save Lives</div>
+        </div>
+        <div class="floating-card">
+          <div class="fc-icon" style="background:rgba(67,160,71,0.15);color:#43A047">✓</div>
+          <div><div class="fc-text">Request Fulfilled</div><div class="fc-sub">O+ blood delivered</div></div>
+        </div>
+        <div class="floating-card">
+          <div class="fc-icon" style="background:var(--primary-glow);color:var(--primary)">🔔</div>
+          <div><div class="fc-text">Urgent: A- Needed</div><div class="fc-sub">Apollo Hospital</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header animate-on-scroll">
+        <span class="badge badge-primary">How It Works</span>
+        <h2>Find Blood in <span class="text-primary">3 Simple Steps</span></h2>
+        <p>Our streamlined process ensures you can find blood donors or request blood in minutes.</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card card animate-on-scroll">
+          <div class="step-number">1</div>
+          <h3>Register & Verify</h3>
+          <p>Create your donor profile with blood group, location, and availability. Get verified for trust.</p>
+        </div>
+        <div class="step-card card animate-on-scroll delay-1">
+          <div class="step-number">2</div>
+          <h3>Search or Request</h3>
+          <p>Search nearby donors by blood group or create an emergency request to alert matching donors.</p>
+        </div>
+        <div class="step-card card animate-on-scroll delay-2">
+          <div class="step-number">3</div>
+          <h3>Connect & Save</h3>
+          <p>Contact donors directly via call or message. Track responses and save lives together.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Blood Groups -->
+  <section class="section" style="background:var(--bg-card)">
+    <div class="container">
+      <div class="section-header animate-on-scroll">
+        <span class="badge badge-primary">Blood Groups</span>
+        <h2>Find Your <span class="text-primary">Blood Match</span></h2>
+        <p>Select a blood group to find available donors instantly.</p>
+      </div>
+      <div class="blood-groups animate-on-scroll">
+        <a href="search.html?bg=A+" class="blood-chip">A+<span>Type</span></a>
+        <a href="search.html?bg=A-" class="blood-chip">A-<span>Type</span></a>
+        <a href="search.html?bg=B+" class="blood-chip">B+<span>Type</span></a>
+        <a href="search.html?bg=B-" class="blood-chip">B-<span>Type</span></a>
+        <a href="search.html?bg=AB+" class="blood-chip">AB+<span>Type</span></a>
+        <a href="search.html?bg=AB-" class="blood-chip">AB-<span>Type</span></a>
+        <a href="search.html?bg=O+" class="blood-chip">O+<span>Type</span></a>
+        <a href="search.html?bg=O-" class="blood-chip">O-<span>Type</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header animate-on-scroll">
+        <span class="badge badge-primary">Features</span>
+        <h2>Why Choose <span class="text-primary">LifeLink</span></h2>
+        <p>Advanced features designed to make blood donation seamless and life-saving.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card card animate-on-scroll">
+          <div class="card-icon red">📍</div>
+          <h3>Location-Based Search</h3>
+          <p>Find donors near you using GPS-powered proximity search and distance filtering.</p>
+        </div>
+        <div class="feature-card card animate-on-scroll delay-1">
+          <div class="card-icon blue">⚡</div>
+          <h3>Instant Alerts</h3>
+          <p>Emergency notifications reach matching donors within seconds of a request.</p>
+        </div>
+        <div class="feature-card card animate-on-scroll delay-2">
+          <div class="card-icon green">✓</div>
+          <h3>Verified Donors</h3>
+          <p>Every donor is verified to ensure safety, trust, and reliability.</p>
+        </div>
+        <div class="feature-card card animate-on-scroll delay-1">
+          <div class="card-icon orange">🏥</div>
+          <h3>Hospital Network</h3>
+          <p>Access our partner hospital directory with real-time blood stock data.</p>
+        </div>
+        <div class="feature-card card animate-on-scroll delay-2">
+          <div class="card-icon blue">💬</div>
+          <h3>Direct Communication</h3>
+          <p>Call or message donors directly. No middlemen, no delays.</p>
+        </div>
+        <div class="feature-card card animate-on-scroll delay-3">
+          <div class="card-icon red">📊</div>
+          <h3>Smart Analytics</h3>
+          <p>Track donations, view history, and get reminders for your next donation.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Bar -->
+  <section class="stats-bar">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item animate-on-scroll"><div class="stat-number" data-count="12500" data-suffix="+">0</div><div class="stat-label">Registered Donors</div></div>
+        <div class="stat-item animate-on-scroll delay-1"><div class="stat-number" data-count="3800" data-suffix="+">0</div><div class="stat-label">Lives Saved</div></div>
+        <div class="stat-item animate-on-scroll delay-2"><div class="stat-number" data-count="250" data-suffix="+">0</div><div class="stat-label">Partner Hospitals</div></div>
+        <div class="stat-item animate-on-scroll delay-3"><div class="stat-number" data-count="48" data-suffix="">0</div><div class="stat-label">Cities Covered</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Donor Map -->
+  <section class="section" style="background:var(--bg-card)">
+    <div class="container">
+      <div class="section-header animate-on-scroll">
+        <span class="badge badge-primary">📍 Live Donor Map</span>
+        <h2>Donors Across <span class="text-primary">India</span></h2>
+        <p>Real-time locations of registered blood donors. Click any pin to view details.</p>
+      </div>
+      <div id="indexDonorMap" class="map-container animate-on-scroll" style="height:420px;margin-bottom:20px"></div>
+      <div style="display:flex;justify-content:center;gap:24px;flex-wrap:wrap;font-size:0.85rem;font-weight:600;color:var(--text-secondary)">
+        <span style="display:flex;align-items:center;gap:6px">
+          <span style="width:12px;height:12px;border-radius:50%;background:#43A047;border:2px solid #fff;box-shadow:0 0 0 1px #43A047;display:inline-block"></span>
+          Available Donors
+        </span>
+        <span style="display:flex;align-items:center;gap:6px">
+          <span style="width:12px;height:12px;border-radius:50%;background:#9E9E9E;border:2px solid #fff;box-shadow:0 0 0 1px #9E9E9E;display:inline-block"></span>
+          Unavailable Donors
+        </span>
+        <span style="display:flex;align-items:center;gap:6px">
+          <span style="width:12px;height:12px;border-radius:50%;background:#1E88E5;border:2px solid #fff;box-shadow:0 0 0 1px #1E88E5;display:inline-block"></span>
+          Your Location
+        </span>
+      </div>
+      <div style="text-align:center;margin-top:20px">
+        <a href="search.html" class="btn btn-primary">🔍 Search Donors by Location</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header animate-on-scroll">
+        <span class="badge badge-primary">Testimonials</span>
+        <h2>Stories That <span class="text-primary">Inspire</span></h2>
+      </div>
+      <div class="grid grid-3 gap-3">
+        <div class="testimonial-card card animate-on-scroll">
+          <div class="quote">"LifeLink helped us find a rare B- donor within 20 minutes. My mother's surgery was a success. Forever grateful!"</div>
+          <div class="author">
+            <div class="author-avatar">RS</div>
+            <div><div class="author-name">Rahul Sharma</div><div class="author-role">Blood Seeker, Mumbai</div></div>
+          </div>
+        </div>
+        <div class="testimonial-card card animate-on-scroll delay-1">
+          <div class="quote">"I've donated blood 8 times through LifeLink. The app makes it so easy to know when someone needs help nearby."</div>
+          <div class="author">
+            <div class="author-avatar">PP</div>
+            <div><div class="author-name">Priya Patel</div><div class="author-role">Regular Donor, Delhi</div></div>
+          </div>
+        </div>
+        <div class="testimonial-card card animate-on-scroll delay-2">
+          <div class="quote">"As a hospital admin, LifeLink has reduced our blood shortage emergencies by 60%. An incredible platform."</div>
+          <div class="author">
+            <div class="author-avatar">DA</div>
+            <div><div class="author-name">Dr. Anita Roy</div><div class="author-role">Apollo Hospital</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="container">
+      <h2>Ready to Save a Life?</h2>
+      <p>Join thousands of donors and help someone in need. It only takes a few minutes to register.</p>
+      <div class="flex flex-center gap-2">
+        <a href="register.html" class="btn btn-white btn-lg">Register as Donor</a>
+        <a href="emergency.html" class="btn btn-outline btn-lg" style="border-color:#fff;color:#fff">Emergency Request</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand">🩸 LifeLink</div>
+          <p>Smart Blood Donor Finder platform connecting donors, seekers, hospitals, and blood banks to save lives during emergencies.</p>
+        </div>
+        <div>
+          <h4>Quick Links</h4>
+          <div class="footer-links">
+            <a href="about.html">About Us</a>
+            <a href="search.html">Find Donors</a>
+            <a href="register.html">Register</a>
+            <a href="faq.html">FAQ</a>
+          </div>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <div class="footer-links">
+            <a href="hospitals.html">Hospitals</a>
+            <a href="blood-banks.html">Blood Banks</a>
+            <a href="emergency.html">Emergency</a>
+            <a href="contact.html">Contact</a>
+          </div>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <div class="footer-links">
+            <a href="mailto:help@lifelink.com">📧 help@lifelink.com</a>
+            <a href="tel:+911800123456">📞 1800-123-456</a>
+            <a>📍 Mumbai, India</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 LifeLink. All rights reserved.</span>
+        <div class="social-links">
+          <a href="#" aria-label="Facebook">f</a>
+          <a href="#" aria-label="Twitter">𝕏</a>
+          <a href="#" aria-label="Instagram">📷</a>
+          <a href="#" aria-label="LinkedIn">in</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/maps.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      Auth.requireAuth((user) => {
+        // Animate counters when visible
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              App.animateCounters();
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.3 });
+        document.querySelectorAll('.hero-stats, .stats-grid').forEach(el => observer.observe(el));
+
+        // Load live India donor map (Leaflet – FREE, no API key!)
+        LeafletLoader.load(() => {
+          DemoData.getUsers().then(users => {
+            const donors = users.filter(u => u.role === 'donor');
+            Maps.init('indexDonorMap', {
+              center: LIFELINK_CONFIG.defaultCenter,
+              zoom: 5,
+              onMapReady: () => Maps.addDonorMarkers(donors)
+            });
+          });
+        });
+      });
+    });
+  </script>
+</body>
+</html>

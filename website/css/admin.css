@@ -1,0 +1,72 @@
+/* ============================================
+   LIFELINK – Admin Panel Styles
+   ============================================ */
+
+.admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;flex-wrap:wrap;gap:16px}
+.admin-header h2{font-size:1.5rem}
+.admin-search{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:50px;padding:4px 4px 4px 16px;min-width:280px}
+.admin-search input{background:none;border:none;flex:1;padding:8px 0;font-size:0.9rem;color:var(--text)}
+.admin-search button{padding:8px 20px;border-radius:50px;background:var(--primary);color:#fff;font-weight:500;font-size:0.85rem}
+
+/* Admin Stats */
+.admin-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:32px}
+.admin-stat{background:var(--bg-card);border-radius:var(--radius-lg);padding:24px;border:1px solid var(--border);position:relative;overflow:hidden}
+.admin-stat::before{content:'';position:absolute;top:0;left:0;right:0;height:4px}
+.admin-stat:nth-child(1)::before{background:var(--primary)}
+.admin-stat:nth-child(2)::before{background:var(--info)}
+.admin-stat:nth-child(3)::before{background:var(--success)}
+.admin-stat:nth-child(4)::before{background:var(--warning)}
+.admin-stat .stat-icon{width:48px;height:48px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:12px}
+.admin-stat .stat-value{font-size:2rem;font-weight:800}
+.admin-stat .stat-label{font-size:0.85rem;color:var(--text-secondary);margin-top:2px}
+.admin-stat .stat-change{display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;font-weight:600;margin-top:8px;padding:4px 10px;border-radius:50px}
+.admin-stat .stat-change.up{background:rgba(67,160,71,0.15);color:var(--success)}
+.admin-stat .stat-change.down{background:rgba(229,57,53,0.15);color:var(--danger)}
+
+/* Admin Cards */
+.admin-grid{display:grid;grid-template-columns:2fr 1fr;gap:24px;margin-bottom:32px}
+.admin-card{background:var(--bg-card);border-radius:var(--radius-lg);border:1px solid var(--border);overflow:hidden}
+.admin-card-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--border)}
+.admin-card-header h3{font-size:1.05rem}
+.admin-card-body{padding:24px}
+
+/* User Management Table */
+.user-row{display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid var(--border)}
+.user-row:last-child{border-bottom:none}
+.user-row .user-avatar{width:42px;height:42px;border-radius:50%;background:var(--primary-glow);display:flex;align-items:center;justify-content:center;font-weight:600;color:var(--primary);font-size:0.9rem;flex-shrink:0}
+.user-row .user-info{flex:1}
+.user-row .user-name{font-weight:600;font-size:0.9rem}
+.user-row .user-email{font-size:0.8rem;color:var(--text-secondary)}
+.user-row .user-actions{display:flex;gap:6px}
+.user-action-btn{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);background:var(--bg);cursor:pointer;font-size:0.8rem;transition:var(--transition)}
+.user-action-btn:hover{border-color:var(--primary);color:var(--primary)}
+.user-action-btn.danger:hover{border-color:var(--danger);color:var(--danger);background:rgba(229,57,53,0.1)}
+.verify-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:50px;font-size:0.7rem;font-weight:600}
+.verify-badge.verified{background:rgba(67,160,71,0.15);color:var(--success)}
+.verify-badge.unverified{background:rgba(251,140,0,0.15);color:var(--warning)}
+
+/* Notification Broadcast */
+.broadcast-form{display:flex;flex-direction:column;gap:12px}
+.broadcast-form textarea{min-height:100px}
+
+/* Analytics Mini Charts */
+.mini-chart{display:flex;align-items:flex-end;gap:4px;height:60px;padding:8px 0}
+.mini-bar{flex:1;background:var(--primary-glow);border-radius:4px 4px 0 0;transition:var(--transition);min-height:8px}
+.mini-bar:hover{background:var(--primary)}
+
+/* Recent Activity Timeline */
+.timeline{position:relative;padding-left:24px}
+.timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:var(--border)}
+.timeline-item{position:relative;padding-bottom:20px;padding-left:20px}
+.timeline-item::before{content:'';position:absolute;left:-20px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--bg-card);border:2px solid var(--primary)}
+.timeline-item .time{font-size:0.75rem;color:var(--text-secondary);margin-bottom:4px}
+.timeline-item .event{font-size:0.9rem;font-weight:500}
+
+@media(max-width:1024px){
+  .admin-stats{grid-template-columns:repeat(2,1fr)}
+  .admin-grid{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  .admin-stats{grid-template-columns:1fr}
+  .admin-search{min-width:auto;width:100%}
+}

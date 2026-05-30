@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Contact LifeLink. Get in touch with our team for support, partnerships, or inquiries.">
+  <title>Contact – LifeLink</title>
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+  <nav class="navbar"><div class="container"><a href="index.html" class="nav-brand"><div class="logo-icon">🩸</div><span>Life<span class="text-primary">Link</span></span></a><div class="nav-links" id="navLinks"><a href="index.html">Home</a><a href="search.html">Find Donors</a><a href="emergency.html">Emergency</a><a href="hospitals.html">Hospitals</a><a href="about.html">About</a><a href="contact.html" class="active">Contact</a></div><div class="nav-actions"><button class="theme-toggle" id="themeToggle">🌙</button><a href="login.html" class="btn btn-sm btn-outline auth-btn">Login</a><button class="hamburger" id="hamburger"><span></span><span></span><span></span></button></div></div></nav>
+
+  <div class="page-header"><div class="container"><h1>Contact <span class="text-primary">Us</span></h1><div class="breadcrumb"><a href="index.html">Home</a><span>/</span><span>Contact</span></div></div></div>
+
+  <section class="section">
+    <div class="container">
+      <div class="grid grid-2 gap-4">
+        <div>
+          <h2 style="margin-bottom:16px">Get In <span class="text-primary">Touch</span></h2>
+          <p style="margin-bottom:32px">Have questions, feedback, or partnership inquiries? We'd love to hear from you.</p>
+          <div class="flex flex-col gap-3">
+            <div class="card" style="padding:20px;display:flex;align-items:center;gap:16px"><div class="card-icon red" style="margin:0">📧</div><div><h4>Email</h4><p>help@lifelink.com</p></div></div>
+            <div class="card" style="padding:20px;display:flex;align-items:center;gap:16px"><div class="card-icon blue" style="margin:0">📞</div><div><h4>Phone</h4><p>1800-123-456 (Toll Free)</p></div></div>
+            <div class="card" style="padding:20px;display:flex;align-items:center;gap:16px"><div class="card-icon green" style="margin:0">📍</div><div><h4>Address</h4><p>LifeLink HQ, Mumbai, Maharashtra, India</p></div></div>
+            <div class="card" style="padding:20px;display:flex;align-items:center;gap:16px"><div class="card-icon orange" style="margin:0">⏰</div><div><h4>Hours</h4><p>24/7 Emergency Support</p></div></div>
+          </div>
+        </div>
+        <div class="card" style="padding:32px">
+          <h3 style="margin-bottom:24px">Send a Message</h3>
+          <form id="contactForm">
+            <div class="grid grid-2 gap-2">
+              <div class="form-group"><label for="contactName">Name *</label><input type="text" id="contactName" class="form-input" placeholder="Your name" required></div>
+              <div class="form-group"><label for="contactEmail">Email *</label><input type="email" id="contactEmail" class="form-input" placeholder="Your email" required></div>
+            </div>
+            <div class="form-group"><label for="contactSubject">Subject *</label><input type="text" id="contactSubject" class="form-input" placeholder="Subject" required></div>
+            <div class="form-group"><label for="contactMessage">Message *</label><textarea id="contactMessage" class="form-input" placeholder="Your message..." required></textarea></div>
+            <button type="submit" class="btn btn-primary btn-lg" style="width:100%">Send Message</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer"><div class="container"><div class="footer-bottom"><span>© 2026 LifeLink. All rights reserved.</span></div></div></footer>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script><script src="js/data.js"></script><script src="js/auth.js"></script><script src="js/app.js"></script>
+  <script>
+    document.getElementById('contactForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      App.showToast('Message sent! We\'ll get back to you soon.', 'success');
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>

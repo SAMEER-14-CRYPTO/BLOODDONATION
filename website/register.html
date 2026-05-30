@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Register as a blood donor on LifeLink. Help save lives by making yourself available for blood donation.">
+  <title>Register – LifeLink</title>
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+  <nav class="navbar"><div class="container"><a href="index.html" class="nav-brand"><div class="logo-icon">🩸</div><span>Life<span class="text-primary">Link</span></span></a><div class="nav-links" id="navLinks"><a href="index.html">Home</a><a href="search.html">Find Donors</a><a href="emergency.html">Emergency</a><a href="hospitals.html">Hospitals</a><a href="about.html">About</a></div><div class="nav-actions"><button class="theme-toggle" id="themeToggle">🌙</button><a href="login.html" class="btn btn-sm btn-outline">Login</a><button class="hamburger" id="hamburger"><span></span><span></span><span></span></button></div></div></nav>
+
+  <section class="section" style="min-height:100vh;padding-top:120px">
+    <div class="container" style="max-width:560px">
+      <div class="card" style="padding:40px">
+        <div class="text-center" style="margin-bottom:32px">
+          <div style="font-size:3rem;margin-bottom:12px">🩸</div>
+          <h2>Become a <span class="text-primary">Donor</span></h2>
+          <p>Register now and start saving lives</p>
+        </div>
+
+        <form id="registerForm">
+          <div class="grid grid-2 gap-2">
+            <div class="form-group">
+              <label for="regName">Full Name *</label>
+              <input type="text" id="regName" class="form-input" placeholder="Your full name" required>
+            </div>
+            <div class="form-group">
+              <label for="regPhone">Phone Number *</label>
+              <input type="tel" id="regPhone" class="form-input" placeholder="+91-XXXXXXXXXX" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="regEmail">Email Address *</label>
+            <input type="email" id="regEmail" class="form-input" placeholder="you@email.com" required>
+          </div>
+          <div class="grid grid-2 gap-2">
+            <div class="form-group">
+              <label for="regPassword">Password *</label>
+              <input type="password" id="regPassword" class="form-input" placeholder="Min 6 characters" required minlength="6">
+            </div>
+            <div class="form-group">
+              <label for="regConfirm">Confirm Password *</label>
+              <input type="password" id="regConfirm" class="form-input" placeholder="Repeat password" required>
+            </div>
+          </div>
+          <div class="grid grid-2 gap-2">
+            <div class="form-group">
+              <label for="regBlood">Blood Group *</label>
+              <select id="regBlood" class="form-input" required>
+                <option value="">Select blood group</option>
+                <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="regGender">Gender *</label>
+              <select id="regGender" class="form-input" required>
+                <option value="">Select gender</option>
+                <option>Male</option><option>Female</option><option>Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-2 gap-2">
+            <div class="form-group">
+              <label for="regAge">Age *</label>
+              <input type="number" id="regAge" class="form-input" placeholder="Age" min="18" max="65" required>
+            </div>
+            <div class="form-group">
+              <label for="regCity">City *</label>
+              <input type="text" id="regCity" class="form-input" placeholder="Your city" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="regLastDonation">Last Donation Date (optional)</label>
+            <input type="date" id="regLastDonation" class="form-input">
+          </div>
+          <div style="margin:20px 0;display:flex;align-items:start;gap:8px">
+            <input type="checkbox" id="regTerms" required style="margin-top:4px">
+            <label for="regTerms" style="font-size:0.85rem;color:var(--text-secondary);cursor:pointer">I agree to the Terms of Service and Privacy Policy. I confirm that the information provided is accurate.</label>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg" style="width:100%">Create Account</button>
+        </form>
+        <p style="text-align:center;margin-top:20px;font-size:0.9rem">
+          Already have an account? <a href="login.html" style="color:var(--primary);font-weight:600">Login here</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const pwd = document.getElementById('regPassword').value;
+      const confirm = document.getElementById('regConfirm').value;
+      if (pwd !== confirm) { App.showToast('Passwords do not match', 'error'); return; }
+      await Auth.signup({
+        fullName: document.getElementById('regName').value,
+        email: document.getElementById('regEmail').value,
+        phone: document.getElementById('regPhone').value,
+        password: pwd,
+        bloodGroup: document.getElementById('regBlood').value,
+        gender: document.getElementById('regGender').value,
+        age: parseInt(document.getElementById('regAge').value),
+        city: document.getElementById('regCity').value,
+        lastDonation: document.getElementById('regLastDonation').value
+      });
+    });
+  </script>
+</body>
+</html>

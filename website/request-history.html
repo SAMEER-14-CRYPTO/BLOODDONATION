@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request History – LifeLink</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+  <nav class="navbar"><div class="container"><a href="index.html" class="nav-brand"><div class="logo-icon">🩸</div><span>Life<span class="text-primary">Link</span></span></a><div class="nav-links" id="navLinks"><a href="index.html">Home</a><a href="search.html">Find Donors</a><a href="emergency.html">Emergency</a></div><div class="nav-actions"><button class="theme-toggle" id="themeToggle">🌙</button><button class="btn btn-sm btn-outline" onclick="Auth.logout()">Logout</button><button class="hamburger" id="hamburger"><span></span><span></span><span></span></button></div></div></nav>
+
+  <div class="dashboard-layout">
+    <aside class="sidebar">
+      <div class="sidebar-section">Main</div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="sidebar-link"><span>📊</span> Dashboard</a>
+        <a href="profile.html" class="sidebar-link"><span>👤</span> My Profile</a>
+        <a href="search.html" class="sidebar-link"><span>🔍</span> Find Donors</a>
+        <a href="emergency.html" class="sidebar-link"><span>🚨</span> Emergency</a>
+        <a href="request-history.html" class="sidebar-link active"><span>📋</span> My Requests</a>
+        <a href="#" class="sidebar-link" onclick="Auth.logout()"><span>🚪</span> Logout</a>
+      </nav>
+    </aside>
+
+    <main class="dashboard-main">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;flex-wrap:wrap;gap:16px">
+        <div><h2>Request <span class="text-primary">History</span></h2><p>View all blood requests and donation history</p></div>
+        <a href="emergency.html" class="btn btn-primary">+ New Request</a>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs" style="margin-bottom:24px">
+        <div class="tab active" data-tab="requestsTab">Blood Requests</div>
+        <div class="tab" data-tab="donationsTab">Donation History</div>
+      </div>
+
+      <!-- Requests -->
+      <div id="requestsTab" class="tab-content">
+        <div id="allRequests" class="flex flex-col gap-2"></div>
+      </div>
+
+      <!-- Donations -->
+      <div id="donationsTab" class="tab-content" style="display:none">
+        <div id="donationHistory"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script><script src="js/data.js"></script><script src="js/auth.js"></script><script src="js/emergency.js"></script><script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      Auth.requireAuth((u) => {
+        App.initTabs('.tabs');
+        Emergency.loadAllRequests();
+        // Donation history
+        const dContainer = document.getElementById('donationHistory');
+        DemoData.getDonations().then(donations => {
+          dContainer.innerHTML = donations.length ? donations.map(d => `
+            <div class="request-card" style="margin-bottom:8px">
+              <div class="request-info">
+                <div class="request-title">🩸 ${d.bloodGroup} Donation by ${d.donorName}</div>
+                <div class="request-meta">
+                  <span>🏥 ${d.hospital}</span>
+                  <span>📅 ${d.date}</span>
+                  <span>📝 ${d.remarks}</span>
+                </div>
+              </div>
+              <span class="badge badge-success">Completed</span>
+            </div>
+          `).join('') : '<p style="color:var(--text-secondary);padding:40px;text-align:center">No donation history yet</p>';
+        });
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard – LifeLink</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+  <nav class="navbar"><div class="container"><a href="index.html" class="nav-brand"><div class="logo-icon">🩸</div><span>Life<span class="text-primary">Link</span></span></a><div class="nav-links" id="navLinks"><a href="index.html">Home</a><a href="search.html">Find Donors</a><a href="emergency.html">Emergency</a><a href="hospitals.html">Hospitals</a></div><div class="nav-actions"><button class="theme-toggle" id="themeToggle">🌙</button><span class="user-btn" style="display:none;font-weight:600;font-size:0.9rem">Hi, <span class="user-name"></span></span><button class="btn btn-sm btn-outline user-btn" style="display:none" onclick="Auth.logout()">Logout</button><button class="hamburger" id="hamburger"><span></span><span></span><span></span></button></div></div></nav>
+
+  <div class="dashboard-layout">
+    <aside class="sidebar">
+      <div class="sidebar-section">Main</div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="sidebar-link active"><span>📊</span> Dashboard</a>
+        <a href="profile.html" class="sidebar-link"><span>👤</span> My Profile</a>
+        <a href="search.html" class="sidebar-link"><span>🔍</span> Find Donors</a>
+        <a href="emergency.html" class="sidebar-link"><span>🚨</span> Emergency</a>
+      </nav>
+      <div class="sidebar-section">History</div>
+      <nav class="sidebar-nav">
+        <a href="request-history.html" class="sidebar-link"><span>📋</span> My Requests</a>
+        <a href="#" class="sidebar-link"><span>🩸</span> Donation History</a>
+        <a href="#" class="sidebar-link"><span>🔔</span> Notifications</a>
+      </nav>
+      <div class="sidebar-section">Settings</div>
+      <nav class="sidebar-nav">
+        <a href="#" class="sidebar-link"><span>⚙️</span> Settings</a>
+        <a href="#" class="sidebar-link" onclick="Auth.logout()"><span>🚪</span> Logout</a>
+      </nav>
+    </aside>
+
+    <main class="dashboard-main">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;flex-wrap:wrap;gap:16px">
+        <div>
+          <h2>Welcome back, <span class="user-name text-primary"></span>!</h2>
+          <p>Here's your donor dashboard overview.</p>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-size:0.9rem;font-weight:500">Availability:</span>
+          <div class="toggle active" id="availabilityToggle"></div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="dash-stats">
+        <div class="dash-stat-card">
+          <div class="dash-stat-icon" style="background:var(--primary-glow);color:var(--primary)">🩸</div>
+          <div><div class="dash-stat-value" id="dashDonations">3</div><div class="dash-stat-label">Total Donations</div></div>
+        </div>
+        <div class="dash-stat-card">
+          <div class="dash-stat-icon" style="background:rgba(30,136,229,0.15);color:var(--info)">📨</div>
+          <div><div class="dash-stat-value" id="dashRequests">2</div><div class="dash-stat-label">Requests Responded</div></div>
+        </div>
+        <div class="dash-stat-card">
+          <div class="dash-stat-icon" style="background:rgba(67,160,71,0.15);color:var(--success)">❤️</div>
+          <div><div class="dash-stat-value" id="dashLives">2</div><div class="dash-stat-label">Lives Saved</div></div>
+        </div>
+        <div class="dash-stat-card">
+          <div class="dash-stat-icon" style="background:rgba(251,140,0,0.15);color:var(--warning)">🔔</div>
+          <div><div class="dash-stat-value" id="dashNotifs">1</div><div class="dash-stat-label">New Notifications</div></div>
+        </div>
+      </div>
+
+      <div class="grid grid-2 gap-3" style="margin-bottom:32px">
+        <!-- Profile Summary -->
+        <div class="card" style="padding:24px">
+          <h3 style="margin-bottom:20px">👤 Profile Summary</h3>
+          <div style="display:flex;gap:20px;align-items:center;margin-bottom:20px">
+            <div class="profile-avatar" style="width:64px;height:64px;font-size:1.5rem" id="dashAvatar">?</div>
+            <div>
+              <h4 class="user-name"></h4>
+              <p id="dashEmail" style="font-size:0.85rem"></p>
+              <div class="profile-blood" id="dashBlood" style="margin-top:6px;font-size:0.8rem;padding:4px 12px"></div>
+            </div>
+          </div>
+          <div class="grid grid-2 gap-2">
+            <div class="profile-detail"><div class="label">City</div><div class="value" id="dashCity">-</div></div>
+            <div class="profile-detail"><div class="label">Last Donation</div><div class="value" id="dashLastDonation">-</div></div>
+          </div>
+          <a href="profile.html" class="btn btn-sm btn-outline" style="margin-top:16px;width:100%">Edit Profile</a>
+        </div>
+
+        <!-- Active Emergency Requests -->
+        <div class="card" style="padding:24px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+            <h3>🚨 Active Requests</h3>
+            <a href="emergency.html" class="btn btn-sm btn-primary">New Request</a>
+          </div>
+          <div id="dashActiveRequests"></div>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="card" style="padding:24px">
+        <h3 style="margin-bottom:20px">📋 Recent Activity</h3>
+        <div class="activity-feed">
+          <div class="activity-item"><div class="activity-dot red"></div><div class="activity-text"><strong>Emergency Alert:</strong> O+ blood needed at Apollo Hospital<div class="activity-time">2 hours ago</div></div></div>
+          <div class="activity-item"><div class="activity-dot green"></div><div class="activity-text"><strong>Donation Complete:</strong> Successfully donated blood at Fortis Hospital<div class="activity-time">1 week ago</div></div></div>
+          <div class="activity-item"><div class="activity-dot blue"></div><div class="activity-text"><strong>Profile Updated:</strong> Availability status changed to Active<div class="activity-time">2 weeks ago</div></div></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/emergency.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      Auth.requireAuth((user) => {
+        // Populate profile data
+        document.querySelectorAll('.user-name').forEach(el => el.textContent = user.displayName || 'User');
+        const avatar = document.getElementById('dashAvatar');
+        if (avatar) avatar.textContent = (user.displayName || '?').charAt(0);
+        const email = document.getElementById('dashEmail');
+        if (email) email.textContent = user.email || '';
+        
+        // Fetch additional user info from firestore if not in demo mode
+        if (!DEMO_MODE) {
+          db.collection('users').doc(user.uid).get().then(doc => {
+            if (doc.exists) {
+              const data = doc.data();
+              populateUserData(data);
+            }
+          });
+        } else {
+          populateUserData(user);
+        }
+
+        function populateUserData(userData) {
+          const blood = document.getElementById('dashBlood');
+          if (blood) blood.textContent = userData.bloodGroup || 'N/A';
+          const city = document.getElementById('dashCity');
+          if (city) city.textContent = userData.city || 'N/A';
+          const ld = document.getElementById('dashLastDonation');
+          if (ld) ld.textContent = userData.lastDonation || 'Never';
+        }
+
+        // Load active requests
+        const reqContainer = document.getElementById('dashActiveRequests');
+        DemoData.getRequests().then(requests => {
+          const activeReqs = requests.filter(r => r.status === 'active').slice(0, 3);
+          if (reqContainer) {
+            reqContainer.innerHTML = activeReqs.length ? activeReqs.map(r => `
+              <div style="padding:12px;background:var(--bg);border-radius:var(--radius);margin-bottom:8px;border:1px solid var(--border)">
+                <div style="font-weight:600;font-size:0.9rem">🩸 ${r.bloodGroupNeeded} — ${r.patientName}</div>
+                <div style="font-size:0.8rem;color:var(--text-secondary);margin-top:4px">🏥 ${r.hospitalName} · ${App.timeAgo(r.createdAt)}</div>
+              </div>
+            `).join('') : '<p style="color:var(--text-secondary);font-size:0.9rem">No active requests</p>';
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Submit an emergency blood request on LifeLink. Alert nearby matching donors instantly.">
+  <title>Emergency Request – LifeLink</title>
+  <!-- Leaflet.js – Free Maps -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    .map-ph-chips { display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px; }
+    .map-ph-chip  { background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);
+                    padding:4px 10px;font-size:0.8rem;display:flex;align-items:center;gap:6px; }
+    .map-ph-dot   { width:8px;height:8px;border-radius:50%;display:inline-block; }
+    .map-ph-icon  { font-size:2.5rem; }
+    .map-ph-sub   { font-size:0.82rem;color:var(--text-secondary); }
+
+    /* Location picker */
+    .location-picker-row {
+      display: flex; gap: 10px; align-items: center;
+    }
+    .location-picker-row input { flex: 1; }
+    .geo-small-btn {
+      white-space: nowrap; background: var(--bg-card);
+      border: 2px solid var(--border); border-radius: var(--radius);
+      padding: 12px 14px; font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; transition: var(--transition); color: var(--text);
+    }
+    .geo-small-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* Mini map for location selection */
+    #locationPickerMap {
+      width: 100%; height: 220px; border-radius: var(--radius);
+      border: 2px solid var(--border); margin-top: 10px;
+      display: none;
+    }
+    #locationPickerMap.visible { display: block; }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-brand">
+        <div class="logo-icon">🩸</div>
+        <span>Life<span class="text-primary">Link</span></span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="search.html">Find Donors</a>
+        <a href="emergency.html" class="active">Emergency</a>
+        <a href="hospitals.html">Hospitals</a>
+        <a href="blood-banks.html">Blood Banks</a>
+        <a href="about.html">About</a>
+      </div>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌙</button>
+        <a href="login.html" class="btn btn-sm btn-outline auth-btn">Login</a>
+        <a href="dashboard.html" class="btn btn-sm btn-primary user-btn" style="display:none">Dashboard</a>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page-header" style="background:linear-gradient(135deg,#FFEBEE,rgba(229,57,53,0.1))">
+    <div class="container">
+      <span class="badge badge-primary">🚨 Emergency</span>
+      <h1>Emergency Blood <span class="text-primary">Request</span></h1>
+      <div class="breadcrumb"><a href="index.html">Home</a><span>/</span><span>Emergency</span></div>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="grid grid-2 gap-4">
+
+        <!-- Request Form -->
+        <div>
+          <div class="card" style="padding:32px;border-left:4px solid var(--primary)">
+            <h3 style="margin-bottom:24px">🚑 Create Emergency Request</h3>
+            <form id="emergencyForm">
+              <div class="form-group">
+                <label for="reqName">Your Name *</label>
+                <input type="text" id="reqName" class="form-input" placeholder="Your full name" required>
+              </div>
+              <div class="form-group">
+                <label for="patientName">Patient Name *</label>
+                <input type="text" id="patientName" class="form-input" placeholder="Patient's full name" required>
+              </div>
+              <div class="grid grid-2 gap-2">
+                <div class="form-group">
+                  <label for="bloodGroupNeeded">Blood Group Needed *</label>
+                  <select id="bloodGroupNeeded" class="form-input" required>
+                    <option value="">Select group</option>
+                    <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                    <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="urgencyLevel">Urgency Level *</label>
+                  <select id="urgencyLevel" class="form-input" required>
+                    <option value="normal">Normal</option>
+                    <option value="urgent">Urgent</option>
+                    <option value="critical" selected>Critical</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="hospitalName">Hospital Name *</label>
+                <input type="text" id="hospitalName" class="form-input"
+                       placeholder="Hospital name (autocomplete if maps enabled)" required>
+              </div>
+              <div class="form-group">
+                <label for="reqLocation">Location / City *</label>
+                <div class="location-picker-row">
+                  <input type="text" id="reqLocation" class="form-input"
+                         placeholder="City or area (e.g. Mumbai)" required>
+                  <button type="button" class="geo-small-btn" id="reqGeoBtn" title="Use my GPS location">📍 GPS</button>
+                </div>
+                <!-- Mini map to confirm location -->
+                <div id="locationPickerMap"></div>
+                <div id="reqCoords" style="font-size:0.78rem;color:var(--text-secondary);margin-top:4px"></div>
+              </div>
+              <div class="form-group">
+                <label for="reqPhone">Contact Phone *</label>
+                <input type="tel" id="reqPhone" class="form-input" placeholder="+91 XXXXXXXXXX" required>
+              </div>
+              <div class="form-group">
+                <label for="reqNotes">Additional Notes</label>
+                <textarea id="reqNotes" class="form-input" placeholder="Any additional details…"></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary btn-lg" style="width:100%">
+                🚨 Submit Emergency Request
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Right column: Info + Active Requests -->
+        <div>
+          <div class="card" style="padding:24px;margin-bottom:24px;background:linear-gradient(135deg,#FFEBEE,#fff);border:1px solid #FFCDD2">
+            <h4 style="color:var(--primary);margin-bottom:12px">⚡ How Emergency Requests Work</h4>
+            <ul style="display:flex;flex-direction:column;gap:12px;font-size:0.9rem">
+              <li style="display:flex;gap:10px"><span style="color:var(--primary);font-weight:700">1.</span> Fill in the request form with patient and blood details</li>
+              <li style="display:flex;gap:10px"><span style="color:var(--primary);font-weight:700">2.</span> All matching donors near the location are instantly notified</li>
+              <li style="display:flex;gap:10px"><span style="color:var(--primary);font-weight:700">3.</span> Donors respond and you can contact them directly</li>
+              <li style="display:flex;gap:10px"><span style="color:var(--primary);font-weight:700">4.</span> Track responses in real-time on your dashboard</li>
+            </ul>
+          </div>
+
+          <!-- Map showing nearby donors for the request -->
+          <div style="margin-bottom:20px">
+            <h4 style="margin-bottom:10px">📍 Donors Near Request Location</h4>
+            <div id="emergencyMap" class="map-container" style="height:260px;margin-bottom:16px"></div>
+          </div>
+
+          <h3 style="margin-bottom:16px">🔴 Active Emergency Requests</h3>
+          <div id="activeRequests" class="flex flex-col gap-2"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom"><span>© 2026 LifeLink. All rights reserved.</span></div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/maps.js"></script>
+  <script src="js/emergency.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Separate map instance for the mini location picker
+    const LocationPickerMap = { map: null, marker: null };
+    let reqPickedCoords = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      Emergency.init();
+
+      LeafletLoader.load(() => {
+        // ── Main emergency map (right side): shows available donors ──
+        DemoData.getUsers().then(users => {
+          const donors = users.filter(u => u.role === 'donor' && u.availability);
+          Maps.init('emergencyMap', {
+            center: LIFELINK_CONFIG.defaultCenter,
+            zoom: 5,
+            onMapReady: () => Maps.addDonorMarkers(donors)
+          });
+        });
+      });
+
+      // ── GPS button for location ──
+      document.getElementById('reqGeoBtn').addEventListener('click', () => {
+        const btn = document.getElementById('reqGeoBtn');
+        btn.textContent = '⏳'; btn.disabled = true;
+        Maps.getUserLocation(coords => {
+          btn.disabled = false;
+          if (!coords) { btn.textContent = '📍 GPS'; App.showToast('Location access denied', 'error'); return; }
+          reqPickedCoords = coords;
+          btn.textContent = '✅';
+          document.getElementById('reqCoords').textContent =
+            `📍 GPS: ${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}`;
+          showMiniLocationMap(coords);
+          Maps.setCenter(coords, 12);
+          App.showToast('📍 GPS location captured for your request', 'success');
+        });
+      });
+
+      // ── Location search on Enter ──
+      document.getElementById('reqLocation').addEventListener('keyup', e => {
+        if (e.key === 'Enter') {
+          const query = e.target.value;
+          if (query.trim()) {
+            Maps.searchLocation(query, loc => {
+              if (loc) {
+                reqPickedCoords = { lat: loc.lat, lng: loc.lng };
+                document.getElementById('reqCoords').textContent =
+                  `📍 ${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)}`;
+                showMiniLocationMap(reqPickedCoords);
+                Maps.setCenter(reqPickedCoords, 12);
+              }
+            });
+          }
+        }
+      });
+    });
+
+    function showMiniLocationMap(coords) {
+      const container = document.getElementById('locationPickerMap');
+      container.classList.add('visible');
+
+      if (!LocationPickerMap.map) {
+        LocationPickerMap.map = L.map(container, {
+          center: [coords.lat, coords.lng],
+          zoom: 14,
+          zoomControl: true
+        });
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+          attribution: '&copy; OpenStreetMap &copy; CARTO',
+          subdomains: 'abcd', maxZoom: 19
+        }).addTo(LocationPickerMap.map);
+
+        LocationPickerMap.marker = L.marker([coords.lat, coords.lng], {
+          icon: L.divIcon({
+            className: 'leaflet-donor-marker',
+            html: '<div class="ll-marker"><div class="ll-marker-pin" style="background:linear-gradient(135deg,#E53935,#C62828)"><span class="ll-marker-bg">📍</span></div></div>',
+            iconSize: [44, 56], iconAnchor: [22, 56]
+          })
+        }).addTo(LocationPickerMap.map);
+
+        // Allow clicking to fine-tune location
+        LocationPickerMap.map.on('click', e => {
+          const pos = { lat: e.latlng.lat, lng: e.latlng.lng };
+          reqPickedCoords = pos;
+          LocationPickerMap.marker.setLatLng([pos.lat, pos.lng]);
+          document.getElementById('reqCoords').textContent =
+            `📍 ${pos.lat.toFixed(4)}, ${pos.lng.toFixed(4)}`;
+        });
+      } else {
+        LocationPickerMap.map.setView([coords.lat, coords.lng], 14);
+        LocationPickerMap.marker.setLatLng([coords.lat, coords.lng]);
+      }
+    }
+  </script>
+</body>
+</html>
