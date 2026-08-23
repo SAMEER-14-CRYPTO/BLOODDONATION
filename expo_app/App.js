@@ -8,7 +8,7 @@ import { Colors } from './src/constants/theme';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
 import HomeScreen from './src/screens/HomeScreen';
 import SearchDonorsScreen from './src/screens/SearchDonorsScreen';
-import EmergencyScreen from './src/screens/EmergencyScreen';
+import ReceiverRequestsScreen from './src/screens/ReceiverRequestsScreen';
 import HospitalsScreen from './src/screens/HospitalsScreen';
 import BloodBanksScreen from './src/screens/BloodBanksScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
@@ -19,38 +19,19 @@ import FloatingAiAssistant from './src/components/FloatingAiAssistant';
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-function HomeStack() {
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        headerStyle: { backgroundColor: Colors.cardDark },
-        headerTintColor: '#FFFFFF',
-        headerTitleStyle: { fontWeight: '900', fontSize: 16 },
-        contentStyle: { backgroundColor: Colors.bgDark }
-      }}
-    >
-      <Stack.Screen name="HomeMain" component={HomeScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="Hospitals" component={HospitalsScreen} options={{ title: '🏥 Hospitals Network' }} />
-      <Stack.Screen name="Blood Banks" component={BloodBanksScreen} options={{ title: '🏦 Blood Banks & Stocks' }} />
-      <Stack.Screen name="Admin" component={AdminScreen} options={{ title: '🛡️ Admin Control Panel' }} />
-      <Stack.Screen name="Login" component={LoginScreen} options={{ title: '🔑 Sign In' }} />
-    </Stack.Navigator>
-  );
-}
-
 function MainTabNavigator() {
-  const { isLoggedIn, user } = useAuth();
+  const { user } = useAuth();
 
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerStyle: { backgroundColor: Colors.cardDark },
         headerTintColor: '#FFFFFF',
-        headerTitleStyle: { fontWeight: '900', fontSize: 17 },
+        headerTitleStyle: { fontWeight: '900', fontSize: 16 },
         tabBarStyle: {
           backgroundColor: Colors.cardDark,
           borderTopColor: Colors.borderDark,
-          height: 62,
+          height: 64,
           paddingBottom: 8,
           paddingTop: 6,
         },
@@ -59,8 +40,8 @@ function MainTabNavigator() {
         tabBarIcon: ({ focused }) => {
           let icon = '🩸';
           if (route.name === 'Home') icon = '🏠';
-          else if (route.name === 'Search') icon = '🔍';
-          else if (route.name === 'Emergency') icon = '🚨';
+          else if (route.name === 'Donors') icon = '🩸';
+          else if (route.name === 'SOS Requests') icon = '🚨';
           else if (route.name === 'Hospitals') icon = '🏥';
           else if (route.name === 'Blood Banks') icon = '🏦';
           else if (route.name === 'Profile') icon = '👤';
@@ -68,17 +49,49 @@ function MainTabNavigator() {
         },
       })}
     >
-      <Tab.Screen name="Home" component={HomeStack} options={{ headerShown: false }} />
-      <Tab.Screen name="Search" component={SearchDonorsScreen} options={{ title: 'Find Donors' }} />
-      <Tab.Screen name="Emergency" component={EmergencyScreen} options={{ title: 'Emergency SOS' }} />
+      <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+      <Tab.Screen name="Donors" component={SearchDonorsScreen} options={{ title: 'Donors Map & Search' }} />
+      <Tab.Screen name="SOS Requests" component={ReceiverRequestsScreen} options={{ title: 'Receiver SOS & Map' }} />
       <Tab.Screen name="Hospitals" component={HospitalsScreen} options={{ title: 'Hospitals Network' }} />
-      <Tab.Screen name="Blood Banks" component={BloodBanksScreen} options={{ title: 'Blood Banks' }} />
+      <Tab.Screen name="Blood Banks" component={BloodBanksScreen} options={{ title: 'Blood Banks & Stock' }} />
       <Tab.Screen 
         name="Profile" 
         component={ProfileScreen} 
-        options={{ title: isLoggedIn ? (user.name ? user.name.split(' ')[0] : 'Profile') : 'Account' }} 
+        options={{ title: user?.role === 'admin' ? 'Admin Profile' : 'Donor Profile' }} 
       />
     </Tab.Navigator>
+  );
+}
+
+function RootNavigation() {
+  const { isLoggedIn } = useAuth();
+
+  return (
+    <NavigationContainer>
+      <StatusBar barStyle="light-content" backgroundColor={Colors.bgDark} />
+      
+      {/* 🔐 Login comes first if user is not logged in */}
+      {!isLoggedIn ? (
+        <Stack.Navigator screenOptions={{ headerShown: false, contentStyle: { backgroundColor: Colors.bgDark } }}>
+          <Stack.Screen name="Login" component={LoginScreen} />
+        </Stack.Navigator>
+      ) : (
+        <Stack.Navigator
+          screenOptions={{
+            headerStyle: { backgroundColor: Colors.cardDark },
+            headerTintColor: '#FFFFFF',
+            headerTitleStyle: { fontWeight: '900', fontSize: 16 },
+            contentStyle: { backgroundColor: Colors.bgDark }
+          }}
+        >
+          <Stack.Screen name="MainTabs" component={MainTabNavigator} options={{ headerShown: false }} />
+          <Stack.Screen name="AdminPanel" component={AdminScreen} options={{ title: '🛡️ Admin Control Panel' }} />
+        </Stack.Navigator>
+      )}
+
+      {/* 🤖 Floating Circular AI Assistant (Positioned above bottom navigation bar) */}
+      <FloatingAiAssistant />
+    </NavigationContainer>
   );
 }
 
@@ -86,12 +99,7 @@ export default function App() {
   return (
     <AuthProvider>
       <View style={styles.appContainer}>
-        <NavigationContainer>
-          <StatusBar barStyle="light-content" backgroundColor={Colors.bgDark} />
-          <MainTabNavigator />
-          {/* Small Floating Circular AI Assistant (Bottom-Right on All Screens) */}
-          <FloatingAiAssistant />
-        </NavigationContainer>
+        <RootNavigation />
       </View>
     </AuthProvider>
   );

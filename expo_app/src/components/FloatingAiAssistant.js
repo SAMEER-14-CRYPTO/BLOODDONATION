@@ -230,11 +230,11 @@ export default function FloatingAiAssistant() {
 const styles = StyleSheet.create({
   circleTrigger: {
     position: 'absolute',
-    bottom: 24,
+    bottom: 84,
     right: 20,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 54,
+    height: 54,
+    borderRadius: 27,
     backgroundColor: '#7B1FA2',
     alignItems: 'center',
     justifyContent: 'center',
