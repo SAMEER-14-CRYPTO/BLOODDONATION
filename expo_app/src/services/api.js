@@ -10,6 +10,14 @@ import {
 
 const BASE_URL = 'http://192.168.1.5:3000/api';
 
+// Fast fetch with 2-second timeout — never blocks the UI
+function fastFetch(url, options = {}) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 2000);
+  return fetch(url, { ...options, signal: controller.signal })
+    .finally(() => clearTimeout(timeout));
+}
+
 // ── 1. Fetch Donors (Firestore + SQLite Backend) ──
 export async function fetchDonors() {
   // A. Try Firebase Firestore
@@ -22,7 +30,7 @@ export async function fetchDonors() {
 
   // B. Try SQLite Backend API
   try {
-    const res = await fetch(`${BASE_URL}/donors`, { headers: { 'Accept': 'application/json' } });
+    const res = await fastFetch(`${BASE_URL}/donors`, { headers: { 'Accept': 'application/json' } });
     if (res.ok) {
       const data = await res.json();
       if (data && Array.isArray(data.donors) && data.donors.length > 0) {
@@ -47,7 +55,7 @@ export async function fetchEmergencyRequests() {
 
   // B. Try SQLite Backend API
   try {
-    const res = await fetch(`${BASE_URL}/emergency/requests`, { headers: { 'Accept': 'application/json' } });
+    const res = await fastFetch(`${BASE_URL}/emergency/requests`, { headers: { 'Accept': 'application/json' } });
     if (res.ok) {
       const data = await res.json();
       if (data && Array.isArray(data.requests) && data.requests.length > 0) {
@@ -73,7 +81,7 @@ export async function postEmergencyRequest(token, requestData) {
     const headers = { 'Content-Type': 'application/json', 'Accept': 'application/json' };
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
-    const res = await fetch(`${BASE_URL}/emergency/requests`, {
+    const res = await fastFetch(`${BASE_URL}/emergency/requests`, {
       method: 'POST',
       headers,
       body: JSON.stringify(requestData)
@@ -92,7 +100,7 @@ export async function respondToEmergencyRequest(token, requestId) {
     const headers = { 'Content-Type': 'application/json' };
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
-    await fetch(`${BASE_URL}/emergency/requests/${requestId}/respond`, {
+    await fastFetch(`${BASE_URL}/emergency/requests/${requestId}/respond`, {
       method: 'PATCH',
       headers
     });
@@ -112,7 +120,7 @@ export async function updateUserProfileInDb(token, uid, profileData) {
     const headers = { 'Content-Type': 'application/json' };
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
-    await fetch(`${BASE_URL}/users/${uid}`, {
+    await fastFetch(`${BASE_URL}/users/${uid}`, {
       method: 'PATCH',
       headers,
       body: JSON.stringify(profileData)
@@ -125,7 +133,7 @@ export async function updateUserProfileInDb(token, uid, profileData) {
 // ── 6. Hospitals & Blood Banks ──
 export async function fetchHospitals() {
   try {
-    const res = await fetch(`${BASE_URL}/hospitals`);
+    const res = await fastFetch(`${BASE_URL}/hospitals`);
     if (res.ok) {
       const data = await res.json();
       if (Array.isArray(data) && data.length > 0) return data;
@@ -136,7 +144,7 @@ export async function fetchHospitals() {
 
 export async function fetchBloodBanks() {
   try {
-    const res = await fetch(`${BASE_URL}/blood-banks`);
+    const res = await fastFetch(`${BASE_URL}/blood-banks`);
     if (res.ok) {
       const data = await res.json();
       if (Array.isArray(data) && data.length > 0) return data;

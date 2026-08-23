@@ -60,6 +60,7 @@ export default function LoginScreen({ navigation }) {
         {/* Role Tabs (Donor vs Receiver vs Admin) - Exact Web Design */}
         <View style={styles.roleTabs}>
           <TouchableOpacity
+            activeOpacity={0.6}
             style={[styles.roleTab, role === 'donor' && styles.roleTabDonorActive]}
             onPress={() => handleRoleChange('donor')}
           >
@@ -67,6 +68,7 @@ export default function LoginScreen({ navigation }) {
           </TouchableOpacity>
 
           <TouchableOpacity
+            activeOpacity={0.6}
             style={[styles.roleTab, role === 'receiver' && styles.roleTabReceiverActive]}
             onPress={() => handleRoleChange('receiver')}
           >
@@ -74,6 +76,7 @@ export default function LoginScreen({ navigation }) {
           </TouchableOpacity>
 
           <TouchableOpacity
+            activeOpacity={0.6}
             style={[styles.roleTab, role === 'admin' && styles.roleTabAdminActive]}
             onPress={() => handleRoleChange('admin')}
           >
@@ -115,6 +118,7 @@ export default function LoginScreen({ navigation }) {
           />
 
           <TouchableOpacity 
+            activeOpacity={0.7}
             style={[
               styles.submitBtn,
               role === 'donor' ? styles.btnDonor : role === 'receiver' ? styles.btnReceiver : styles.btnAdmin
@@ -131,18 +135,21 @@ export default function LoginScreen({ navigation }) {
             <Text style={styles.quickFillTitle}>⚡ 1-Tap Instant Demo Login:</Text>
             <View style={styles.quickBtnRow}>
               <TouchableOpacity 
+                activeOpacity={0.6}
                 style={[styles.quickPill, { borderColor: Colors.primary }]}
                 onPress={() => handleQuickDemoLogin('donor')}
               >
                 <Text style={[styles.quickPillText, { color: Colors.primary }]}>🩸 Donor</Text>
               </TouchableOpacity>
               <TouchableOpacity 
+                activeOpacity={0.6}
                 style={[styles.quickPill, { borderColor: Colors.success }]}
                 onPress={() => handleQuickDemoLogin('receiver')}
               >
                 <Text style={[styles.quickPillText, { color: Colors.success }]}>🏥 Receiver</Text>
               </TouchableOpacity>
               <TouchableOpacity 
+                activeOpacity={0.6}
                 style={[styles.quickPill, { borderColor: Colors.info }]}
                 onPress={() => handleQuickDemoLogin('admin')}
               >

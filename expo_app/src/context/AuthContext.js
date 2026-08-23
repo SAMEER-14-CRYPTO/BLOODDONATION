@@ -4,6 +4,14 @@ import { saveUserToFirestore } from '../services/firebase';
 const AuthContext = createContext();
 const BASE_URL = 'http://192.168.1.5:3000/api';
 
+// Fast fetch with 2-second timeout — never blocks the UI
+function fastFetch(url, options = {}) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 2000);
+  return fetch(url, { ...options, signal: controller.signal })
+    .finally(() => clearTimeout(timeout));
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
@@ -14,31 +22,15 @@ export function AuthProvider({ children }) {
     const emailClean = (email || '').trim().toLowerCase();
     const passClean = (password || '').trim();
 
-    // 1. Try Live Database Backend API
-    try {
-      const res = await fetch(`${BASE_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: emailClean, password: passClean, role })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setUser(data.user);
-        setToken(data.token);
-        setLoading(false);
-        return { success: true, user: data.user };
-      }
-    } catch (e) {
-      // Backend offline, seamlessly proceed with database-mirrored auth
-    }
+    // ── INSTANT LOCAL AUTH (no network wait) ──
+    let localUser = null;
 
-    // 2. Verified Accounts Authentication (Mirrored with Web App database)
     if (role === 'admin') {
       const isSameerAdmin = emailClean === 'sameeradmin@lifelink.com' || emailClean.includes('admin');
       const isValidPass = passClean.toLowerCase() === 'sameer@14' || passClean.length >= 4;
 
       if (isSameerAdmin && isValidPass) {
-        const adminUser = {
+        localUser = {
           uid: 'admin_sameer_1',
           name: 'Sameer Shaik (Admin)',
           displayName: 'Sameer Shaik',
@@ -50,18 +42,14 @@ export function AuthProvider({ children }) {
           address: 'LifeLink Headquarters, Railway Kodur, AP',
           isVerified: true
         };
-        setUser(adminUser);
+      } else {
         setLoading(false);
-        return { success: true, user: adminUser };
+        return { success: false, message: 'Admin login: Use email sameeradmin@lifelink.com and password Sameer@14' };
       }
-      setLoading(false);
-      return { success: false, message: 'Admin login: Use email sameeradmin@lifelink.com and password Sameer@14' };
-    }
-
-    if (role === 'donor') {
+    } else if (role === 'donor') {
       const donorName = emailClean.includes('sameer') ? 'Sameer Shaik' : (emailClean.split('@')[0] || 'Blood Donor');
-      const donorUser = {
-        uid: 'donor_' + Date.now(),
+      localUser = {
+        uid: 'donor_sameer_1',
         name: donorName,
         displayName: donorName,
         fullName: donorName,
@@ -79,45 +67,55 @@ export function AuthProvider({ children }) {
         isVerified: true,
         donorId: 'LL-IND-9184'
       };
-      setUser(donorUser);
-      setLoading(false);
-      return { success: true, user: donorUser };
+    } else {
+      // Receiver
+      const receiverName = emailClean.split('@')[0] || 'Blood Seeker';
+      localUser = {
+        uid: 'receiver_' + Date.now(),
+        name: receiverName,
+        displayName: receiverName,
+        fullName: receiverName,
+        email: emailClean || 'receiver@lifelink.com',
+        role: 'receiver',
+        phone: '+91-9876543210',
+        city: 'Chennai',
+        address: 'Anna Nagar, Chennai, TN',
+        isVerified: true
+      };
     }
 
-    // Receiver Login
-    const receiverName = emailClean.split('@')[0] || 'Blood Seeker';
-    const receiverUser = {
-      uid: 'receiver_' + Date.now(),
-      name: receiverName,
-      displayName: receiverName,
-      fullName: receiverName,
-      email: emailClean || 'receiver@lifelink.com',
-      role: 'receiver',
-      phone: '+91-9876543210',
-      city: 'Chennai',
-      address: 'Anna Nagar, Chennai, TN',
-      isVerified: true
-    };
-    setUser(receiverUser);
+    // Set user INSTANTLY — no waiting
+    setUser(localUser);
     setLoading(false);
-    return { success: true, user: receiverUser };
+
+    // ── BACKGROUND SYNC (non-blocking) ──
+    // Try backend API + Firebase in background, never blocks the user
+    setTimeout(async () => {
+      try {
+        const res = await fastFetch(`${BASE_URL}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: emailClean, password: passClean, role })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.token) setToken(data.token);
+          if (data.user) setUser(prev => ({ ...prev, ...data.user }));
+        }
+      } catch (e) {
+        // Backend unreachable — local auth is already active
+      }
+
+      // Sync user to Firebase Firestore in background
+      try {
+        await saveUserToFirestore(localUser.uid, localUser);
+      } catch (e) {}
+    }, 100);
+
+    return { success: true, user: localUser };
   };
 
   const register = async (userData) => {
-    try {
-      const res = await fetch(`${BASE_URL}/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userData)
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setUser(data.user);
-        setToken(data.token);
-        return { success: true, user: data.user };
-      }
-    } catch (e) {}
-
     const newUser = {
       ...userData,
       uid: 'user_' + Date.now(),
@@ -125,6 +123,21 @@ export function AuthProvider({ children }) {
       donorId: 'LL-IND-' + Math.floor(1000 + Math.random() * 9000)
     };
     setUser(newUser);
+
+    // Background sync
+    setTimeout(async () => {
+      try {
+        await fastFetch(`${BASE_URL}/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(userData)
+        });
+      } catch (e) {}
+      try {
+        await saveUserToFirestore(newUser.uid, newUser);
+      } catch (e) {}
+    }, 100);
+
     return { success: true, user: newUser };
   };
 
