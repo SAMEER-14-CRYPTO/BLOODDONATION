@@ -4,10 +4,12 @@
   "description": "LifeLink – Smart Blood Donor Finder & Emergency Network",
   "main": "expo_app/index.js",
   "scripts": {
+    "server": "node website/server/server.js",
     "start": "cd expo_app && npx expo start",
     "android": "cd expo_app && npx expo start --android",
     "ios": "cd expo_app && npx expo start --ios",
-    "web": "cd expo_app && npx expo start --web"
+    "web": "cd expo_app && npx expo start --web",
+    "dev": "start node website/server/server.js && cd expo_app && npx expo start -c"
   },
   "keywords": [
     "blood-donation",
