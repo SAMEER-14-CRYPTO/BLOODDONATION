@@ -428,11 +428,36 @@
         if (ci) ci.value = cityParam;
       }
 
-      // Initial search
       if (typeof Donors !== 'undefined') {
         Donors.init();
-        Donors.performSearch();
       }
+
+      // Initialize Leaflet Map properly with LeafletLoader
+      if (typeof LeafletLoader !== 'undefined') {
+        LeafletLoader.load(() => {
+          Maps.init('donorMap', {
+            center: { lat: 13.0827, lng: 79.8877 },
+            zoom: 7
+          });
+          const ctrl = document.getElementById('mapControls');
+          if (ctrl) ctrl.style.display = 'flex';
+
+          // Perform initial search after map is initialized
+          if (typeof Donors !== 'undefined') {
+            Donors.performSearch();
+          }
+        });
+      } else {
+        if (typeof Donors !== 'undefined') {
+          Donors.performSearch();
+        }
+      }
+
+      // Map Control buttons
+      const fitBtn = document.getElementById('fitAllBtn');
+      if (fitBtn) fitBtn.addEventListener('click', () => Maps.fitBoundsToMarkers());
+      const clrBtn = document.getElementById('clearMapBtn');
+      if (clrBtn) clrBtn.addEventListener('click', () => Maps.clearMarkers());
 
       // Autocomplete for South Indian Cities
       const southCities = [

@@ -103,12 +103,21 @@ const Donors = {
           ${d.distance ? `<div class="donor-meta"><span class="dist-badge">📏 ${d.distance} km away</span></div>` : ''}
         </div>
         <div class="blood-badge">${d.bloodGroup}</div>
-        <div class="donor-actions">
+        <div class="donor-actions" style="display:flex;gap:6px">
           <a href="tel:${d.phone || '#'}" class="btn btn-sm btn-primary" title="Call">📞 Call</a>
-          <button class="btn btn-sm btn-outline" onclick="Donors.viewDonor('${d.uid}')">View</button>
+          ${(d.lat && d.lng) ? `<button class="btn btn-sm btn-outline" onclick="Donors.focusOnMap(${d.lat}, ${d.lng}, '${d.uid}')" title="Locate on map">📍 Map</button>` : ''}
+          <button class="btn btn-sm btn-outline" onclick="Donors.viewDonor('${d.uid}')">Details</button>
         </div>
       </div>
     `).join('');
+  },
+
+  focusOnMap(lat, lng, uid) {
+    if (typeof Maps !== 'undefined' && Maps.map) {
+      Maps.setCenter({ lat: Number(lat), lng: Number(lng) }, 14);
+      const mapEl = document.getElementById('donorMap');
+      if (mapEl) mapEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
   },
 
   async viewDonor(uid) {
