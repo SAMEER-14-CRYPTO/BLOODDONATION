@@ -5,11 +5,11 @@
   "main": "expo_app/index.js",
   "scripts": {
     "server": "node website/server/server.js",
-    "start": "cd expo_app && npx expo start",
+    "tunnel": "cd expo_app && npx expo start --tunnel -c",
+    "start": "cd expo_app && npx expo start -c",
     "android": "cd expo_app && npx expo start --android",
     "ios": "cd expo_app && npx expo start --ios",
-    "web": "cd expo_app && npx expo start --web",
-    "dev": "start node website/server/server.js && cd expo_app && npx expo start -c"
+    "web": "cd expo_app && npx expo start --web"
   },
   "keywords": [
     "blood-donation",
