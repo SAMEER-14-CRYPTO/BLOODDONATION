@@ -1,0 +1,21 @@
+{
+  "name": "lifelink-blood-donation",
+  "version": "1.0.0",
+  "description": "LifeLink – Smart Blood Donor Finder & Emergency Network",
+  "main": "expo_app/index.js",
+  "scripts": {
+    "start": "cd expo_app && npx expo start",
+    "android": "cd expo_app && npx expo start --android",
+    "ios": "cd expo_app && npx expo start --ios",
+    "web": "cd expo_app && npx expo start --web"
+  },
+  "keywords": [
+    "blood-donation",
+    "lifelink",
+    "expo",
+    "react-native",
+    "android"
+  ],
+  "author": "LifeLink",
+  "license": "ISC"
+}
