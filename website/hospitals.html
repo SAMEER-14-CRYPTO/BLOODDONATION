@@ -139,6 +139,17 @@
   <script>
     let allHospitals = [];
 
+    const BLOOD_THEMES = {
+      'A+':  { bg: 'rgba(239, 83, 80, 0.09)',  text: '#d32f2f', border: 'rgba(239, 83, 80, 0.28)' },
+      'A-':  { bg: 'rgba(255, 112, 67, 0.09)', text: '#e64a19', border: 'rgba(255, 112, 67, 0.28)' },
+      'B+':  { bg: 'rgba(66, 165, 245, 0.09)', text: '#1976d2', border: 'rgba(66, 165, 245, 0.28)' },
+      'B-':  { bg: 'rgba(38, 198, 218, 0.09)', text: '#0097a7', border: 'rgba(38, 198, 218, 0.28)' },
+      'O+':  { bg: 'rgba(102, 187, 106, 0.09)',text: '#2e7d32', border: 'rgba(102, 187, 106, 0.28)' },
+      'O-':  { bg: 'rgba(255, 167, 38, 0.09)', text: '#ef6c00', border: 'rgba(255, 167, 38, 0.28)' },
+      'AB+': { bg: 'rgba(171, 71, 188, 0.09)',text: '#7b1fa2', border: 'rgba(171, 71, 188, 0.28)' },
+      'AB-': { bg: 'rgba(126, 87, 194, 0.09)',text: '#512da8', border: 'rgba(126, 87, 194, 0.28)' },
+    };
+
     function renderHospitals(hospitals) {
       const container = document.getElementById('hospitalList');
       const countEl = document.getElementById('hospCount');
@@ -151,8 +162,12 @@
 
       container.innerHTML = hospitals.map(h => {
         const stocks = Object.entries(h.bloodAvailability || {}).map(([g, c]) => {
-          const cls = c > 5 ? 'stock-high' : c > 0 ? 'stock-low' : 'stock-none';
-          return `<span class="stock-item ${cls}">${g}: ${c}</span>`;
+          const theme = BLOOD_THEMES[g] || { bg: 'rgba(229,57,53,0.08)', text: '#e53935', border: 'rgba(229,57,53,0.2)' };
+          return `
+            <div style="padding:6px 10px;border-radius:10px;background:${theme.bg};border:1px solid ${theme.border};display:flex;align-items:center;justify-content:space-between;gap:6px">
+              <strong style="color:${theme.text};font-size:0.85rem">${g}</strong>
+              <span style="font-weight:700;font-size:0.8rem;color:${theme.text}">${c} <span style="font-size:0.68rem;font-weight:500;opacity:0.85">units</span></span>
+            </div>`;
         }).join('');
 
         return `
@@ -169,8 +184,8 @@
               </div>
             </div>
             <div>
-              <p style="font-size:0.78rem;font-weight:600;margin-bottom:8px;color:var(--text)">Blood Availability:</p>
-              <div class="stock-grid">${stocks}</div>
+              <p style="font-size:0.8rem;font-weight:600;margin-bottom:8px;color:var(--text)">Live Blood Availability:</p>
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px">${stocks}</div>
             </div>
           </div>`;
       }).join('');

@@ -142,6 +142,17 @@
   <script>
     let allBanks = [];
 
+    const BLOOD_THEMES = {
+      'A+':  { bg: 'rgba(239, 83, 80, 0.09)',  text: '#d32f2f', border: 'rgba(239, 83, 80, 0.28)',  bar: 'linear-gradient(90deg, #ef5350, #e53935)' },
+      'A-':  { bg: 'rgba(255, 112, 67, 0.09)', text: '#e64a19', border: 'rgba(255, 112, 67, 0.28)', bar: 'linear-gradient(90deg, #ff7043, #f4511e)' },
+      'B+':  { bg: 'rgba(66, 165, 245, 0.09)', text: '#1976d2', border: 'rgba(66, 165, 245, 0.28)', bar: 'linear-gradient(90deg, #42a5f5, #1e88e5)' },
+      'B-':  { bg: 'rgba(38, 198, 218, 0.09)', text: '#0097a7', border: 'rgba(38, 198, 218, 0.28)', bar: 'linear-gradient(90deg, #26c6da, #00acc1)' },
+      'O+':  { bg: 'rgba(102, 187, 106, 0.09)',text: '#2e7d32', border: 'rgba(102, 187, 106, 0.28)',bar: 'linear-gradient(90deg, #66bb6a, #43a047)' },
+      'O-':  { bg: 'rgba(255, 167, 38, 0.09)', text: '#ef6c00', border: 'rgba(255, 167, 38, 0.28)', bar: 'linear-gradient(90deg, #ffa726, #fb8c00)' },
+      'AB+': { bg: 'rgba(171, 71, 188, 0.09)',text: '#7b1fa2', border: 'rgba(171, 71, 188, 0.28)', bar: 'linear-gradient(90deg, #ab47bc, #8e24aa)' },
+      'AB-': { bg: 'rgba(126, 87, 194, 0.09)',text: '#512da8', border: 'rgba(126, 87, 194, 0.28)', bar: 'linear-gradient(90deg, #7e57c2, #5e35b1)' },
+    };
+
     function renderBanks(banks) {
       const container = document.getElementById('bloodBankList');
       const countEl = document.getElementById('bankCount');
@@ -155,14 +166,14 @@
         const stockBars = Object.entries(b.stocks || {}).map(([g, c]) => {
           const max = 60;
           const pct = Math.min(100, Math.round((c / max) * 100));
-          const cls = c > 10 ? 'high' : c > 3 ? 'medium' : 'low';
+          const theme = BLOOD_THEMES[g] || { bg: 'rgba(229,57,53,0.08)', text: '#e53935', border: 'rgba(229,57,53,0.2)', bar: '#e53935' };
           return `
-            <div style="flex:1;min-width:70px;text-align:center">
-              <div style="font-weight:700;font-size:0.9rem;margin-bottom:4px">${g}</div>
-              <div style="background:#e0e0e0;border-radius:4px;height:6px;overflow:hidden;margin-bottom:4px">
-                <div class="stock-fill ${cls}" style="width:${pct}%;height:100%;border-radius:4px"></div>
+            <div style="flex:1;min-width:85px;padding:10px 8px;border-radius:12px;background:${theme.bg};border:1px solid ${theme.border};text-align:center;transition:transform 0.2s">
+              <div style="font-weight:800;font-size:0.95rem;color:${theme.text};margin-bottom:6px">${g}</div>
+              <div style="background:rgba(0,0,0,0.06);border-radius:6px;height:7px;overflow:hidden;margin-bottom:6px">
+                <div style="width:${pct}%;height:100%;background:${theme.bar};border-radius:6px;transition:width 0.4s ease"></div>
               </div>
-              <span style="font-size:0.75rem;color:var(--text-secondary)">${c} units</span>
+              <span style="font-size:0.8rem;font-weight:700;color:${theme.text}">${c} <span style="font-size:0.7rem;font-weight:500;opacity:0.85">units</span></span>
             </div>`;
         }).join('');
 
@@ -180,7 +191,7 @@
               </div>
             </div>
             <h4 style="margin-bottom:12px;font-size:0.9rem">Blood Stock Status</h4>
-            <div style="display:flex;flex-wrap:wrap;gap:16px">${stockBars}</div>
+            <div style="display:flex;flex-wrap:wrap;gap:12px">${stockBars}</div>
           </div>`;
       }).join('');
     }
