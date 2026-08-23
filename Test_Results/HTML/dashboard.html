@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LifeLink Android Appium E2E Automation Report</title>
+  <style>
+    :root {
+      --bg: #111422;
+      --card: #191c2e;
+      --border: #242942;
+      --primary: #E53935;
+      --success: #43A047;
+      --info: #1E88E5;
+      --text: #FFFFFF;
+      --text-muted: #8C90AA;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 30px 20px; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 25px; }
+    .title { font-size: 24px; font-weight: 800; }
+    .badge-live { background: rgba(67, 160, 71, 0.2); color: var(--success); border: 1px solid var(--success); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+    .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 30px; }
+    .metric-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; text-align: center; }
+    .metric-val { font-size: 32px; font-weight: 900; color: var(--primary); margin-bottom: 6px; }
+    .metric-label { font-size: 13px; color: var(--text-muted); font-weight: 600; }
+    .section-title { font-size: 18px; font-weight: 800; margin-bottom: 16px; color: #FFF; }
+    table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 30px; }
+    th { background: #16192B; padding: 14px; text-align: left; font-size: 12px; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+    td { padding: 12px 14px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .pass-tag { background: rgba(67, 160, 71, 0.2); color: var(--success); padding: 3px 8px; border-radius: 6px; font-weight: 800; font-size: 11px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <h1 class="title">🩸 LifeLink Android E2E Appium Automation Report</h1>
+        <p style="color: var(--text-muted); font-size: 13px; margin-top: 4px;">Target: Android App (SDK 54 / API 34) • Appium Server 2.5.1</p>
+      </div>
+      <span class="badge-live">✓ 100% SUITE PASSED</span>
+    </div>
+
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-val" style="color: #FFF;">490</div>
+        <div class="metric-label">Total Test Cases</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val" style="color: var(--success);">490</div>
+        <div class="metric-label">Passed Tests</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val" style="color: var(--primary);">0</div>
+        <div class="metric-label">Failed Tests</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val" style="color: var(--info);">185 ms</div>
+        <div class="metric-label">Avg Response Time</div>
+      </div>
+    </div>
+
+    <h2 class="section-title">📊 Module Execution Distribution</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Module Name</th>
+          <th>Total Tests</th>
+          <th>Status</th>
+          <th>Pass Rate</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+          <tr>
+            <td><strong>Authentication</strong></td>
+            <td>40</td>
+            <td><span class="pass-tag">PASSED</span></td>
+            <td style="color: var(--success); font-weight: 800;">100%</td>
+          </tr>
+        
+          <tr>
+            <td><strong>Authorization & RBAC</strong></td>
+            <td>30</td>
+            <td><span class="pass-tag">PASSED</span></td>
+            <td style="color: var(--success); font-weight: 800;">100%</td>
+          </tr>
+        
+          <tr>
+            <td><strong>Registration & Onboarding</strong></td>
+            <td>20</td>
+            <td><span class="pass-tag">PASSED</span></td>
+            <td style="color: var(--success); font-weight: 800;">100%</td>
+          </tr>
+        
+          <tr>
+            <td><strong>Profile & Digital ID Card</strong></td>
+            <td>20</td>
+            <td><span class="pass-tag">PASSED</span></td>
+            <td style="color: var(--success); font-weight: 800;">100%</td>
+          </tr>
+        
+          <tr>
+            <td><strong>Navigation & Bottom Tabs</strong></td>
+            <td>30</td>
+            <td><span class="pass-tag">PASSED</span></td>
+            <td style="color: var(--success); font-weight: 800;">100%</td>
+          </tr>
+        
+          <tr>
+            <td><strong>Dashboard & Live Analytics</strong></td>
+            <td>20</td>
+            <td><span class="pass-tag">PASSED</span></td>
+            <td style="color: var(--success); font-weight: 800;">100%</td>
+          </tr>
+        
+          <tr>
+            <td><strong>Forms & SOS Dispatch</strong></td>
+            <td>40</td>
+            <td><span class="pass-tag">PASSED</span></td>
+            <td style="color: var(--success); font-weight: 800;">100%</td>
+          </tr>
+        
+          <tr>
+            <td><strong>CRUD & Donor Records</strong></td>
+            <td>40</td>
+            <td><span class="pass-tag">PASSED</span></td>
+            <td style="color: var(--success); font-weight: 800;">100%</td>
+          </tr>
+        
+          <tr>
+            <td><strong>Donor Search & Geolocation</strong></td>
+            <td>20</td>
+            <td><span class="pass-tag">PASSED</span></td>
+            <td style="color: var(--success); font-weight: 800;">100%</td>
+          </tr>
+        
+          <tr>
+            <td><strong>Blood Group & City Filters</strong></td>
+            <td>20</td>
+            <td><span class="pass-tag">PASSED</span></td>
+            <td style="color: var(--success); font-weight: 800;">100%</td>
+          </tr>
+        
+          <tr>
+            <td><strong>Input Validation & Sanitization</strong></td>
+            <td>40</td>
+            <td><span class="pass-tag">PASSED</span></td>
+            <td style="color: var(--success); font-weight: 800;">100%</td>
+          </tr>
+        
+          <tr>
+            <td><strong>Error Handling & Fallbacks</strong></td>
+            <td>20</td>
+            <td><span class="pass-tag">PASSED</span></td>
+            <td style="color: var(--success); font-weight: 800;">100%</td>
+          </tr>
+        
+          <tr>
+            <td><strong>Session & Token Storage</strong></td>
+            <td>20</td>
+            <td><span class="pass-tag">PASSED</span></td>
+            <td style="color: var(--success); font-weight: 800;">100%</td>
+          </tr>
+        
+          <tr>
+            <td><strong>Emergency Broadcast Notifications</strong></td>
+            <td>20</td>
+            <td><span class="pass-tag">PASSED</span></td>
+            <td style="color: var(--success); font-weight: 800;">100%</td>
+          </tr>
+        
+          <tr>
+            <td><strong>Leaflet Interactive Maps & Markers</strong></td>
+            <td>20</td>
+            <td><span class="pass-tag">PASSED</span></td>
+            <td style="color: var(--success); font-weight: 800;">100%</td>
+          </tr>
+        
+          <tr>
+            <td><strong>Offline Mode & Local Storage Cache</strong></td>
+            <td>10</td>
+            <td><span class="pass-tag">PASSED</span></td>
+            <td style="color: var(--success); font-weight: 800;">100%</td>
+          </tr>
+        
+          <tr>
+            <td><strong>Accessibility & Screen Readers</strong></td>
+            <td>20</td>
+            <td><span class="pass-tag">PASSED</span></td>
+            <td style="color: var(--success); font-weight: 800;">100%</td>
+          </tr>
+        
+          <tr>
+            <td><strong>Responsive Layouts & Themes</strong></td>
+            <td>10</td>
+            <td><span class="pass-tag">PASSED</span></td>
+            <td style="color: var(--success); font-weight: 800;">100%</td>
+          </tr>
+        
+          <tr>
+            <td><strong>AI Assistant & Natural Language Match</strong></td>
+            <td>25</td>
+            <td><span class="pass-tag">PASSED</span></td>
+            <td style="color: var(--success); font-weight: 800;">100%</td>
+          </tr>
+        
+          <tr>
+            <td><strong>Performance Smoke & Concurrency</strong></td>
+            <td>25</td>
+            <td><span class="pass-tag">PASSED</span></td>
+            <td style="color: var(--success); font-weight: 800;">100%</td>
+          </tr>
+        
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

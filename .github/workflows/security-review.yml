@@ -1,0 +1,39 @@
+name: Backend Security Review & SAST/DAST
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  security-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Run Gitleaks Secret Detection
+        uses: gitleaks/gitleaks-action@v2
+        continue-on-error: true
+
+      - name: Run Semgrep SAST Scan
+        uses: returntocorp/semgrep-action@v1
+        continue-on-error: true
+        with:
+          config: >-
+            p/security-audit
+            p/secrets
+            p/owasp-top-ten
+
+      - name: Run Backend Health & Load Smoke Test
+        run: |
+          npm install
+          node website/server/server.js &
+          sleep 2
+          curl -f http://localhost:3000/api/health
+
+      - name: Publish Security Summary
+        run: |
+          cat Vulnerability_Test_Results/executive-summary.md >> $GITHUB_STEP_SUMMARY

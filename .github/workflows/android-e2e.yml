@@ -1,0 +1,48 @@
+name: Android Appium E2E Automation & CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  android-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: |
+          npm install
+          cd expo_app && npm install --legacy-peer-deps
+
+      - name: Start Backend Server
+        run: |
+          node website/server/server.js &
+          sleep 3
+
+      - name: Run E2E Test Suite & Generate Excel Reports
+        run: |
+          node scripts/generate_all_reports.js
+
+      - name: Upload Test Results & Excel Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: Test-Results-Excel-HTML
+          path: |
+            Test_Results/
+            Vulnerability_Test_Results/
+          retention-days: 30
+
+      - name: Publish GitHub Action Summary
+        run: |
+          cat Test_Results/Summary/summary.md >> $GITHUB_STEP_SUMMARY
