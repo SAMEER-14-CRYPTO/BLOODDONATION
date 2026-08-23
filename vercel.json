@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/website/index.html"
+    },
+    {
+      "source": "/css/:path*",
+      "destination": "/website/css/:path*"
+    },
+    {
+      "source": "/js/:path*",
+      "destination": "/website/js/:path*"
+    },
+    {
+      "source": "/icons/:path*",
+      "destination": "/website/icons/:path*"
+    },
+    {
+      "source": "/manifest.json",
+      "destination": "/website/manifest.json"
+    },
+    {
+      "source": "/sw.js",
+      "destination": "/website/sw.js"
+    },
+    {
+      "source": "/offline.html",
+      "destination": "/website/offline.html"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/website/:path*"
+    }
+  ]
+}
