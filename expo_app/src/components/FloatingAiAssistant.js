@@ -3,6 +3,7 @@ import {
   View, Text, StyleSheet, Modal, TextInput, TouchableOpacity, 
   FlatList, Linking, KeyboardAvoidingView, Platform 
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '../constants/theme';
 import { answerAiPrompt } from '../services/aiMatching';
 
@@ -20,7 +21,7 @@ export default function FloatingAiAssistant() {
     {
       id: '1',
       sender: 'bot',
-      text: '👋 **Hi! I am your LifeLink AI Assistant.**\n\nAsk me anything about finding blood donors, checking compatibility, or hospital availability.',
+      text: '👋 **Hi! I am your LifeLink Medical AI Assistant.**\n\nAsk me anything about finding blood donors, checking compatibility, or hospital availability.',
       donors: []
     }
   ]);
@@ -73,7 +74,7 @@ export default function FloatingAiAssistant() {
           </View>
           <View style={styles.donorInfo}>
             <Text style={styles.donorName}>{donor.displayName}</Text>
-            <Text style={styles.donorMeta}>📍 {donor.address || donor.city} • <strong>{donor.distance} km</strong></Text>
+            <Text style={styles.donorMeta}>📍 {donor.address || donor.city} • <strong>{donor.distance} km away</strong></Text>
           </View>
           <View style={styles.aiScoreBadge}>
             <Text style={styles.aiScoreText}>{donor.aiScore}% Match</Text>
@@ -104,7 +105,11 @@ export default function FloatingAiAssistant() {
 
     return (
       <View style={[styles.msgRow, isUser ? styles.msgRowUser : styles.msgRowBot]}>
-        {!isUser && <View style={styles.botAvatar}><Text style={{ fontSize: 13 }}>🤖</Text></View>}
+        {!isUser && (
+          <View style={styles.botAvatar}>
+            <Text style={{ fontSize: 13 }}>✨</Text>
+          </View>
+        )}
         <View style={[styles.msgBubble, isUser ? styles.bubbleUser : styles.bubbleBot]}>
           {lines.map((line, idx) => {
             const isBullet = line.trim().startsWith('•') || line.trim().startsWith('-');
@@ -138,17 +143,22 @@ export default function FloatingAiAssistant() {
 
   return (
     <>
-      {/* 🤖 Floating Circular AI Trigger Button */}
+      {/* ✨ Sleek Floating Circular AI Assistant Button (Positioned above tabs) */}
       <TouchableOpacity 
-        style={styles.circleTrigger}
+        style={styles.circleTriggerContainer}
         onPress={() => setIsOpen(true)}
         activeOpacity={0.85}
       >
-        <Text style={styles.circleIcon}>🤖</Text>
-        <View style={styles.onlineDot} />
+        <LinearGradient
+          colors={['#E53935', '#B71C1C']}
+          style={styles.circleTrigger}
+        >
+          <Text style={styles.circleIcon}>✨</Text>
+          <View style={styles.onlineDot} />
+        </LinearGradient>
       </TouchableOpacity>
 
-      {/* Full Screen ChatGPT-Style Chatbot Modal */}
+      {/* Full Screen ChatGPT-Style Assistant Modal */}
       <Modal visible={isOpen} animationType="slide" transparent={true}>
         <KeyboardAvoidingView 
           style={styles.modalOverlay}
@@ -158,15 +168,18 @@ export default function FloatingAiAssistant() {
             {/* Header */}
             <View style={styles.chatHeader}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                <View style={styles.headerAvatar}>
-                  <Text style={{ fontSize: 16 }}>🤖</Text>
-                </View>
+                <LinearGradient
+                  colors={['#E53935', '#B71C1C']}
+                  style={styles.headerAvatar}
+                >
+                  <Text style={{ fontSize: 16 }}>✨</Text>
+                </LinearGradient>
                 <View>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                     <Text style={styles.headerTitle}>LifeLink AI</Text>
                     <View style={styles.statusDot} />
                   </View>
-                  <Text style={styles.headerSub}>Medical Assistant</Text>
+                  <Text style={styles.headerSub}>Smart Medical Assistant</Text>
                 </View>
               </View>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
@@ -228,27 +241,28 @@ export default function FloatingAiAssistant() {
 }
 
 const styles = StyleSheet.create({
-  circleTrigger: {
+  circleTriggerContainer: {
     position: 'absolute',
     bottom: 84,
     right: 20,
-    width: 54,
-    height: 54,
-    borderRadius: 27,
-    backgroundColor: '#7B1FA2',
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#7B1FA2',
+    zIndex: 999,
+    shadowColor: '#E53935',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.6,
     shadowRadius: 10,
     elevation: 12,
-    zIndex: 999,
+  },
+  circleTrigger: {
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.35)',
+    borderColor: 'rgba(255, 255, 255, 0.4)',
   },
   circleIcon: {
-    fontSize: 26,
+    fontSize: 22,
   },
   onlineDot: {
     position: 'absolute',
@@ -289,7 +303,6 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#7B1FA2',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -350,7 +363,9 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: '#7B1FA2',
+    backgroundColor: 'rgba(229, 57, 53, 0.2)',
+    borderWidth: 1,
+    borderColor: 'rgba(229, 57, 53, 0.4)',
     alignItems: 'center',
     justifyContent: 'center',
   },

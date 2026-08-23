@@ -5,8 +5,8 @@ import { useAuth } from '../context/AuthContext';
 
 export default function LoginScreen({ navigation }) {
   const [role, setRole] = useState('donor'); // 'donor' | 'receiver' | 'admin'
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('sameershaik9184@gmail.com');
+  const [password, setPassword] = useState('Donor@123');
   const { login } = useAuth();
 
   const handleRoleChange = (newRole) => {
@@ -23,23 +23,25 @@ export default function LoginScreen({ navigation }) {
     }
   };
 
-  const handleLogin = () => {
-    if (!email.trim() || !password.trim()) {
-      Alert.alert('Required', 'Please enter email and password');
+  const handleLogin = async () => {
+    if (!email.trim()) {
+      Alert.alert('Required', 'Please enter email address');
       return;
     }
 
-    const res = login(role, { email, password });
+    const res = await login(role, { email, password: password || '123456' });
     if (res.success) {
-      Alert.alert('Login Successful', `Welcome to LifeLink as ${role.toUpperCase()}!`);
-      if (navigation.canGoBack()) {
-        navigation.goBack();
-      } else {
-        navigation.navigate('Home');
-      }
+      // User is logged in, RootNavigation will automatically render the main app
     } else {
-      Alert.alert('Login Failed', res.message || 'Invalid credentials');
+      Alert.alert('Login Notice', res.message || 'Invalid credentials. Please verify details.');
     }
+  };
+
+  const handleQuickDemoLogin = (demoRole) => {
+    handleRoleChange(demoRole);
+    const demoEmail = demoRole === 'admin' ? 'sameeradmin@lifelink.com' : demoRole === 'donor' ? 'sameershaik9184@gmail.com' : 'receiver@lifelink.com';
+    const demoPass = demoRole === 'admin' ? 'Sameer@14' : 'Donor@123';
+    login(demoRole, { email: demoEmail, password: demoPass });
   };
 
   return (
@@ -52,7 +54,7 @@ export default function LoginScreen({ navigation }) {
         <View style={styles.header}>
           <Text style={styles.logoIcon}>🩸</Text>
           <Text style={styles.title}>Life<Text style={{ color: Colors.primary }}>Link</Text></Text>
-          <Text style={styles.subtitle}>Sign in to access your portal</Text>
+          <Text style={styles.subtitle}>Smart Blood Donor Network</Text>
         </View>
 
         {/* Role Tabs (Donor vs Receiver vs Admin) - Exact Web Design */}
@@ -82,14 +84,14 @@ export default function LoginScreen({ navigation }) {
         {/* Login Card */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>
-            {role === 'donor' ? '🩸 Blood Donor Login' : role === 'receiver' ? '🏥 Blood Seeker Login' : '🛡️ Administrator Portal'}
+            {role === 'donor' ? '🩸 Blood Donor Sign In' : role === 'receiver' ? '🏥 Blood Seeker Sign In' : '🛡️ Admin Control Login'}
           </Text>
           <Text style={styles.cardDesc}>
             {role === 'donor' 
-              ? 'Manage availability, track donation milestones, and view digital donor card.' 
+              ? 'Sign in to manage donation availability, emergency alerts & donor card.' 
               : role === 'receiver'
-              ? 'Find compatible donors, track SOS requests, and connect with hospitals.'
-              : 'Authorized LifeLink system administration and verification.'}
+              ? 'Sign in to find compatible donors & broadcast urgent patient requests.'
+              : 'Admin access for user verification and platform management.'}
           </Text>
 
           <Text style={styles.label}>{role === 'admin' ? 'Admin Email' : 'Email Address / Phone'}</Text>
@@ -124,16 +126,29 @@ export default function LoginScreen({ navigation }) {
             </Text>
           </TouchableOpacity>
 
-          {/* Quick Fill Demo Note */}
+          {/* 1-Tap Quick Demo Buttons */}
           <View style={styles.quickFillBox}>
-            <Text style={styles.quickFillTitle}>💡 Quick Demo Account:</Text>
-            <Text style={styles.quickFillText}>
-              {role === 'admin' 
-                ? 'Email: sameeradmin@lifelink.com\nPassword: Sameer@14' 
-                : role === 'donor'
-                ? 'Email: sameershaik9184@gmail.com\nPassword: Donor@123'
-                : 'Email: receiver@lifelink.com\nPassword: Receiver@123'}
-            </Text>
+            <Text style={styles.quickFillTitle}>⚡ 1-Tap Instant Demo Login:</Text>
+            <View style={styles.quickBtnRow}>
+              <TouchableOpacity 
+                style={[styles.quickPill, { borderColor: Colors.primary }]}
+                onPress={() => handleQuickDemoLogin('donor')}
+              >
+                <Text style={[styles.quickPillText, { color: Colors.primary }]}>🩸 Donor</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.quickPill, { borderColor: Colors.success }]}
+                onPress={() => handleQuickDemoLogin('receiver')}
+              >
+                <Text style={[styles.quickPillText, { color: Colors.success }]}>🏥 Receiver</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.quickPill, { borderColor: Colors.info }]}
+                onPress={() => handleQuickDemoLogin('admin')}
+              >
+                <Text style={[styles.quickPillText, { color: Colors.info }]}>🛡️ Admin</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </ScrollView>
@@ -269,7 +284,7 @@ const styles = StyleSheet.create({
     marginTop: 18,
     padding: 12,
     backgroundColor: 'rgba(255, 255, 255, 0.04)',
-    borderRadius: 10,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.08)',
   },
@@ -277,11 +292,22 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '800',
     color: Colors.textMuted,
-    marginBottom: 2,
+    marginBottom: 8,
   },
-  quickFillText: {
+  quickBtnRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  quickPill: {
+    flex: 1,
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+  },
+  quickPillText: {
     fontSize: 11,
-    color: 'rgba(255, 255, 255, 0.75)',
-    lineHeight: 16,
+    fontWeight: '800',
   },
 });

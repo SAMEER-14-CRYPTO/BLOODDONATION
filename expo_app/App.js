@@ -76,21 +76,23 @@ function RootNavigation() {
           <Stack.Screen name="Login" component={LoginScreen} />
         </Stack.Navigator>
       ) : (
-        <Stack.Navigator
-          screenOptions={{
-            headerStyle: { backgroundColor: Colors.cardDark },
-            headerTintColor: '#FFFFFF',
-            headerTitleStyle: { fontWeight: '900', fontSize: 16 },
-            contentStyle: { backgroundColor: Colors.bgDark }
-          }}
-        >
-          <Stack.Screen name="MainTabs" component={MainTabNavigator} options={{ headerShown: false }} />
-          <Stack.Screen name="AdminPanel" component={AdminScreen} options={{ title: '🛡️ Admin Control Panel' }} />
-        </Stack.Navigator>
-      )}
+        <>
+          <Stack.Navigator
+            screenOptions={{
+              headerStyle: { backgroundColor: Colors.cardDark },
+              headerTintColor: '#FFFFFF',
+              headerTitleStyle: { fontWeight: '900', fontSize: 16 },
+              contentStyle: { backgroundColor: Colors.bgDark }
+            }}
+          >
+            <Stack.Screen name="MainTabs" component={MainTabNavigator} options={{ headerShown: false }} />
+            <Stack.Screen name="AdminPanel" component={AdminScreen} options={{ title: '🛡️ Admin Control Panel' }} />
+          </Stack.Navigator>
 
-      {/* 🤖 Floating Circular AI Assistant (Positioned above bottom navigation bar) */}
-      <FloatingAiAssistant />
+          {/* ✨ Floating AI Assistant ONLY rendered inside the app when logged in */}
+          <FloatingAiAssistant />
+        </>
+      )}
     </NavigationContainer>
   );
 }
