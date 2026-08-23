@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { Colors } from '../constants/theme';
@@ -7,9 +7,23 @@ export default function InteractiveMap({
   markers = [], 
   center = { lat: 13.0827, lng: 79.8877 }, 
   zoom = 7, 
-  height = 280 
+  height = 280,
+  focusedMarker = null
 }) {
+  const webViewRef = useRef(null);
   const markersJSON = JSON.stringify(markers);
+
+  useEffect(() => {
+    if (focusedMarker && focusedMarker.lat && focusedMarker.lng && webViewRef.current) {
+      const jsCode = `
+        if (window.focusMarker) {
+          window.focusMarker(${focusedMarker.lat}, ${focusedMarker.lng}, "${focusedMarker.name || ''}");
+        }
+        true;
+      `;
+      webViewRef.current.injectJavaScript(jsCode);
+    }
+  }, [focusedMarker]);
 
   const htmlContent = `
     <!DOCTYPE html>
@@ -55,6 +69,7 @@ export default function InteractiveMap({
           }).addTo(map);
 
           const markersData = ${markersJSON};
+          const markerMap = {};
 
           markersData.forEach(m => {
             if (m.lat && m.lng) {
@@ -77,8 +92,19 @@ export default function InteractiveMap({
                 '<div class="popup-sub">📍 ' + (m.address || m.city || '') + '</div>' +
                 (m.contact || m.phone ? '<div class="popup-sub">📞 ' + (m.contact || m.phone) + '</div>' : '')
               );
+
+              const key = m.lat + '_' + m.lng;
+              markerMap[key] = marker;
             }
           });
+
+          window.focusMarker = function(lat, lng, name) {
+            map.flyTo([lat, lng], 13, { duration: 1.2 });
+            const key = lat + '_' + lng;
+            if (markerMap[key]) {
+              setTimeout(() => { markerMap[key].openPopup(); }, 600);
+            }
+          };
         </script>
       </body>
     </html>
@@ -87,6 +113,7 @@ export default function InteractiveMap({
   return (
     <View style={[styles.mapContainer, { height }]}>
       <WebView
+        ref={webViewRef}
         originWhitelist={['*']}
         source={{ html: htmlContent }}
         style={styles.webview}

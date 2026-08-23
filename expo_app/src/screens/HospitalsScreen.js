@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, Linking, Alert } from 'react-native';
 import { Colors } from '../constants/theme';
 import { HospitalsList, CityCoordinates } from '../data/mockData';
@@ -7,6 +7,8 @@ import InteractiveMap from '../components/InteractiveMap';
 export default function HospitalsScreen() {
   const [search, setSearch] = useState('');
   const [showMap, setShowMap] = useState(true);
+  const [focusedMarker, setFocusedMarker] = useState(null);
+  const listRef = useRef(null);
 
   const filtered = HospitalsList.filter(h => 
     !search.trim() || 
@@ -19,6 +21,19 @@ export default function HospitalsScreen() {
     Linking.openURL(`tel:${phone}`).catch(() => {
       Alert.alert('Phone', phone);
     });
+  };
+
+  const handleFocusOnMap = (hospital) => {
+    const coords = CityCoordinates[hospital.city] || { lat: 13.0827, lng: 80.2707 };
+    setShowMap(true);
+    setFocusedMarker({
+      lat: coords.lat,
+      lng: coords.lng,
+      name: hospital.name
+    });
+    if (listRef.current) {
+      listRef.current.scrollToOffset({ offset: 0, animated: true });
+    }
   };
 
   const mapMarkers = filtered.map(h => {
@@ -42,12 +57,6 @@ export default function HospitalsScreen() {
             <Text style={styles.addressText}>📍 {item.address}</Text>
             <Text style={styles.phoneText}>📞 {item.contact}</Text>
           </View>
-          <TouchableOpacity 
-            style={styles.callBtn}
-            onPress={() => handleCall(item.contact)}
-          >
-            <Text style={styles.callBtnText}>Call</Text>
-          </TouchableOpacity>
         </View>
 
         {/* Live Blood Availability Badges */}
@@ -65,6 +74,22 @@ export default function HospitalsScreen() {
               </View>
             );
           })}
+        </View>
+
+        {/* Action Buttons: View on Map + Direct Call */}
+        <View style={styles.actionBtnRow}>
+          <TouchableOpacity 
+            style={styles.mapFocusBtn}
+            onPress={() => handleFocusOnMap(item)}
+          >
+            <Text style={styles.mapFocusBtnText}>📍 View on Map</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.callBtn}
+            onPress={() => handleCall(item.contact)}
+          >
+            <Text style={styles.callBtnText}>📞 Call Hospital</Text>
+          </TouchableOpacity>
         </View>
       </View>
     );
@@ -92,8 +117,15 @@ export default function HospitalsScreen() {
       </View>
 
       <FlatList
+        ref={listRef}
         ListHeaderComponent={
-          showMap ? <InteractiveMap markers={mapMarkers} height={200} /> : null
+          showMap ? (
+            <InteractiveMap 
+              markers={mapMarkers} 
+              focusedMarker={focusedMarker}
+              height={220} 
+            />
+          ) : null
         }
         data={filtered}
         keyExtractor={item => item.id}
@@ -152,7 +184,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: 10,
-    marginBottom: 12,
+    marginBottom: 10,
   },
   hospName: {
     fontSize: 15,
@@ -169,17 +201,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: Colors.textMuted,
   },
-  callBtn: {
-    backgroundColor: Colors.primary,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 10,
-  },
-  callBtnText: {
-    color: '#FFFFFF',
-    fontWeight: '800',
-    fontSize: 12,
-  },
   stockTitle: {
     fontSize: 11,
     fontWeight: '700',
@@ -190,6 +211,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 6,
+    marginBottom: 14,
   },
   stockPill: {
     flexDirection: 'row',
@@ -207,5 +229,38 @@ const styles = StyleSheet.create({
   stockCount: {
     fontSize: 11,
     fontWeight: '600',
+  },
+  actionBtnRow: {
+    flexDirection: 'row',
+    gap: 10,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.06)',
+    paddingTop: 12,
+  },
+  mapFocusBtn: {
+    flex: 1,
+    backgroundColor: 'rgba(30, 136, 229, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(30, 136, 229, 0.3)',
+    paddingVertical: 9,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  mapFocusBtnText: {
+    color: '#42A5F5',
+    fontWeight: '800',
+    fontSize: 12,
+  },
+  callBtn: {
+    flex: 1,
+    backgroundColor: Colors.primary,
+    paddingVertical: 9,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  callBtnText: {
+    color: '#FFFFFF',
+    fontWeight: '800',
+    fontSize: 12,
   },
 });

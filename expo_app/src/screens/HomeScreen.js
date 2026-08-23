@@ -2,8 +2,11 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, StatusBar } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '../constants/theme';
+import { useAuth } from '../context/AuthContext';
 
 export default function HomeScreen({ navigation }) {
+  const { user, isLoggedIn } = useAuth();
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       <StatusBar barStyle="light-content" backgroundColor={Colors.bgDark} />
@@ -15,10 +18,12 @@ export default function HomeScreen({ navigation }) {
           <Text style={styles.tagline}>Smart Blood Donor Network</Text>
         </View>
         <TouchableOpacity 
-          style={styles.aiBadgeBtn} 
-          onPress={() => navigation.navigate('AI Assistant')}
+          style={styles.authBtn} 
+          onPress={() => navigation.navigate(isLoggedIn ? 'Profile' : 'Login')}
         >
-          <Text style={styles.aiBadgeText}>🤖 AI Assistant</Text>
+          <Text style={styles.authBtnText}>
+            {isLoggedIn ? `👤 ${user.name.split(' ')[0]}` : '🔑 Sign In'}
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -32,7 +37,7 @@ export default function HomeScreen({ navigation }) {
         <Text style={styles.heroBadge}>⚡ REAL-TIME DISPATCH</Text>
         <Text style={styles.heroTitle}>Need Blood Urgently?</Text>
         <Text style={styles.heroSubtitle}>
-          Connect with verified donors, hospitals, and certified blood centres instantly.
+          Connect with verified donors, super-speciality hospitals, and certified blood component centres instantly.
         </Text>
         <View style={styles.heroBtnRow}>
           <TouchableOpacity 
@@ -66,8 +71,8 @@ export default function HomeScreen({ navigation }) {
         </View>
       </View>
 
-      {/* Quick Menu Grid */}
-      <Text style={styles.sectionTitle}>Quick Services</Text>
+      {/* Core Services Grid (Cleaned: No Admin, No AI Matcher here as AI is floating side assistant) */}
+      <Text style={styles.sectionTitle}>Essential Services</Text>
       <View style={styles.gridContainer}>
         <TouchableOpacity 
           style={styles.gridCard}
@@ -75,34 +80,7 @@ export default function HomeScreen({ navigation }) {
         >
           <Text style={styles.gridIcon}>🩸</Text>
           <Text style={styles.gridTitle}>Find Donors</Text>
-          <Text style={styles.gridDesc}>Search by blood group & city</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={styles.gridCard}
-          onPress={() => navigation.navigate('AI Assistant')}
-        >
-          <Text style={styles.gridIcon}>🤖</Text>
-          <Text style={styles.gridTitle}>AI Matcher</Text>
-          <Text style={styles.gridDesc}>ChatGPT-style medical assistant</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={styles.gridCard}
-          onPress={() => navigation.navigate('Hospitals')}
-        >
-          <Text style={styles.gridIcon}>🏥</Text>
-          <Text style={styles.gridTitle}>Hospitals</Text>
-          <Text style={styles.gridDesc}>Verified super-speciality network</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={styles.gridCard}
-          onPress={() => navigation.navigate('Blood Banks')}
-        >
-          <Text style={styles.gridIcon}>🏦</Text>
-          <Text style={styles.gridTitle}>Blood Banks</Text>
-          <Text style={styles.gridDesc}>Live component unit stocks</Text>
+          <Text style={styles.gridDesc}>Filter by blood group & city</Text>
         </TouchableOpacity>
 
         <TouchableOpacity 
@@ -111,26 +89,27 @@ export default function HomeScreen({ navigation }) {
         >
           <Text style={styles.gridIcon}>🚨</Text>
           <Text style={styles.gridTitle}>Emergency SOS</Text>
-          <Text style={styles.gridDesc}>1-tap urgent hospital alert</Text>
+          <Text style={styles.gridDesc}>1-tap urgent patient broadcast</Text>
         </TouchableOpacity>
 
         <TouchableOpacity 
           style={styles.gridCard}
-          onPress={() => navigation.navigate('Admin')}
+          onPress={() => navigation.navigate('Hospitals')}
         >
-          <Text style={styles.gridIcon}>🛡️</Text>
-          <Text style={styles.gridTitle}>Admin Panel</Text>
-          <Text style={styles.gridDesc}>Platform management & control</Text>
+          <Text style={styles.gridIcon}>🏥</Text>
+          <Text style={styles.gridTitle}>Hospitals Network</Text>
+          <Text style={styles.gridDesc}>27 verified hospital centres</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.gridCard}
+          onPress={() => navigation.navigate('Blood Banks')}
+        >
+          <Text style={styles.gridIcon}>🏦</Text>
+          <Text style={styles.gridTitle}>Blood Banks</Text>
+          <Text style={styles.gridDesc}>18 certified component centres</Text>
         </TouchableOpacity>
       </View>
-
-      {/* Live Web App Portal Link */}
-      <TouchableOpacity 
-        style={styles.webPortalBtn}
-        onPress={() => navigation.navigate('Web Portal')}
-      >
-        <Text style={styles.webPortalText}>🌐 Open Full Web Application Mode</Text>
-      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -162,18 +141,18 @@ const styles = StyleSheet.create({
     color: Colors.textMuted,
     marginTop: 2,
   },
-  aiBadgeBtn: {
-    backgroundColor: 'rgba(123, 31, 162, 0.25)',
+  authBtn: {
+    backgroundColor: 'rgba(229, 57, 53, 0.15)',
     borderWidth: 1,
-    borderColor: '#7B1FA2',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    borderColor: 'rgba(229, 57, 53, 0.3)',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
     borderRadius: 20,
   },
-  aiBadgeText: {
-    color: '#BA68C8',
+  authBtnText: {
+    color: '#FFFFFF',
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: '800',
   },
   heroCard: {
     borderRadius: 20,
@@ -297,18 +276,5 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: Colors.textMuted,
     lineHeight: 15,
-  },
-  webPortalBtn: {
-    backgroundColor: 'rgba(30, 136, 229, 0.12)',
-    borderWidth: 1,
-    borderColor: 'rgba(30, 136, 229, 0.3)',
-    borderRadius: 14,
-    padding: 14,
-    alignItems: 'center',
-  },
-  webPortalText: {
-    color: '#42A5F5',
-    fontWeight: '700',
-    fontSize: 13,
   },
 });

@@ -2,14 +2,16 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, TextInput, Modal, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '../constants/theme';
+import { useAuth } from '../context/AuthContext';
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ navigation }) {
+  const { user, isLoggedIn, logout, setUser } = useAuth();
   const [isAvailable, setIsAvailable] = useState(true);
   const [notifications, setNotifications] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
 
-  // User Profile State
-  const [userData, setUserData] = useState({
+  // Profile data fallback
+  const profileData = user || {
     name: 'Sameer Shaik',
     email: 'sameershaik9184@gmail.com',
     phone: '+91-9184000000',
@@ -23,23 +25,42 @@ export default function ProfileScreen() {
     totalDonations: 4,
     livesSaved: 12,
     lastDonation: '2026-08-20',
+    role: 'donor',
     isVerified: true
-  });
+  };
 
-  const [editForm, setEditForm] = useState({ ...userData });
+  const [editForm, setEditForm] = useState({ ...profileData });
 
   const handleSaveProfile = () => {
-    setUserData({ ...editForm });
+    setUser({ ...profileData, ...editForm });
     setIsEditing(false);
-    Alert.alert('Profile Saved', 'Your donor details have been updated successfully.');
+    Alert.alert('Profile Saved', 'Your details have been updated successfully.');
   };
 
   const handleDownloadCard = () => {
-    Alert.alert('Digital Donor Card', `Donor ID: ${userData.donorId}\nName: ${userData.name}\nBlood Group: ${userData.bloodGroup}\nStatus: Verified Active Donor`);
+    Alert.alert('Digital Donor Card', `Donor ID: ${profileData.donorId || 'LL-IND-9184'}\nName: ${profileData.name}\nBlood Group: ${profileData.bloodGroup || 'B-'}\nStatus: Verified Active Donor`);
+  };
+
+  const handleLogout = () => {
+    logout();
+    Alert.alert('Logged Out', 'You have been signed out.');
   };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
+      {/* Login Banner if not logged in */}
+      {!isLoggedIn && (
+        <View style={styles.guestBanner}>
+          <Text style={styles.guestText}>💡 You are browsing as a guest.</Text>
+          <TouchableOpacity 
+            style={styles.signInPill}
+            onPress={() => navigation.navigate('Login')}
+          >
+            <Text style={styles.signInPillText}>Sign In / Login</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       {/* 💳 Digital Donor ID Card (Web-Style) */}
       <LinearGradient
         colors={['#191C2E', '#232842', '#141724']}
@@ -48,7 +69,7 @@ export default function ProfileScreen() {
         <View style={styles.cardTopRow}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
             <Text style={{ fontSize: 16 }}>🩸</Text>
-            <Text style={styles.cardBrand}>Life<Text style={{ color: Colors.primary }}>Link</Text> DONOR ID</Text>
+            <Text style={styles.cardBrand}>Life<Text style={{ color: Colors.primary }}>Link</Text> {profileData.role === 'admin' ? 'ADMIN CARD' : 'DONOR ID'}</Text>
           </View>
           <View style={styles.verifiedTag}>
             <Text style={styles.verifiedTagText}>✓ VERIFIED</Text>
@@ -57,20 +78,20 @@ export default function ProfileScreen() {
 
         <View style={styles.cardMainRow}>
           <View style={styles.avatarBox}>
-            <Text style={styles.avatarLetter}>{userData.name.charAt(0)}</Text>
+            <Text style={styles.avatarLetter}>{profileData.name.charAt(0)}</Text>
           </View>
           <View style={{ flex: 1, marginLeft: 12 }}>
-            <Text style={styles.cardName}>{userData.name}</Text>
-            <Text style={styles.cardId}>ID: {userData.donorId}</Text>
-            <Text style={styles.cardLocation}>📍 {userData.city}, AP</Text>
+            <Text style={styles.cardName}>{profileData.name}</Text>
+            <Text style={styles.cardId}>ID: {profileData.donorId || 'LL-IND-9184'}</Text>
+            <Text style={styles.cardLocation}>📍 {profileData.city || 'Chennai'}, AP</Text>
           </View>
           <View style={styles.cardBloodBadge}>
-            <Text style={styles.cardBloodText}>{userData.bloodGroup}</Text>
+            <Text style={styles.cardBloodText}>{profileData.bloodGroup || 'B-'}</Text>
           </View>
         </View>
 
         <View style={styles.cardFooter}>
-          <Text style={styles.cardFooterText}>Emergency Contact: {userData.phone}</Text>
+          <Text style={styles.cardFooterText}>Emergency Contact: {profileData.phone || '+91-9184000000'}</Text>
           <TouchableOpacity onPress={handleDownloadCard}>
             <Text style={styles.cardDownloadText}>📥 Save Card</Text>
           </TouchableOpacity>
@@ -80,11 +101,11 @@ export default function ProfileScreen() {
       {/* Stats Overview */}
       <View style={styles.statsCard}>
         <View style={styles.statCol}>
-          <Text style={styles.statNum}>{userData.totalDonations}</Text>
+          <Text style={styles.statNum}>{profileData.totalDonations || 4}</Text>
           <Text style={styles.statLabel}>Donations</Text>
         </View>
         <View style={styles.statCol}>
-          <Text style={[styles.statNum, { color: Colors.success }]}>{userData.livesSaved}</Text>
+          <Text style={[styles.statNum, { color: Colors.success }]}>{profileData.livesSaved || 12}</Text>
           <Text style={styles.statLabel}>Lives Saved</Text>
         </View>
         <View style={styles.statCol}>
@@ -97,7 +118,7 @@ export default function ProfileScreen() {
       <View style={styles.sectionCard}>
         <View style={styles.sectionHeaderRow}>
           <Text style={styles.sectionTitle}>👤 Personal Details</Text>
-          <TouchableOpacity onPress={() => { setEditForm({ ...userData }); setIsEditing(true); }}>
+          <TouchableOpacity onPress={() => { setEditForm({ ...profileData }); setIsEditing(true); }}>
             <Text style={styles.editLinkText}>✏️ Edit</Text>
           </TouchableOpacity>
         </View>
@@ -105,35 +126,35 @@ export default function ProfileScreen() {
         <View style={styles.detailGrid}>
           <View style={styles.detailItem}>
             <Text style={styles.detailLabel}>Full Name</Text>
-            <Text style={styles.detailValue}>{userData.name}</Text>
+            <Text style={styles.detailValue}>{profileData.name}</Text>
           </View>
           <View style={styles.detailItem}>
             <Text style={styles.detailLabel}>Blood Group</Text>
-            <Text style={[styles.detailValue, { color: Colors.primary, fontWeight: '800' }]}>{userData.bloodGroup}</Text>
+            <Text style={[styles.detailValue, { color: Colors.primary, fontWeight: '800' }]}>{profileData.bloodGroup || 'B-'}</Text>
           </View>
           <View style={styles.detailItem}>
             <Text style={styles.detailLabel}>Contact Phone</Text>
-            <Text style={styles.detailValue}>{userData.phone}</Text>
+            <Text style={styles.detailValue}>{profileData.phone}</Text>
           </View>
           <View style={styles.detailItem}>
             <Text style={styles.detailLabel}>Email Address</Text>
-            <Text style={styles.detailValue}>{userData.email}</Text>
+            <Text style={styles.detailValue}>{profileData.email}</Text>
           </View>
           <View style={styles.detailItem}>
             <Text style={styles.detailLabel}>Age / Gender</Text>
-            <Text style={styles.detailValue}>{userData.age} yrs • {userData.gender}</Text>
+            <Text style={styles.detailValue}>{profileData.age || 21} yrs • {profileData.gender || 'Male'}</Text>
           </View>
           <View style={styles.detailItem}>
             <Text style={styles.detailLabel}>City / Location</Text>
-            <Text style={styles.detailValue}>{userData.city}</Text>
+            <Text style={styles.detailValue}>{profileData.city || 'Rly Kodur'}</Text>
           </View>
           <View style={[styles.detailItem, { width: '100%' }]}>
             <Text style={styles.detailLabel}>Full Residential Address</Text>
-            <Text style={styles.detailValue}>{userData.address}, {userData.pincode}</Text>
+            <Text style={styles.detailValue}>{profileData.address || 'Main Road, Railway Kodur'}</Text>
           </View>
           <View style={[styles.detailItem, { width: '100%' }]}>
             <Text style={styles.detailLabel}>Last Blood Donation</Text>
-            <Text style={styles.detailValue}>{userData.lastDonation} (Safe & eligible to donate)</Text>
+            <Text style={styles.detailValue}>{profileData.lastDonation || '2026-08-20'} (Safe & eligible to donate)</Text>
           </View>
         </View>
       </View>
@@ -171,23 +192,17 @@ export default function ProfileScreen() {
         </View>
       </View>
 
-      {/* Recent Activity Feed (Web-style) */}
-      <View style={styles.sectionCard}>
-        <Text style={styles.sectionTitle}>📋 Recent Activity</Text>
-        <View style={styles.activityItem}>
-          <View style={[styles.activityDot, { backgroundColor: Colors.primary }]} />
-          <View style={{ flex: 1 }}>
-            <Text style={styles.activityText}>Emergency Alert responded at SVIMS Hospital, Tirupati</Text>
-            <Text style={styles.activityTime}>2 days ago</Text>
-          </View>
-        </View>
-        <View style={styles.activityItem}>
-          <View style={[styles.activityDot, { backgroundColor: Colors.success }]} />
-          <View style={{ flex: 1 }}>
-            <Text style={styles.activityText}>Blood donation verified at Area Govt Hospital, Rly Kodur</Text>
-            <Text style={styles.activityTime}>1 week ago</Text>
-          </View>
-        </View>
+      {/* Account Action Buttons */}
+      <View style={{ gap: 10, marginTop: 6, marginBottom: 20 }}>
+        {isLoggedIn ? (
+          <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
+            <Text style={styles.logoutBtnText}>🚪 Sign Out</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity style={styles.loginBtn} onPress={() => navigation.navigate('Login')}>
+            <Text style={styles.loginBtnText}>🔑 Sign In / Switch Account</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       {/* Edit Profile Modal */}
@@ -196,7 +211,7 @@ export default function ProfileScreen() {
           <View style={styles.modalCard}>
             <Text style={styles.modalTitle}>✏️ Edit Donor Profile</Text>
 
-            <ScrollView style={{ maxHeight: 400 }}>
+            <ScrollView style={{ maxHeight: 380 }}>
               <Text style={styles.inputLabel}>Full Name</Text>
               <TextInput
                 style={styles.modalInput}
@@ -257,6 +272,33 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: 16,
     paddingBottom: 40,
+  },
+  guestBanner: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: 'rgba(30, 136, 229, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(30, 136, 229, 0.3)',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 16,
+  },
+  guestText: {
+    color: '#42A5F5',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  signInPill: {
+    backgroundColor: Colors.info,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  signInPillText: {
+    color: '#FFFFFF',
+    fontWeight: '800',
+    fontSize: 11,
   },
   donorCard: {
     borderRadius: 20,
@@ -448,25 +490,29 @@ const styles = StyleSheet.create({
     color: Colors.textMuted,
     marginTop: 2,
   },
-  activityItem: {
-    flexDirection: 'row',
+  loginBtn: {
+    backgroundColor: Colors.primary,
+    paddingVertical: 14,
+    borderRadius: 12,
     alignItems: 'center',
-    gap: 10,
-    paddingVertical: 8,
   },
-  activityDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
-  activityText: {
-    fontSize: 12,
+  loginBtnText: {
     color: '#FFFFFF',
+    fontWeight: '800',
+    fontSize: 14,
   },
-  activityTime: {
-    fontSize: 10,
-    color: Colors.textMuted,
-    marginTop: 1,
+  logoutBtn: {
+    backgroundColor: 'rgba(239, 83, 80, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(239, 83, 80, 0.3)',
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  logoutBtnText: {
+    color: Colors.primary,
+    fontWeight: '800',
+    fontSize: 14,
   },
   modalOverlay: {
     flex: 1,
