@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   StyleSheet, View, StatusBar, SafeAreaView, BackHandler, 
-  ActivityIndicator, Text, TouchableOpacity, Linking, TextInput, Modal, Alert 
+  ActivityIndicator, Text, TouchableOpacity, Linking, TextInput, Modal, Alert, Platform 
 } from 'react-native';
 import { WebView } from 'react-native-webview';
 
