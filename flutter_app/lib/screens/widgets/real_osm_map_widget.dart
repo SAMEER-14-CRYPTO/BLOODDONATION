@@ -41,9 +41,9 @@ class _RealOsmMapWidgetState extends State<RealOsmMapWidget> with SingleTickerPr
   late double _centerLng;
   late double _zoom;
 
-  double _userLat = 19.0760;
-  double _userLng = 72.8777;
-  String _userLocationName = 'Mumbai, MH';
+  double _userLat = 13.0827;
+  double _userLng = 80.2707;
+  String _userLocationName = 'Chennai, TN';
 
   String _selectedBloodGroup = 'All';
   UserModel? _selectedDonor;
@@ -58,54 +58,55 @@ class _RealOsmMapWidgetState extends State<RealOsmMapWidget> with SingleTickerPr
   Offset _dragOffset = Offset.zero;
 
   final List<Map<String, dynamic>> _cities = [
-    {'name': 'All India', 'lat': 21.5937, 'lng': 78.9629, 'zoom': 4.5},
-    {'name': 'Mumbai', 'lat': 19.0760, 'lng': 72.8777, 'zoom': 11.5},
-    {'name': 'Delhi NCR', 'lat': 28.6139, 'lng': 77.2090, 'zoom': 11.5},
-    {'name': 'Bengaluru', 'lat': 12.9716, 'lng': 77.5946, 'zoom': 11.5},
-    {'name': 'Hyderabad', 'lat': 17.3850, 'lng': 78.4867, 'zoom': 11.5},
+    {'name': 'South India', 'lat': 13.0827, 'lng': 79.8877, 'zoom': 6.5},
     {'name': 'Chennai', 'lat': 13.0827, 'lng': 80.2707, 'zoom': 11.5},
-    {'name': 'Kolkata', 'lat': 22.5726, 'lng': 88.3639, 'zoom': 11.5},
-    {'name': 'Pune', 'lat': 18.5204, 'lng': 73.8567, 'zoom': 11.5},
-    {'name': 'Ahmedabad', 'lat': 23.0225, 'lng': 72.5714, 'zoom': 11.5},
-    {'name': 'Jaipur', 'lat': 26.9124, 'lng': 75.7873, 'zoom': 11.5},
+    {'name': 'Tirupati', 'lat': 13.6288, 'lng': 79.4192, 'zoom': 12.0},
+    {'name': 'Coimbatore', 'lat': 11.0168, 'lng': 76.9558, 'zoom': 11.5},
+    {'name': 'Vijayawada', 'lat': 16.5062, 'lng': 80.6480, 'zoom': 12.0},
+    {'name': 'Visakhapatnam', 'lat': 17.6868, 'lng': 83.2185, 'zoom': 11.5},
+    {'name': 'Madurai', 'lat': 9.9252, 'lng': 78.1198, 'zoom': 12.0},
+    {'name': 'Guntur', 'lat': 16.3067, 'lng': 80.4365, 'zoom': 12.0},
+    {'name': 'Nellore', 'lat': 14.4426, 'lng': 79.9865, 'zoom': 12.0},
+    {'name': 'Kadapa', 'lat': 14.4673, 'lng': 78.8242, 'zoom': 12.0},
+    {'name': 'Rly Kodur', 'lat': 14.0042, 'lng': 79.3512, 'zoom': 13.0},
   ];
 
   final List<Map<String, dynamic>> _bloodBanks = [
     {
-      'name': 'Indian Red Cross Blood Bank',
-      'city': 'Mumbai',
-      'address': '1, Red Cross Rd, Mumbai',
-      'phone': '+91-22-23621573',
-      'lat': 18.9322,
-      'lng': 72.8364,
-      'stocks': {'O+': 45, 'A+': 30, 'B+': 38, 'AB+': 12, 'O-': 15, 'A-': 8}
+      'name': 'Tamil Nadu State Apex Blood Bank',
+      'city': 'Chennai',
+      'address': 'Kilpauk, Chennai, Tamil Nadu',
+      'phone': '+91-44-26432804',
+      'lat': 13.0843,
+      'lng': 80.2399,
+      'stocks': {'O+': 58, 'A+': 40, 'B+': 46, 'AB+': 16, 'O-': 22, 'A-': 12}
     },
     {
-      'name': 'Rotary Blood Bank',
-      'city': 'Delhi',
-      'address': '56-57, Tughlakabad, Delhi',
-      'phone': '+91-11-29960044',
-      'lat': 28.5130,
-      'lng': 77.2580,
-      'stocks': {'O+': 55, 'A+': 40, 'B+': 35, 'AB+': 15, 'O-': 20, 'A-': 12}
+      'name': 'Indian Red Cross Society Blood Centre',
+      'city': 'Chennai',
+      'address': '179, Anna Salai, Chennai',
+      'phone': '+91-44-28520068',
+      'lat': 13.0580,
+      'lng': 80.2579,
+      'stocks': {'O+': 48, 'A+': 32, 'B+': 38, 'AB+': 12, 'O-': 18, 'A-': 10}
     },
     {
-      'name': 'Prathama Blood Centre',
-      'city': 'Ahmedabad',
-      'address': 'Satellite Rd, Ahmedabad',
-      'phone': '+91-79-26921111',
-      'lat': 23.0300,
-      'lng': 72.5180,
-      'stocks': {'O+': 38, 'A+': 25, 'B+': 30, 'AB+': 10, 'O-': 12, 'A-': 7}
+      'name': 'SVIMS Blood Bank & Component Centre',
+      'city': 'Tirupati',
+      'address': 'Alipiri Road, Tirupati, AP',
+      'phone': '+91-877-2287777',
+      'lat': 13.6350,
+      'lng': 79.4200,
+      'stocks': {'O+': 45, 'A+': 28, 'B+': 32, 'AB+': 11, 'O-': 15, 'A-': 8}
     },
     {
-      'name': 'RV Blood Bank',
-      'city': 'Bangalore',
-      'address': 'Basavanagudi, Bangalore',
-      'phone': '+91-80-26576985',
-      'lat': 12.9420,
-      'lng': 77.5750,
-      'stocks': {'O+': 32, 'A+': 20, 'B+': 25, 'AB+': 8, 'O-': 10, 'A-': 5}
+      'name': 'Red Cross Blood Bank, Vijayawada',
+      'city': 'Vijayawada',
+      'address': 'Eluru Road, Vijayawada, AP',
+      'phone': '+91-866-2573456',
+      'lat': 16.5101,
+      'lng': 80.6320,
+      'stocks': {'O+': 50, 'A+': 32, 'B+': 38, 'AB+': 13, 'O-': 17, 'A-': 10}
     },
   ];
 

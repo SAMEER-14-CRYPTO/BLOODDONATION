@@ -22,82 +22,100 @@ class _BloodBankScreenState extends State<BloodBankScreen> {
     'Chennai',
     'Coimbatore',
     'Madurai',
-    'Bangalore',
-    'Hyderabad',
-    'Mumbai',
-    'Delhi',
+    'All',
+    'Chennai',
+    'Coimbatore',
+    'Madurai',
+    'Trichy',
+    'Salem',
+    'Tirunelveli',
+    'Tirupati',
+    'Vijayawada',
+    'Visakhapatnam',
+    'Guntur',
+    'Nellore',
+    'Kadapa',
+    'Kurnool',
+    'Rly Kodur',
   ];
 
   final List<Map<String, dynamic>> _banks = [
     {
-      'name': 'Tamil Nadu Blood Transfusion Council',
+      'name': 'Tamil Nadu State Apex Blood Bank',
       'city': 'Chennai',
-      'address': '359/1, Anna Salai, Teynampet, Chennai - 600018',
-      'phone': '+91-44-24333370',
-      'stocks': {'O+': 60, 'A+': 45, 'B+': 42, 'AB+': 18, 'O-': 22, 'A-': 14, 'B-': 12, 'AB-': 7}
+      'address': 'Kilpauk Medical College, Chennai, Tamil Nadu - 600010',
+      'phone': '+91-44-26432804',
+      'stocks': {'O+': 58, 'A+': 40, 'B+': 46, 'AB+': 16, 'O-': 22, 'A-': 12, 'B-': 14, 'AB-': 6}
     },
     {
-      'name': 'Apollo Blood Bank, Chennai',
+      'name': 'Indian Red Cross Society Blood Centre',
       'city': 'Chennai',
-      'address': '21, Greams Lane, Thousand Lights, Chennai - 600006',
-      'phone': '+91-44-28290200',
-      'stocks': {'O+': 48, 'A+': 32, 'B+': 36, 'AB+': 14, 'O-': 18, 'A-': 11, 'B-': 9, 'AB-': 5}
+      'address': '179, Anna Salai, Chennai, Tamil Nadu - 600002',
+      'phone': '+91-44-28520068',
+      'stocks': {'O+': 48, 'A+': 32, 'B+': 38, 'AB+': 12, 'O-': 18, 'A-': 10, 'B-': 12, 'AB-': 5}
     },
     {
-      'name': 'KKHTDB Government Blood Bank',
-      'city': 'Chennai',
-      'address': 'KKHTDB, Kilpauk, Chennai - 600010',
-      'phone': '+91-44-26412503',
-      'stocks': {'O+': 70, 'A+': 55, 'B+': 50, 'AB+': 20, 'O-': 25, 'A-': 16, 'B-': 13, 'AB-': 8}
-    },
-    {
-      'name': 'Voluntary Blood Bank, Coimbatore',
+      'name': 'Rotary Central Blood Bank',
       'city': 'Coimbatore',
-      'address': 'Gandhipuram, Coimbatore - 641012',
-      'phone': '+91-422-2301850',
-      'stocks': {'O+': 35, 'A+': 24, 'B+': 28, 'AB+': 9, 'O-': 13, 'A-': 8, 'B-': 6, 'AB-': 3}
+      'address': 'DB Road, RS Puram, Coimbatore, Tamil Nadu - 641002',
+      'phone': '+91-422-2543444',
+      'stocks': {'O+': 42, 'A+': 28, 'B+': 34, 'AB+': 11, 'O-': 15, 'A-': 8, 'B-': 10, 'AB-': 4}
     },
     {
-      'name': 'District Blood Bank, Madurai',
+      'name': 'Lions Blood Bank & Research Foundation',
       'city': 'Madurai',
-      'address': 'Govt Rajaji Hospital Campus, Madurai - 625020',
-      'phone': '+91-452-2532535',
-      'stocks': {'O+': 40, 'A+': 28, 'B+': 32, 'AB+': 11, 'O-': 15, 'A-': 9, 'B-': 8, 'AB-': 4}
+      'address': 'Bibi Kulam Road, Madurai, Tamil Nadu - 625002',
+      'phone': '+91-452-2337344',
+      'stocks': {'O+': 36, 'A+': 24, 'B+': 30, 'AB+': 10, 'O-': 12, 'A-': 6, 'B-': 8, 'AB-': 4}
     },
     {
-      'name': 'RV Blood Bank',
-      'city': 'Bangalore',
-      'address': 'Basavanagudi, Bengaluru, Karnataka 560004',
-      'phone': '+91-80-26576985',
-      'stocks': {'O+': 32, 'A+': 20, 'B+': 25, 'AB+': 8, 'O-': 10, 'A-': 5, 'B-': 7, 'AB-': 2}
+      'name': 'CMC Voluntary Donor Blood Bank',
+      'city': 'Vellore',
+      'address': 'Ida Scudder Road, Vellore, Tamil Nadu - 632004',
+      'phone': '+91-416-2282000',
+      'stocks': {'O+': 40, 'A+': 26, 'B+': 32, 'AB+': 10, 'O-': 14, 'A-': 8, 'B-': 9, 'AB-': 4}
     },
     {
-      'name': 'Thalassemia Society Blood Bank',
-      'city': 'Hyderabad',
-      'address': 'Padmarao Nagar, Secunderabad, Hyderabad - 500025',
-      'phone': '+91-40-27803894',
-      'stocks': {'O+': 28, 'A+': 18, 'B+': 22, 'AB+': 6, 'O-': 8, 'A-': 4, 'B-': 6, 'AB-': 2}
+      'name': 'Indian Red Cross Society Blood Centre',
+      'city': 'Vijayawada',
+      'address': 'Eluru Road, Governorpet, Vijayawada, AP - 520001',
+      'phone': '+91-866-2573456',
+      'stocks': {'O+': 50, 'A+': 32, 'B+': 38, 'AB+': 13, 'O-': 17, 'A-': 10, 'B-': 11, 'AB-': 5}
     },
     {
-      'name': 'Indian Red Cross Blood Bank',
-      'city': 'Mumbai',
-      'address': '1, Red Cross Rd, Mumbai, Maharashtra 400001',
-      'phone': '+91-22-23621573',
-      'stocks': {'O+': 45, 'A+': 30, 'B+': 38, 'AB+': 12, 'O-': 15, 'A-': 8, 'B-': 10, 'AB-': 4}
+      'name': 'SVIMS Blood Bank & Component Centre',
+      'city': 'Tirupati',
+      'address': 'Alipiri Road, Near SVIMS, Tirupati, AP - 517507',
+      'phone': '+91-877-2287777',
+      'stocks': {'O+': 45, 'A+': 28, 'B+': 32, 'AB+': 11, 'O-': 15, 'A-': 8, 'B-': 9, 'AB-': 4}
     },
     {
-      'name': 'Rotary Blood Bank',
-      'city': 'Delhi',
-      'address': '56-57, Tughlakabad, New Delhi 110062',
-      'phone': '+91-11-29960044',
-      'stocks': {'O+': 55, 'A+': 40, 'B+': 35, 'AB+': 15, 'O-': 20, 'A-': 12, 'B-': 8, 'AB-': 6}
+      'name': 'King George Hospital (KGH) Regional Blood Centre',
+      'city': 'Visakhapatnam',
+      'address': 'Maharanipeta, Visakhapatnam, Andhra Pradesh - 530002',
+      'phone': '+91-891-2564900',
+      'stocks': {'O+': 52, 'A+': 36, 'B+': 42, 'AB+': 15, 'O-': 19, 'A-': 11, 'B-': 13, 'AB-': 5}
     },
     {
-      'name': 'Prathama Blood Centre',
-      'city': 'Ahmedabad',
-      'address': 'Satellite Rd, Ahmedabad, Gujarat 380015',
-      'phone': '+91-79-26921111',
-      'stocks': {'O+': 38, 'A+': 25, 'B+': 30, 'AB+': 10, 'O-': 12, 'A-': 7, 'B-': 9, 'AB-': 3}
+      'name': 'NRI Super Speciality Blood Bank',
+      'city': 'Guntur',
+      'address': 'Chinakakani, Mangalagiri, Guntur, AP - 522503',
+      'phone': '+91-863-2878990',
+      'stocks': {'O+': 34, 'A+': 22, 'B+': 26, 'AB+': 9, 'O-': 11, 'A-': 6, 'B-': 7, 'AB-': 3}
+    },
+    {
+      'name': 'Government General Blood Centre',
+      'city': 'Nellore',
+      'address': 'Grand Trunk Road, Dargamitta, Nellore, AP - 524001',
+      'phone': '+91-861-2314567',
+      'stocks': {'O+': 28, 'A+': 18, 'B+': 22, 'AB+': 6, 'O-': 9, 'A-': 5, 'B-': 6, 'AB-': 2}
+    },
+    {
+      'name': 'RIMS Regional Blood Bank',
+      'city': 'Kadapa',
+      'address': 'Putlampalli, Kadapa, Andhra Pradesh - 516004',
+      'phone': '+91-8562-252280',
+      'stocks': {'O+': 24, 'A+': 15, 'B+': 18, 'AB+': 5, 'O-': 8, 'A-': 4, 'B-': 4, 'AB-': 2}
     },
   ];
 

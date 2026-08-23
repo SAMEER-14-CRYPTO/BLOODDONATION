@@ -344,32 +344,88 @@ const DemoData = {
     return local.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
   },
 
+  // Helper to strictly validate if a facility is located in Tamil Nadu or Andhra Pradesh
+  _isSouthIndiaFacility(item) {
+    if (!item) return false;
+    const text = ((item.name || '') + ' ' + (item.address || '') + ' ' + (item.city || '') + ' ' + (item.location || '')).toLowerCase();
+    const forbidden = ['mumbai', 'delhi', 'gurugram', 'gurgaon', 'bengaluru', 'bangalore', 'ahmedabad', 'gujarat', 'pune', 'kolkata', 'maharashtra', 'haryana', 'ncr', 'karnataka'];
+    if (forbidden.some(f => text.includes(f))) return false;
+    const allowed = ['tamil nadu', 'tamilnadu', 'chennai', 'madras', 'coimbatore', 'madurai', 'trichy', 'tiruchirappalli', 'salem', 'tirunelveli', 'erode', 'vellore', 'thanjavur', 'puducherry', 'pondicherry', 'dindigul', 'kanchipuram', 'andhra', 'andhra pradesh', 'tirupati', 'vijayawada', 'visakhapatnam', 'vizag', 'guntur', 'nellore', 'kurnool', 'kadapa', 'cuddapah', 'rly kodur', 'railway kodur', 'anantapur', 'rajahmundry', 'kakinada', 'puttaparthi'];
+    return allowed.some(kw => text.includes(kw));
+  },
+
   async getHospitals() { 
+    const verifiedHospitals = this.getData().hospitals || [];
     if (typeof db !== 'undefined' && db) {
       try {
         const snap = await db.collection('hospitals').get();
         if (!snap.empty) {
-          return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          // Check if Firestore contains old north indian records
+          const docs = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          const validSouthOnly = docs.filter(h => this._isSouthIndiaFacility(h));
+          // If Firestore had old north indian hospitals, overwrite/sync them with fresh TN & AP hospitals
+          if (validSouthOnly.length < verifiedHospitals.length || docs.length !== validSouthOnly.length) {
+            console.log('🔄 Syncing fresh Tamil Nadu & Andhra Pradesh hospitals into Firestore...');
+            // Delete old non-TN/AP docs
+            snap.docs.forEach(doc => {
+              if (!this._isSouthIndiaFacility(doc.data())) {
+                doc.ref.delete().catch(() => {});
+              }
+            });
+            // Overwrite with verified list
+            verifiedHospitals.forEach(h => {
+              db.collection('hospitals').doc(h.id).set(h).catch(() => {});
+            });
+          }
+          if (validSouthOnly.length >= verifiedHospitals.length) {
+            return validSouthOnly;
+          }
+        } else {
+          // Seed Firestore if empty
+          verifiedHospitals.forEach(h => {
+            db.collection('hospitals').doc(h.id).set(h).catch(() => {});
+          });
         }
       } catch (e) {
         console.warn('Firestore getHospitals fallback:', e.message);
       }
     }
-    return this.getData().hospitals;
+    return verifiedHospitals;
   },
 
   async getBloodBanks() { 
+    const verifiedBanks = this.getData().bloodBanks || [];
     if (typeof db !== 'undefined' && db) {
       try {
         const snap = await db.collection('bloodBanks').get();
         if (!snap.empty) {
-          return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          const docs = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          const validSouthOnly = docs.filter(b => this._isSouthIndiaFacility(b));
+          // If Firestore had old north indian blood banks, overwrite/sync them
+          if (validSouthOnly.length < verifiedBanks.length || docs.length !== validSouthOnly.length) {
+            console.log('🔄 Syncing fresh Tamil Nadu & Andhra Pradesh blood banks into Firestore...');
+            snap.docs.forEach(doc => {
+              if (!this._isSouthIndiaFacility(doc.data())) {
+                doc.ref.delete().catch(() => {});
+              }
+            });
+            verifiedBanks.forEach(b => {
+              db.collection('bloodBanks').doc(b.id).set(b).catch(() => {});
+            });
+          }
+          if (validSouthOnly.length >= verifiedBanks.length) {
+            return validSouthOnly;
+          }
+        } else {
+          verifiedBanks.forEach(b => {
+            db.collection('bloodBanks').doc(b.id).set(b).catch(() => {});
+          });
         }
       } catch (e) {
         console.warn('Firestore getBloodBanks fallback:', e.message);
       }
     }
-    return this.getData().bloodBanks;
+    return verifiedBanks;
   },
 
   async getDonations() { 
