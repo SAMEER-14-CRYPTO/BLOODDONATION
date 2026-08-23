@@ -4,14 +4,17 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '../constants/theme';
 import { useAuth } from '../context/AuthContext';
 
+import { updateUserProfileInDb } from '../services/api';
+
 export default function ProfileScreen({ navigation }) {
-  const { user, isLoggedIn, logout, setUser } = useAuth();
+  const { user, token, isLoggedIn, logout, setUser } = useAuth();
   const [isAvailable, setIsAvailable] = useState(true);
   const [notifications, setNotifications] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
 
   // Profile data fallback
   const profileData = user || {
+    uid: 'donor_sameer_1',
     name: 'Sameer Shaik',
     email: 'sameershaik9184@gmail.com',
     phone: '+91-9184000000',
@@ -31,10 +34,21 @@ export default function ProfileScreen({ navigation }) {
 
   const [editForm, setEditForm] = useState({ ...profileData });
 
-  const handleSaveProfile = () => {
-    setUser({ ...profileData, ...editForm });
+  const handleSaveProfile = async () => {
+    const updated = { ...profileData, ...editForm };
+    setUser(updated);
+    if (token && profileData.uid) {
+      await updateUserProfileInDb(token, profileData.uid, editForm);
+    }
     setIsEditing(false);
-    Alert.alert('Profile Saved', 'Your details have been updated successfully.');
+    Alert.alert('Profile Saved', 'Your details have been updated in the shared database.');
+  };
+
+  const handleToggleAvailability = async (val) => {
+    setIsAvailable(val);
+    if (token && profileData.uid) {
+      await updateUserProfileInDb(token, profileData.uid, { availability: val });
+    }
   };
 
   const handleDownloadCard = () => {
@@ -172,7 +186,7 @@ export default function ProfileScreen({ navigation }) {
           </View>
           <Switch
             value={isAvailable}
-            onValueChange={setIsAvailable}
+            onValueChange={handleToggleAvailability}
             thumbColor="#FFFFFF"
             trackColor={{ false: '#3E3E3E', true: Colors.success }}
           />

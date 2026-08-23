@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { 
   View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, 
-  Linking, Modal, ScrollView, Alert 
+  Linking, Modal, ScrollView, Alert, RefreshControl 
 } from 'react-native';
 import { Colors } from '../constants/theme';
 import { CityCoordinates } from '../data/mockData';
 import InteractiveMap from '../components/InteractiveMap';
 import { useAuth } from '../context/AuthContext';
+import { fetchEmergencyRequests, postEmergencyRequest, respondToEmergencyRequest } from '../services/api';
 
-const INITIAL_REQUESTS = [
+const DEFAULT_FALLBACK_REQUESTS = [
   {
     id: 'req_1',
     patientName: 'Ravi Kumar',
@@ -54,39 +55,52 @@ const INITIAL_REQUESTS = [
 ];
 
 export default function ReceiverRequestsScreen() {
-  const [requests, setRequests] = useState(INITIAL_REQUESTS);
+  const [requests, setRequests] = useState(DEFAULT_FALLBACK_REQUESTS);
+  const [loading, setLoading] = useState(false);
   const [showMap, setShowMap] = useState(true);
   const [showNewModal, setShowNewModal] = useState(false);
   const [search, setSearch] = useState('');
-  const { user } = useAuth();
+  const { user, token } = useAuth();
 
   // Form State
   const [patientName, setPatientName] = useState('');
   const [bloodGroup, setBloodGroup] = useState('O+');
   const [hospitalName, setHospitalName] = useState('');
   const [location, setLocation] = useState('');
-  const [phone, setPhone] = useState(user?.phone || '');
+  const [phone, setPhone] = useState(user?.phone || '+91-9184000000');
   const [units, setUnits] = useState('1');
   const [notes, setNotes] = useState('');
+
+  const loadRequests = async () => {
+    setLoading(true);
+    const dbRequests = await fetchEmergencyRequests();
+    if (dbRequests && dbRequests.length > 0) {
+      setRequests(dbRequests);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    loadRequests();
+  }, []);
 
   const mapMarkers = requests.map(r => ({
     lat: r.lat || 13.0827,
     lng: r.lng || 80.2707,
-    name: `🚨 ${r.bloodGroupNeeded} needed for ${r.patientName}`,
-    address: `${r.hospitalName}, ${r.location}`,
+    name: `🚨 ${r.bloodGroupNeeded || r.blood_group_needed} needed for ${r.patientName || r.patient_name}`,
+    address: `${r.hospitalName || r.hospital_name}, ${r.location}`,
     contact: r.phone,
     type: 'donor'
   }));
 
-  const handlePostRequest = () => {
+  const handlePostRequest = async () => {
     if (!patientName.trim() || !hospitalName.trim() || !location.trim() || !phone.trim()) {
       Alert.alert('Required Fields', 'Please fill in patient name, hospital, location, and contact phone.');
       return;
     }
 
     const coords = CityCoordinates[location] || { lat: 13.0827, lng: 80.2707 };
-    const newReq = {
-      id: 'req_' + Date.now(),
+    const newReqPayload = {
       patientName,
       bloodGroupNeeded: bloodGroup,
       unitsNeeded: parseInt(units) || 1,
@@ -95,24 +109,33 @@ export default function ReceiverRequestsScreen() {
       urgencyLevel: 'critical',
       phone,
       notes,
-      createdAt: 'Just now',
       lat: coords.lat,
       lng: coords.lng
     };
 
-    setRequests(prev => [newReq, ...prev]);
+    // Save directly to the shared SQLite / Web backend database!
+    await postEmergencyRequest(token, newReqPayload);
+
+    const localNewReq = {
+      ...newReqPayload,
+      id: 'req_' + Date.now(),
+      createdAt: 'Just now'
+    };
+
+    setRequests(prev => [localNewReq, ...prev]);
     setShowNewModal(false);
     setPatientName('');
     setHospitalName('');
     setLocation('');
     setNotes('');
-    Alert.alert('🚨 SOS Dispatched', `Emergency broadcast for ${bloodGroup} at ${hospitalName} is live and visible to all verified donors!`);
+    Alert.alert('🚨 SOS Dispatched', `Emergency broadcast for ${bloodGroup} at ${hospitalName} is live in the database and visible across both Web & Mobile platforms!`);
   };
 
-  const handleRespond = (req) => {
+  const handleRespond = async (req) => {
+    await respondToEmergencyRequest(token, req.id);
     Alert.alert(
       'Respond to SOS',
-      `Would you like to notify ${req.patientName}'s family that you are available to donate ${req.bloodGroupNeeded}?`,
+      `Would you like to connect with ${req.patientName || req.patient_name}'s family to donate ${req.bloodGroupNeeded || req.blood_group_needed}?`,
       [
         { text: 'Cancel', style: 'cancel' },
         { 
@@ -121,37 +144,48 @@ export default function ReceiverRequestsScreen() {
         },
         { 
           text: '💬 WhatsApp', 
-          onPress: () => Linking.openURL(`https://wa.me/${req.phone.replace(/[^0-9]/g, '')}?text=I saw your emergency request for ${req.bloodGroupNeeded} blood at ${req.hospitalName}. I want to help.`) 
+          onPress: () => Linking.openURL(`https://wa.me/${req.phone.replace(/[^0-9]/g, '')}?text=I saw your emergency request for ${req.bloodGroupNeeded || req.blood_group_needed} blood at ${req.hospitalName || req.hospital_name}. I want to help.`) 
         }
       ]
     );
   };
 
-  const filtered = requests.filter(r => 
-    !search.trim() ||
-    r.patientName.toLowerCase().includes(search.toLowerCase()) ||
-    r.hospitalName.toLowerCase().includes(search.toLowerCase()) ||
-    r.location.toLowerCase().includes(search.toLowerCase()) ||
-    r.bloodGroupNeeded.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = requests.filter(r => {
+    const pName = r.patientName || r.patient_name || '';
+    const hName = r.hospitalName || r.hospital_name || '';
+    const loc = r.location || '';
+    const bGroup = r.bloodGroupNeeded || r.blood_group_needed || '';
+    return !search.trim() ||
+      pName.toLowerCase().includes(search.toLowerCase()) ||
+      hName.toLowerCase().includes(search.toLowerCase()) ||
+      loc.toLowerCase().includes(search.toLowerCase()) ||
+      bGroup.toLowerCase().includes(search.toLowerCase());
+  });
 
   const renderRequestCard = ({ item }) => {
-    const theme = Colors.bloodThemes[item.bloodGroupNeeded] || Colors.bloodThemes['O+'];
+    const bg = item.bloodGroupNeeded || item.blood_group_needed || 'O+';
+    const pName = item.patientName || item.patient_name || 'Patient';
+    const hName = item.hospitalName || item.hospital_name || 'Hospital';
+    const urgency = item.urgencyLevel || item.urgency_level || 'critical';
+    const unitsCount = item.unitsNeeded || item.units_needed || 1;
+    const timeStr = item.createdAt || item.created_at || 'Recently';
+
+    const theme = Colors.bloodThemes[bg] || Colors.bloodThemes['O+'];
     return (
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <View style={[styles.bloodBadge, { backgroundColor: theme.bg, borderColor: theme.border }]}>
-            <Text style={[styles.bloodBadgeText, { color: theme.text }]}>{item.bloodGroupNeeded}</Text>
+            <Text style={[styles.bloodBadgeText, { color: theme.text }]}>{bg}</Text>
           </View>
           <View style={{ flex: 1 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Text style={styles.patientName}>{item.patientName}</Text>
-              <View style={[styles.urgencyBadge, item.urgencyLevel === 'critical' ? styles.urgencyCritical : styles.urgencyUrgent]}>
-                <Text style={styles.urgencyText}>{item.urgencyLevel.toUpperCase()}</Text>
+              <Text style={styles.patientName}>{pName}</Text>
+              <View style={[styles.urgencyBadge, urgency === 'critical' ? styles.urgencyCritical : styles.urgencyUrgent]}>
+                <Text style={styles.urgencyText}>{urgency.toUpperCase()}</Text>
               </View>
             </View>
-            <Text style={styles.metaText}>🏥 {item.hospitalName}</Text>
-            <Text style={styles.metaText}>📍 {item.location} • 🩸 {item.unitsNeeded} unit(s) • ⏱️ {item.createdAt}</Text>
+            <Text style={styles.metaText}>🏥 {hName}</Text>
+            <Text style={styles.metaText}>📍 {item.location} • 🩸 {unitsCount} unit(s) • ⏱️ {timeStr}</Text>
           </View>
         </View>
 
@@ -204,11 +238,14 @@ export default function ReceiverRequestsScreen() {
       </View>
 
       <FlatList
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={loadRequests} tintColor={Colors.primary} />
+        }
         ListHeaderComponent={
           showMap ? <InteractiveMap markers={mapMarkers} height={200} /> : null
         }
         data={filtered}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item.id?.toString() || Math.random().toString()}
         renderItem={renderRequestCard}
         contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
       />
