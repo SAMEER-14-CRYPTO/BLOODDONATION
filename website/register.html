@@ -6,6 +6,15 @@
   <meta name="description" content="Register as a blood donor on LifeLink. Help save lives by making yourself available for blood donation.">
   <title>Register – LifeLink</title>
   <link rel="stylesheet" href="css/main.css">
+  <!-- PWA Meta Tags -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#E53935">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="LifeLink">
+  <link rel="apple-touch-icon" href="icons/icon-512x512.png">
+  <meta name="msapplication-TileColor" content="#E53935">
+  <meta name="msapplication-TileImage" content="icons/icon-512x512.png">
 </head>
 <body>
   <nav class="navbar"><div class="container"><a href="index.html" class="nav-brand"><div class="logo-icon">🩸</div><span>Life<span class="text-primary">Link</span></span></a><div class="nav-links" id="navLinks"><a href="index.html">Home</a><a href="search.html">Find Donors</a><a href="emergency.html">Emergency</a><a href="hospitals.html">Hospitals</a><a href="about.html">About</a></div><div class="nav-actions"><button class="theme-toggle" id="themeToggle">🌙</button><a href="login.html" class="btn btn-sm btn-outline">Login</a><button class="hamburger" id="hamburger"><span></span><span></span><span></span></button></div></div></nav>
@@ -75,6 +84,10 @@
             <label for="regLastDonation">Last Donation Date (optional)</label>
             <input type="date" id="regLastDonation" class="form-input">
           </div>
+          <div class="form-group" style="margin-top: 10px;">
+            <label for="adminCode" style="font-size:0.85rem; color:var(--text-secondary);">Admin Registration Code (Optional)</label>
+            <input type="password" id="adminCode" class="form-input" placeholder="Leave blank for donor account">
+          </div>
           <div style="margin:20px 0;display:flex;align-items:start;gap:8px">
             <input type="checkbox" id="regTerms" required style="margin-top:4px">
             <label for="regTerms" style="font-size:0.85rem;color:var(--text-secondary);cursor:pointer">I agree to the Terms of Service and Privacy Policy. I confirm that the information provided is accurate.</label>
@@ -92,7 +105,9 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics-compat.js"></script>
   <script src="js/firebase-config.js"></script>
+  <script src="js/api.js"></script>
   <script src="js/data.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
@@ -101,18 +116,33 @@
       e.preventDefault();
       const pwd = document.getElementById('regPassword').value;
       const confirm = document.getElementById('regConfirm').value;
-      if (pwd !== confirm) { App.showToast('Passwords do not match', 'error'); return; }
-      await Auth.signup({
-        fullName: document.getElementById('regName').value,
-        email: document.getElementById('regEmail').value,
-        phone: document.getElementById('regPhone').value,
-        password: pwd,
-        bloodGroup: document.getElementById('regBlood').value,
-        gender: document.getElementById('regGender').value,
-        age: parseInt(document.getElementById('regAge').value),
-        city: document.getElementById('regCity').value,
-        lastDonation: document.getElementById('regLastDonation').value
-      });
+      if (pwd !== confirm) { 
+        App.showToast('Passwords do not match. Please re-enter.', 'error'); 
+        return; 
+      }
+      
+      const submitBtn = e.target.querySelector('button[type=submit]');
+      submitBtn.disabled = true;
+      submitBtn.textContent = '⏳ Creating Account...';
+
+      try {
+        await Auth.signup({
+          fullName: document.getElementById('regName').value.trim(),
+          email: document.getElementById('regEmail').value.trim(),
+          phone: document.getElementById('regPhone').value.trim(),
+          password: pwd,
+          bloodGroup: document.getElementById('regBlood').value,
+          gender: document.getElementById('regGender').value,
+          age: parseInt(document.getElementById('regAge').value) || 21,
+          city: document.getElementById('regCity').value.trim(),
+          lastDonation: document.getElementById('regLastDonation').value,
+          adminCode: document.getElementById('adminCode').value.trim()
+        });
+      } catch (err) {
+        console.error('Registration error:', err);
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create Account';
+      }
     });
   </script>
 </body>

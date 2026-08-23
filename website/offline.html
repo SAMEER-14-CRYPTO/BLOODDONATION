@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offline – LifeLink</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#E53935">
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    .offline-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      padding: 2rem;
+      background: var(--bg);
+    }
+    .offline-icon {
+      font-size: 5rem;
+      margin-bottom: 1.5rem;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    .offline-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 0.75rem;
+    }
+    .offline-desc {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      max-width: 420px;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+    .offline-retry {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: var(--shadow-glow);
+    }
+    .offline-retry:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(229,57,53,0.35);
+    }
+    .offline-retry:active {
+      transform: scale(0.97);
+    }
+    .offline-status {
+      margin-top: 1.5rem;
+      padding: 10px 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+    .offline-features {
+      margin-top: 2.5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+      max-width: 500px;
+    }
+    .offline-feature {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      text-align: center;
+    }
+    .offline-feature-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .offline-feature-text { font-size: 0.8rem; color: var(--text-secondary); }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.7; }
+    }
+  </style>
+</head>
+<body>
+  <div class="offline-container">
+    <div class="offline-icon">📡</div>
+    <h1 class="offline-title">You're <span class="text-primary">Offline</span></h1>
+    <p class="offline-desc">
+      It looks like you've lost your internet connection. Some features of LifeLink require an active connection to work.
+    </p>
+    <button class="offline-retry" onclick="window.location.reload()">
+      🔄 Try Again
+    </button>
+    <div class="offline-status">
+      <span>💡 Tip: Cached pages are still available from the menu</span>
+    </div>
+    <div class="offline-features">
+      <div class="offline-feature">
+        <div class="offline-feature-icon">📋</div>
+        <div class="offline-feature-text">Cached pages work offline</div>
+      </div>
+      <div class="offline-feature">
+        <div class="offline-feature-icon">🔔</div>
+        <div class="offline-feature-text">Requests sync when online</div>
+      </div>
+      <div class="offline-feature">
+        <div class="offline-feature-icon">📍</div>
+        <div class="offline-feature-text">Location saved locally</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Auto-retry when connection comes back
+    window.addEventListener('online', () => {
+      window.location.reload();
+    });
+  </script>
+</body>
+</html>

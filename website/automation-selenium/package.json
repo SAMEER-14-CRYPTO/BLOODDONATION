@@ -1,0 +1,21 @@
+{
+  "name": "lifelink-selenium-automation",
+  "version": "2.0.0",
+  "description": "Enterprise-Grade Selenium Web E2E Automation Framework for LifeLink Blood Donation System",
+  "main": "runners/testRunner.js",
+  "scripts": {
+    "test": "node runners/testRunner.js",
+    "test:auth": "node runners/testRunner.js --suite auth",
+    "test:emergency": "node runners/testRunner.js --suite emergency",
+    "test:search": "node runners/testRunner.js --suite search",
+    "test:regression": "node runners/testRunner.js --suite regression"
+  },
+  "dependencies": {
+    "selenium-webdriver": "^4.20.0",
+    "chromedriver": "^125.0.0",
+    "axios": "^1.6.8"
+  },
+  "keywords": ["selenium", "e2e", "bloodlife", "testing", "excel-reports"],
+  "author": "LifeLink QA Team",
+  "license": "MIT"
+}

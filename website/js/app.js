@@ -1,5 +1,6 @@
 // ============================================
 // LIFELINK – Main Application Controller
+// Smooth Micro-Animations & Interactivity
 // ============================================
 
 const App = {
@@ -10,7 +11,37 @@ const App = {
     this.initAccordions();
     this.initScrollAnimations();
     this.initToggles();
+    this.initClickFeedback();
     Auth.init();
+  },
+
+  // --- Smooth Tactile Click & Ripple Animations ---
+  initClickFeedback() {
+    document.addEventListener('pointerdown', (e) => {
+      const target = e.target.closest('.btn, .blood-chip, .tab, .tab-btn, .map-ctrl-btn, .user-action-btn, .geo-small-btn');
+      if (!target) return;
+
+      const rect = target.getBoundingClientRect();
+      const circle = document.createElement('span');
+      const diameter = Math.max(rect.width, rect.height);
+      const radius = diameter / 2;
+
+      const isLightBg = target.classList.contains('btn-white') || target.classList.contains('btn-outline');
+      circle.className = `ll-ripple ${isLightBg ? 'll-ripple-dark' : ''}`;
+      circle.style.width = circle.style.height = `${diameter}px`;
+      circle.style.left = `${e.clientX - rect.left - radius}px`;
+      circle.style.top = `${e.clientY - rect.top - radius}px`;
+
+      // Remove existing ripples
+      const existing = target.querySelectorAll('.ll-ripple');
+      existing.forEach(r => r.remove());
+
+      target.appendChild(circle);
+
+      setTimeout(() => {
+        circle.remove();
+      }, 600);
+    });
   },
 
   // --- Theme ---
@@ -58,7 +89,7 @@ const App = {
     }
   },
 
-  // --- Modals ---
+  // --- Modals with Smooth Backdrop Click ---
   initModals() {
     document.querySelectorAll('[data-modal]').forEach(trigger => {
       trigger.addEventListener('click', () => {
@@ -147,8 +178,8 @@ const App = {
     container.appendChild(toast);
     setTimeout(() => {
       toast.style.opacity = '0';
-      toast.style.transform = 'translateX(100px)';
-      setTimeout(() => toast.remove(), 300);
+      toast.style.transform = 'translateX(100px) scale(0.9)';
+      setTimeout(() => toast.remove(), 320);
     }, 4000);
   },
 
@@ -177,11 +208,11 @@ const App = {
     });
   },
 
-  // --- Tabs ---
+  // --- Tabs with Tactile Transition ---
   initTabs(container) {
     const tabContainer = document.querySelector(container);
     if (!tabContainer) return;
-    const tabs = tabContainer.querySelectorAll('.tab');
+    const tabs = tabContainer.querySelectorAll('.tab, .tab-btn');
     tabs.forEach(tab => {
       tab.addEventListener('click', () => {
         tabs.forEach(t => t.classList.remove('active'));
@@ -197,3 +228,181 @@ const App = {
 
 // Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', () => App.init());
+
+// ============================================
+// PWA – Service Worker, Install Prompt & Status
+// ============================================
+
+const PWA = {
+  deferredPrompt: null,
+
+  init() {
+    this.registerServiceWorker();
+    this.setupInstallPrompt();
+    this.setupOnlineStatus();
+    this.setupStandaloneMode();
+  },
+
+  // --- Register Service Worker ---
+  async registerServiceWorker() {
+    if (!('serviceWorker' in navigator)) {
+      console.warn('[PWA] Service Workers not supported');
+      return;
+    }
+    try {
+      const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+      console.log('[PWA] Service Worker registered:', reg.scope);
+
+      // Check for updates
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'activated') {
+            App.showToast('App updated! Refresh to see changes.', 'info');
+          }
+        });
+      });
+    } catch (err) {
+      console.error('[PWA] Service Worker registration failed:', err);
+    }
+  },
+
+  // --- Install Prompt ---
+  setupInstallPrompt() {
+    // Capture the install prompt event
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      this.deferredPrompt = e;
+      // Only show if user hasn't dismissed before
+      if (!localStorage.getItem('lifelink_install_dismissed')) {
+        this.showInstallBanner();
+      }
+    });
+
+    // Track successful installs
+    window.addEventListener('appinstalled', () => {
+      this.deferredPrompt = null;
+      this.hideInstallBanner();
+      App.showToast('🎉 LifeLink installed successfully!', 'success');
+      localStorage.setItem('lifelink_installed', 'true');
+    });
+  },
+
+  showInstallBanner() {
+    // Don't show if already installed
+    if (window.matchMedia('(display-mode: standalone)').matches) return;
+    if (document.querySelector('.pwa-install-banner')) return;
+
+    const banner = document.createElement('div');
+    banner.className = 'pwa-install-banner';
+    banner.innerHTML = `
+      <div class="pwa-install-content">
+        <div class="pwa-install-icon">🩸</div>
+        <div class="pwa-install-text">
+          <strong>Install LifeLink</strong>
+          <span>Add to home screen for the best experience</span>
+        </div>
+        <div class="pwa-install-actions">
+          <button class="pwa-install-btn" id="pwaInstallBtn">Install</button>
+          <button class="pwa-install-close" id="pwaCloseBtn">✕</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(banner);
+
+    // Animate in
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        banner.classList.add('active');
+      });
+    });
+
+    // Install button
+    document.getElementById('pwaInstallBtn').addEventListener('click', async () => {
+      if (!this.deferredPrompt) return;
+      this.deferredPrompt.prompt();
+      const result = await this.deferredPrompt.userChoice;
+      console.log('[PWA] Install result:', result.outcome);
+      this.deferredPrompt = null;
+      this.hideInstallBanner();
+    });
+
+    // Close button
+    document.getElementById('pwaCloseBtn').addEventListener('click', () => {
+      this.hideInstallBanner();
+      localStorage.setItem('lifelink_install_dismissed', Date.now().toString());
+    });
+  },
+
+  hideInstallBanner() {
+    const banner = document.querySelector('.pwa-install-banner');
+    if (banner) {
+      banner.classList.remove('active');
+      setTimeout(() => banner.remove(), 400);
+    }
+  },
+
+  // --- Online / Offline Status ---
+  setupOnlineStatus() {
+    window.addEventListener('online', () => {
+      App.showToast('✅ You\'re back online!', 'success');
+      document.body.classList.remove('is-offline');
+    });
+
+    window.addEventListener('offline', () => {
+      App.showToast('📡 You\'re offline. Some features may be limited.', 'warning');
+      document.body.classList.add('is-offline');
+    });
+
+    // Set initial state
+    if (!navigator.onLine) {
+      document.body.classList.add('is-offline');
+    }
+  },
+
+  // --- Standalone Mode Enhancements ---
+  setupStandaloneMode() {
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                         window.navigator.standalone === true;
+
+    if (isStandalone) {
+      document.body.classList.add('pwa-standalone');
+      this.addBottomNav();
+    }
+  },
+
+  // --- Bottom Navigation for Installed App ---
+  addBottomNav() {
+    if (document.querySelector('.pwa-bottom-nav')) return;
+
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    const nav = document.createElement('nav');
+    nav.className = 'pwa-bottom-nav';
+    nav.innerHTML = `
+      <a href="index.html" class="pwa-nav-item ${currentPage === 'index.html' ? 'active' : ''}">
+        <span class="pwa-nav-icon">🏠</span>
+        <span class="pwa-nav-label">Home</span>
+      </a>
+      <a href="search.html" class="pwa-nav-item ${currentPage === 'search.html' ? 'active' : ''}">
+        <span class="pwa-nav-icon">🔍</span>
+        <span class="pwa-nav-label">Donors</span>
+      </a>
+      <a href="emergency.html" class="pwa-nav-item pwa-nav-emergency ${currentPage === 'emergency.html' ? 'active' : ''}">
+        <span class="pwa-nav-icon">🚨</span>
+        <span class="pwa-nav-label">SOS</span>
+      </a>
+      <a href="hospitals.html" class="pwa-nav-item ${currentPage === 'hospitals.html' ? 'active' : ''}">
+        <span class="pwa-nav-icon">🏥</span>
+        <span class="pwa-nav-label">Hospitals</span>
+      </a>
+      <a href="dashboard.html" class="pwa-nav-item ${currentPage === 'dashboard.html' ? 'active' : ''}">
+        <span class="pwa-nav-icon">👤</span>
+        <span class="pwa-nav-label">Profile</span>
+      </a>
+    `;
+    document.body.appendChild(nav);
+  }
+};
+
+// Initialize PWA on load
+document.addEventListener('DOMContentLoaded', () => PWA.init());

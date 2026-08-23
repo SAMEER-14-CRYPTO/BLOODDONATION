@@ -1,0 +1,45 @@
+{
+  "name": "LifeLink – Smart Blood Donor Finder",
+  "short_name": "LifeLink",
+  "description": "Find nearby blood donors quickly during emergencies. Save lives with instant donor matching.",
+  "start_url": "/login.html",
+  "display": "standalone",
+  "background_color": "#FAFAFA",
+  "theme_color": "#E53935",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["health", "medical", "social"],
+  "icons": [
+    {
+      "src": "icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Find Donors",
+      "short_name": "Donors",
+      "description": "Search for blood donors near you",
+      "url": "/search.html",
+      "icons": [{ "src": "icons/icon-512x512.png", "sizes": "512x512" }]
+    },
+    {
+      "name": "Emergency Request",
+      "short_name": "Emergency",
+      "description": "Submit an emergency blood request",
+      "url": "/emergency.html",
+      "icons": [{ "src": "icons/icon-512x512.png", "sizes": "512x512" }]
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "View your donor dashboard",
+      "url": "/dashboard.html",
+      "icons": [{ "src": "icons/icon-512x512.png", "sizes": "512x512" }]
+    }
+  ]
+}

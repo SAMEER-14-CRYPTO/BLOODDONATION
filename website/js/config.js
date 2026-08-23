@@ -12,6 +12,11 @@ const LIFELINK_CONFIG = {
   version: '3.0.0'
 };
 
+// Safe global fallbacks for Firebase & Demo Mode
+window.db = typeof window.db !== 'undefined' ? window.db : null;
+window.auth = typeof window.auth !== 'undefined' ? window.auth : null;
+window.DEMO_MODE = typeof window.DEMO_MODE !== 'undefined' ? window.DEMO_MODE : true;
+
 // -----------------------------------------------
 // Leaflet Map Loader (replaces Google Maps Loader)
 // -----------------------------------------------

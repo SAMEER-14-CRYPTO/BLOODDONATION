@@ -1,0 +1,41 @@
+config:
+  target: "http://localhost:3000"
+  phases:
+    # 1. Warm-up
+    - duration: 20
+      arrivalRate: 5
+      name: "Warm-up phase"
+    # 2. Baseline Load Test: 100 Virtual Users Sustained for 60s
+    - duration: 60
+      arrivalRate: 100
+      name: "Baseline 100 VUs Load Test (1 Minute)"
+    # 3. Spike Phase
+    - duration: 30
+      arrivalRate: 250
+      name: "Spike Load Simulation"
+  defaults:
+    headers:
+      Content-Type: "application/json"
+  ensure:
+    p95: 500
+    p99: 1500
+    maxErrorRate: 2
+
+scenarios:
+  - name: "Standard LifeLink User Journey (Browse & Search)"
+    flow:
+      - get:
+          url: "/api/health"
+      - think: 1
+      - get:
+          url: "/api/donors"
+      - think: 1
+      - get:
+          url: "/api/emergency/requests"
+      - think: 2
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "donor@lifelink.org"
+            password: "password123"
+            role: "donor"

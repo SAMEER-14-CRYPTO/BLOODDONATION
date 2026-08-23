@@ -3,26 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel – LifeLink</title>
+  <title>Admin Control Center – LifeLink</title>
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/dashboard.css">
   <link rel="stylesheet" href="css/admin.css">
+  <!-- PWA Meta Tags -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#E53935">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="LifeLink">
+  <link rel="apple-touch-icon" href="icons/icon-512x512.png">
+  <meta name="msapplication-TileColor" content="#E53935">
+  <meta name="msapplication-TileImage" content="icons/icon-512x512.png">
 </head>
 <body>
-  <nav class="navbar"><div class="container"><a href="index.html" class="nav-brand"><div class="logo-icon">🩸</div><span>Life<span class="text-primary">Link</span></span></a><div class="nav-links" id="navLinks"><a href="index.html">Home</a></div><div class="nav-actions"><button class="theme-toggle" id="themeToggle">🌙</button><span class="badge badge-primary">Admin</span><button class="btn btn-sm btn-outline" onclick="Auth.logout()">Logout</button><button class="hamburger" id="hamburger"><span></span><span></span><span></span></button></div></div></nav>
+  <nav class="navbar"><div class="container"><a href="index.html" class="nav-brand"><div class="logo-icon">🩸</div><span>Life<span class="text-primary">Link</span></span></a><div class="nav-links" id="navLinks"><a href="index.html">Home</a><a href="search.html">Find Donors</a><a href="emergency.html">Emergency</a></div><div class="nav-actions"><button class="theme-toggle" id="themeToggle">🌙</button><span class="badge badge-primary">Admin Portal</span><button class="btn btn-sm btn-outline" onclick="Auth.logout()">Logout</button><button class="hamburger" id="hamburger"><span></span><span></span><span></span></button></div></div></nav>
 
   <div class="dashboard-layout">
     <aside class="sidebar">
-      <div class="sidebar-section">Admin Panel</div>
+      <div class="sidebar-section">Admin Database</div>
       <nav class="sidebar-nav">
         <a href="admin.html" class="sidebar-link active"><span>📊</span> Dashboard</a>
-        <a href="#users" class="sidebar-link" onclick="document.getElementById('usersSection').scrollIntoView({behavior:'smooth'})"><span>👥</span> Users</a>
-        <a href="#requests" class="sidebar-link" onclick="document.getElementById('requestsSection').scrollIntoView({behavior:'smooth'})"><span>📋</span> Requests</a>
+        <a href="#users" class="sidebar-link" onclick="Admin.switchUserTab('donors')"><span>🩸</span> Donors Section</a>
+        <a href="#admins" class="sidebar-link" onclick="Admin.switchUserTab('admins')"><span>🔐</span> Admins Section</a>
+        <a href="#requests" class="sidebar-link" onclick="document.getElementById('requestsSection').scrollIntoView({behavior:'smooth'})"><span>🚨</span> Emergency Requests</a>
         <a href="#analytics" class="sidebar-link" onclick="document.getElementById('analyticsSection').scrollIntoView({behavior:'smooth'})"><span>📈</span> Analytics</a>
-        <a href="#broadcast" class="sidebar-link" onclick="document.getElementById('broadcastSection').scrollIntoView({behavior:'smooth'})"><span>📢</span> Broadcast</a>
+        <a href="#broadcast" class="sidebar-link" onclick="document.getElementById('broadcastSection').scrollIntoView({behavior:'smooth'})"><span>📢</span> Broadcast SOS</a>
       </nav>
-      <div class="sidebar-section">Quick Links</div>
+      <div class="sidebar-section">Quick Access</div>
       <nav class="sidebar-nav">
+        <a href="emergency.html" class="sidebar-link"><span>🚑</span> New SOS Request</a>
         <a href="hospitals.html" class="sidebar-link"><span>🏥</span> Hospitals</a>
         <a href="blood-banks.html" class="sidebar-link"><span>🏦</span> Blood Banks</a>
         <a href="#" class="sidebar-link" onclick="Auth.logout()"><span>🚪</span> Logout</a>
@@ -31,58 +42,74 @@
 
     <main class="dashboard-main">
       <div class="admin-header">
-        <div><h2>Admin Dashboard</h2><p>Manage the LifeLink platform</p></div>
-        <div class="admin-search"><input type="text" placeholder="Search users, requests..." id="adminSearchInput"><button onclick="App.showToast('Search feature active','info')">Search</button></div>
+        <div>
+          <h2>Admin Control Center</h2>
+          <p>Multi-Section Database Management (Donors, Admins & Emergency Requests)</p>
+        </div>
+        <div class="admin-search">
+          <input type="text" placeholder="Search database records..." id="adminSearchInput">
+          <button onclick="Admin.filterRecords()">Search</button>
+        </div>
       </div>
 
-      <!-- Stats -->
+      <!-- Stats Grid -->
       <div class="admin-stats">
         <div class="admin-stat">
-          <div class="stat-icon" style="background:var(--primary-glow);color:var(--primary)">👥</div>
+          <div class="stat-icon" style="background:var(--primary-glow);color:var(--primary)">🩸</div>
           <div class="stat-value" id="adminTotalUsers">0</div>
           <div class="stat-label">Total Donors</div>
-          <div class="stat-change up">↑ 12% this month</div>
+          <div class="stat-change up">Database: Donors Section</div>
         </div>
         <div class="admin-stat">
-          <div class="stat-icon" style="background:rgba(30,136,229,0.15);color:var(--info)">✓</div>
-          <div class="stat-value" id="adminActiveDonors">0</div>
-          <div class="stat-label">Active Donors</div>
-          <div class="stat-change up">↑ 8% this month</div>
+          <div class="stat-icon" style="background:rgba(30,136,229,0.15);color:var(--info)">🔐</div>
+          <div class="stat-value" id="adminTotalAdmins">0</div>
+          <div class="stat-label">Admin Accounts</div>
+          <div class="stat-change up">Database: Admins Section</div>
         </div>
         <div class="admin-stat">
-          <div class="stat-icon" style="background:rgba(67,160,71,0.15);color:var(--success)">🚨</div>
+          <div class="stat-icon" style="background:rgba(229,57,53,0.15);color:var(--primary)">🚨</div>
           <div class="stat-value" id="adminActiveRequests">0</div>
-          <div class="stat-label">Active Requests</div>
-          <div class="stat-change down">↓ 3% this month</div>
+          <div class="stat-label">Active SOS Requests</div>
+          <div class="stat-change down">Real-Time Matching</div>
         </div>
         <div class="admin-stat">
-          <div class="stat-icon" style="background:rgba(251,140,0,0.15);color:var(--warning)">🩸</div>
-          <div class="stat-value" id="adminTotalDonations">0</div>
-          <div class="stat-label">Total Donations</div>
-          <div class="stat-change up">↑ 15% this month</div>
+          <div class="stat-icon" style="background:rgba(67,160,71,0.15);color:var(--success)">✓</div>
+          <div class="stat-value" id="adminActiveDonors">0</div>
+          <div class="stat-label">Available Donors</div>
+          <div class="stat-change up">Ready for donation</div>
         </div>
       </div>
 
       <!-- Main Content Grid -->
-      <div class="admin-grid" id="usersSection">
-        <!-- User Management -->
+      <div class="admin-grid" id="usersSection" style="margin-bottom:32px">
+        <!-- User Management with Distinct Database Section Tabs -->
         <div class="admin-card">
-          <div class="admin-card-header"><h3>👥 User Management</h3><span class="badge badge-primary">Live</span></div>
+          <div class="admin-card-header" style="flex-wrap:wrap;gap:10px">
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-sm btn-primary" id="viewDonorsTabBtn" onclick="Admin.switchUserTab('donors')">🩸 Donors Section</button>
+              <button class="btn btn-sm btn-outline" id="viewAdminsTabBtn" onclick="Admin.switchUserTab('admins')">🔐 Admins Section</button>
+            </div>
+            <span class="badge badge-primary" id="activeSectionBadge">Database: Donors</span>
+          </div>
           <div class="admin-card-body" id="adminUsersList"></div>
         </div>
+
         <!-- Activity Timeline -->
         <div class="admin-card">
-          <div class="admin-card-header"><h3>📋 Recent Activity</h3></div>
+          <div class="admin-card-header"><h3>📋 Recent Activity & Logs</h3></div>
           <div class="admin-card-body">
             <div class="timeline" id="adminTimeline"></div>
           </div>
         </div>
       </div>
 
-      <!-- Requests Section -->
+      <!-- Emergency Requests Section -->
       <div id="requestsSection" style="margin-bottom:32px">
         <div class="admin-card">
-          <div class="admin-card-header"><h3>🚨 All Blood Requests</h3></div>
+          <div class="admin-card-header">
+            <h3>🚨 Emergency Blood Requests (Database Collection: <code>requests</code>)</h3>
+            <a href="emergency.html" class="btn btn-sm btn-primary">+ Create Emergency Request</a>
+          </div>
           <div class="admin-card-body" id="adminRequestsList"></div>
         </div>
       </div>
@@ -90,19 +117,22 @@
       <!-- Analytics Section -->
       <div class="admin-grid" id="analyticsSection">
         <div class="admin-card">
-          <div class="admin-card-header"><h3>📈 Donation Trends (Monthly)</h3></div>
-          <div class="admin-card-body"><div class="mini-chart" id="miniChart" style="height:120px;align-items:flex-end;display:flex;gap:8px"></div></div>
+          <div class="admin-card-header"><h3>📈 Monthly Donation Trends</h3></div>
+          <div class="admin-card-body">
+            <div class="mini-chart" id="miniChart" style="height:120px;align-items:flex-end;display:flex;gap:8px"></div>
+          </div>
         </div>
-        <!-- Broadcast -->
+
+        <!-- Broadcast Notification -->
         <div class="admin-card" id="broadcastSection">
-          <div class="admin-card-header"><h3>📢 Broadcast Notification</h3></div>
+          <div class="admin-card-header"><h3>📢 Broadcast SOS to All Donors</h3></div>
           <div class="admin-card-body">
             <form id="broadcastForm" class="broadcast-form">
               <div class="form-group" style="margin-bottom:12px">
-                <label>Message</label>
-                <textarea class="form-input" placeholder="Type broadcast message to all donors..." required></textarea>
+                <label>Emergency Message</label>
+                <textarea class="form-input" placeholder="Type urgent announcement or emergency alert to all donors in database..." required></textarea>
               </div>
-              <button type="submit" class="btn btn-primary" style="width:100%">Send Broadcast</button>
+              <button type="submit" class="btn btn-primary" style="width:100%">🚀 Send Push Broadcast</button>
             </form>
           </div>
         </div>
@@ -114,11 +144,13 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics-compat.js"></script>
   <script src="js/firebase-config.js"></script>
+  <script src="js/api.js"></script>
   <script src="js/data.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/admin.js"></script>
   <script src="js/app.js"></script>
-  <script>document.addEventListener('DOMContentLoaded', () => Admin.init());</script>
+  <script>document.addEventListener('DOMContentLoaded', () => { Auth.requireAdmin(() => Admin.init()); });</script>
 </body>
 </html>

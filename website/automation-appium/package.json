@@ -1,0 +1,21 @@
+{
+  "name": "lifelink-appium-mobile-automation",
+  "version": "2.0.0",
+  "description": "Enterprise-Grade Appium Android E2E Mobile Automation Framework for LifeLink Blood Donation App",
+  "main": "runners/appiumRunner.js",
+  "scripts": {
+    "test:mobile": "node runners/appiumRunner.js",
+    "test:mobile:auth": "node runners/appiumRunner.js --suite auth",
+    "test:mobile:emergency": "node runners/appiumRunner.js --suite emergency",
+    "test:mobile:regression": "node runners/appiumRunner.js --suite regression"
+  },
+  "dependencies": {
+    "webdriverio": "^8.36.0",
+    "appium": "^2.5.0",
+    "appium-uiautomator2-driver": "^3.5.0",
+    "axios": "^1.6.8"
+  },
+  "keywords": ["appium", "android", "mobile-testing", "bloodlife", "e2e", "qa"],
+  "author": "LifeLink Mobile QA Team",
+  "license": "MIT"
+}

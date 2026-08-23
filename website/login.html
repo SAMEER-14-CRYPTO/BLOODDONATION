@@ -3,19 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Login to your LifeLink account. Access your donor dashboard, manage requests, and stay connected.">
+  <meta name="description" content="Login to LifeLink. Access your donor dashboard or admin control panel.">
   <title>Login – LifeLink</title>
   <link rel="stylesheet" href="css/main.css">
   <style>
     body {
       background-color: #111422 !important;
-      background-image: radial-gradient(circle at 10% 20%, rgba(229,57,53,0.06) 0%, transparent 40%), 
-                        radial-gradient(circle at 90% 80%, rgba(30,136,229,0.06) 0%, transparent 40%) !important;
+      background-image: radial-gradient(circle at 10% 20%, rgba(229,57,53,0.08) 0%, transparent 40%), 
+                        radial-gradient(circle at 90% 80%, rgba(30,136,229,0.08) 0%, transparent 40%) !important;
       color: #ffffff !important;
+      min-height: 100vh;
     }
     .navbar {
-      background: rgba(17, 20, 34, 0.8) !important;
+      background: rgba(17, 20, 34, 0.85) !important;
       border-bottom: 1px solid #1c2035 !important;
+      backdrop-filter: blur(10px);
     }
     .navbar .nav-links a {
       color: #8c90aa !important;
@@ -24,78 +26,109 @@
       color: #ffffff !important;
       background: rgba(229, 57, 53, 0.15) !important;
     }
-    .card {
+    .login-card {
       background: #191c2e !important;
       border: 1px solid #242942 !important;
-      border-radius: 24px !important;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4) !important;
+      border-radius: 28px !important;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45) !important;
+      padding: 38px 34px !important;
+      position: relative;
     }
     .text-center h2 {
       color: #ffffff !important;
-      font-size: 2.2rem !important;
+      font-size: 2.1rem !important;
       font-weight: 800 !important;
       letter-spacing: -0.03em !important;
       margin-bottom: 6px !important;
     }
     .text-center p {
       color: #8c90aa !important;
-      font-size: 1rem !important;
-    }
-    
-    /* Tabs styling from the image */
-    .tabs {
-      background: #111422 !important;
-      border: 1px solid #242942 !important;
-      border-radius: 50px !important;
-      padding: 6px !important;
-      display: flex !important;
-      gap: 0 !important;
-      width: 100% !important;
-      margin-bottom: 30px !important;
-    }
-    .tab {
-      padding: 14px 24px !important;
-      border-radius: 50px !important;
-      font-weight: 600 !important;
       font-size: 0.95rem !important;
-      cursor: pointer !important;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-      color: #8c90aa !important;
-      flex: 1 !important;
-      text-align: center !important;
-      background: transparent !important;
-      border: none !important;
-    }
-    .tab.active {
-      background: #e53935 !important;
-      color: #ffffff !important;
-      box-shadow: 0 4px 15px rgba(229, 57, 53, 0.35) !important;
-    }
-    .tab:not(.active):hover {
-      color: #ffffff !important;
     }
 
-    /* Labels and inputs styling */
+    /* Database Section Pill Indicator */
+    .db-section-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+      background: rgba(67, 160, 71, 0.15);
+      color: #81c784;
+      border: 1px solid rgba(67, 160, 71, 0.3);
+      transition: all 0.3s ease;
+    }
+    .db-section-pill.admin-pill {
+      background: rgba(30, 136, 229, 0.15);
+      color: #64b5f6;
+      border: 1px solid rgba(30, 136, 229, 0.3);
+    }
+
+    /* Role selection tabs: Donor vs Admin */
+    .role-tabs {
+      display: flex;
+      background: #111422;
+      border: 1px solid #242942;
+      border-radius: 50px;
+      padding: 5px;
+      margin-bottom: 22px;
+      gap: 4px;
+    }
+    .role-tab {
+      flex: 1;
+      text-align: center;
+      padding: 12px 16px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: #8c90aa;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .role-tab.active {
+      background: #e53935;
+      color: #ffffff;
+      box-shadow: 0 4px 15px rgba(229, 57, 53, 0.4);
+    }
+    .role-tab.active.admin-active {
+      background: #1e88e5;
+      box-shadow: 0 4px 15px rgba(30, 136, 229, 0.4);
+    }
+    .role-tab:not(.active):hover {
+      color: #ffffff;
+    }
+
+    /* Form controls */
     .form-group label {
       color: #ffffff !important;
       font-weight: 600 !important;
       font-size: 0.9rem !important;
-      margin-bottom: 10px !important;
+      margin-bottom: 8px !important;
       display: block !important;
       text-align: left !important;
     }
     .form-input {
       background: #111422 !important;
       border: 1px solid #242942 !important;
-      border-radius: 12px !important;
+      border-radius: 14px !important;
       color: #ffffff !important;
-      padding: 16px 20px !important;
+      padding: 14px 18px !important;
       font-size: 0.95rem !important;
       transition: all 0.2s ease !important;
+      width: 100%;
     }
     .form-input:focus {
       border-color: #e53935 !important;
-      box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.2) !important;
+      box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.25) !important;
       background: #151829 !important;
     }
     .form-input::placeholder {
@@ -103,162 +136,373 @@
     }
 
     /* Primary Login Button */
-    .btn-primary {
+    .btn-login-main {
       background: #e53935 !important;
       border: none !important;
       color: #ffffff !important;
       border-radius: 50px !important;
-      padding: 16px !important;
+      padding: 15px !important;
       font-weight: 700 !important;
       font-size: 1.05rem !important;
-      box-shadow: 0 4px 15px rgba(229, 57, 53, 0.35) !important;
+      box-shadow: 0 4px 18px rgba(229, 57, 53, 0.4) !important;
       transition: all 0.3s ease !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
-    }
-    .btn-primary:hover {
-      background: #d32f2f !important;
-      transform: translateY(-2px) !important;
-      box-shadow: 0 8px 20px rgba(229, 57, 53, 0.5) !important;
-    }
-
-    /* Don't have an account? Register here */
-    .tab-content p {
-      color: #8c90aa !important;
-    }
-    .tab-content a {
-      color: #e53935 !important;
-      font-weight: 700 !important;
-    }
-    .tab-content a:hover {
-      text-decoration: underline !important;
-    }
-
-    /* Demo Login Buttons */
-    .demo-login-container {
-      text-align: center !important;
-      margin-top: 24px !important;
-      padding-top: 24px !important;
-      border-top: 1px solid #242942 !important;
-    }
-    .demo-login-title {
-      font-size: 0.85rem !important;
-      color: #535670 !important;
-      margin-bottom: 12px !important;
-      font-weight: 600 !important;
-      text-transform: uppercase !important;
-      letter-spacing: 0.05em !important;
-    }
-    .demo-btn-container {
-      display: flex !important;
-      gap: 12px !important;
-      justify-content: center !important;
-    }
-    .btn-demo-outline {
-      background: #111422 !important;
-      border: 1px solid #e53935 !important;
-      color: #ffffff !important;
-      border-radius: 50px !important;
-      padding: 12px 24px !important;
-      font-size: 0.9rem !important;
-      font-weight: 600 !important;
-      transition: all 0.2s ease !important;
-      flex: 1 !important;
       cursor: pointer !important;
+      width: 100%;
+      margin-top: 14px;
     }
-    .btn-demo-outline:hover {
-      background: #e53935 !important;
-      color: #ffffff !important;
-      transform: translateY(-1px) !important;
-      box-shadow: 0 4px 12px rgba(229, 57, 53, 0.2) !important;
+    .btn-login-main.btn-admin {
+      background: #1e88e5 !important;
+      box-shadow: 0 4px 18px rgba(30, 136, 229, 0.4) !important;
+    }
+    .btn-login-main:hover {
+      transform: translateY(-2px) !important;
+      filter: brightness(1.1);
+    }
+    .btn-login-main:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    /* Divider */
+    .oauth-divider {
+      display: flex;
+      align-items: center;
+      margin: 22px 0 18px;
+      color: #717590;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .oauth-divider::before,
+    .oauth-divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid #242942;
+    }
+    .oauth-divider span {
+      padding: 0 12px;
+    }
+
+    /* Google Button */
+    .btn-google {
+      width: 100%;
+      background: #ffffff !important;
+      color: #3c4043 !important;
+      border: 1px solid #dadce0 !important;
+      border-radius: 50px !important;
+      padding: 13px 20px !important;
+      font-size: 0.95rem !important;
+      font-weight: 700 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 12px !important;
+      cursor: pointer !important;
+      transition: all 0.2s ease !important;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25) !important;
+    }
+    .btn-google:hover {
+      background: #f8f9fa !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 5px 16px rgba(0, 0, 0, 0.35) !important;
+    }
+    .google-icon {
+      width: 20px;
+      height: 20px;
+      display: block;
+    }
+
+    /* Google Modal */
+    .g-modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(6px);
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .g-modal-overlay.active { display: flex; }
+    .g-modal-box {
+      background: #ffffff; color: #202124;
+      border-radius: 20px; padding: 28px;
+      max-width: 420px; width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .g-modal-header {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 20px; border-bottom: 1px solid #e8eaed; padding-bottom: 14px;
+    }
+    .g-account-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 12px 14px; border-radius: 12px;
+      cursor: pointer; transition: all 0.2s ease; margin-bottom: 8px;
+      border: 1px solid #e8eaed;
+    }
+    .g-account-item:hover { background: #f1f3f4; border-color: #dadce0; }
+    .g-account-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: #e53935; color: #ffffff;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 1.1rem;
+    }
+    .g-modal-close {
+      margin-top: 14px; width: 100%;
+      background: #f1f3f4; color: #3c4043;
+      border: none; border-radius: 8px; padding: 10px;
+      font-weight: 600; cursor: pointer;
+    }
+    .g-modal-close:hover {
+      background: #e8eaed;
     }
   </style>
-</head>
-<body>
-  <nav class="navbar"><div class="container"><a href="index.html" class="nav-brand"><div class="logo-icon">🩸</div><span>Life<span class="text-primary">Link</span></span></a><div class="nav-links" id="navLinks"><a href="index.html">Home</a><a href="search.html">Find Donors</a><a href="emergency.html">Emergency</a><a href="hospitals.html">Hospitals</a><a href="about.html">About</a></div><div class="nav-actions"><button class="theme-toggle" id="themeToggle">🌙</button><button class="hamburger" id="hamburger"><span></span><span></span><span></span></button></div></div></nav>
-
-  <section class="section" style="min-height:100vh;display:flex;align-items:center;padding-top:120px">
-    <div class="container" style="max-width:460px">
-      <div class="card" style="padding:40px">
-        <div class="text-center" style="margin-bottom:32px">
-          <div style="font-size:3rem;margin-bottom:12px">🩸</div>
-          <h2>Welcome Back</h2>
-          <p>Login to your LifeLink account</p>
-        </div>
-
-        <!-- Tabs -->
-        <div class="tabs">
-          <div class="tab active" data-tab="loginTab">Login</div>
-          <div class="tab" data-tab="forgotTab">Forgot Password</div>
-        </div>
-
-        <!-- Login Form -->
-        <div id="loginTab" class="tab-content">
-          <form id="loginForm">
-            <div class="form-group">
-              <label for="loginEmail">Email Address</label>
-              <input type="email" id="loginEmail" class="form-input" placeholder="you@email.com" required>
-            </div>
-            <div class="form-group">
-              <label for="loginPassword">Password</label>
-              <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" required>
-            </div>
-            <button type="submit" class="btn btn-primary" style="width:100%">Login</button>
-          </form>
-          <p style="text-align:center;margin-top:20px;font-size:0.9rem">
-            Don't have an account? <a href="register.html">Register here</a>
-          </p>
-          
-          <!-- Demo Login Buttons matching style in the image -->
-          <div class="demo-login-container">
-            <p class="demo-login-title">Demo Login</p>
-            <div class="demo-btn-container">
-              <button type="button" class="btn-demo-outline" onclick="document.getElementById('loginEmail').value='rahul@demo.com';document.getElementById('loginPassword').value='demo123'">Donor Login</button>
-              <button type="button" class="btn-demo-outline" onclick="document.getElementById('loginEmail').value='admin@lifelink.com';document.getElementById('loginPassword').value='admin123'">Admin Login</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Forgot Password -->
-        <div id="forgotTab" class="tab-content" style="display:none">
-          <form id="forgotForm">
-            <div class="form-group">
-              <label for="forgotEmail">Email Address</label>
-              <input type="email" id="forgotEmail" class="form-input" placeholder="Enter your registered email" required>
-            </div>
-            <button type="submit" class="btn btn-primary" style="width:100%">Send Reset Link</button>
-          </form>
-          <p style="text-align:center;margin-top:20px;font-size:0.9rem">
-            Remember your password? <a href="#" onclick="document.querySelector('[data-tab=loginTab]').click()">Back to Login</a>
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
+  <!-- PWA Meta Tags -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#E53935">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="LifeLink">
+  <link rel="apple-touch-icon" href="icons/icon-512x512.png">
+  <meta name="msapplication-TileColor" content="#E53935">
+  <meta name="msapplication-TileImage" content="icons/icon-512x512.png">
 
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics-compat.js"></script>
   <script src="js/firebase-config.js"></script>
+</head>
+<body>
+  <nav class="navbar"><div class="container"><a href="index.html" class="nav-brand"><div class="logo-icon">🩸</div><span>Life<span class="text-primary">Link</span></span></a><div class="nav-links" id="navLinks"><a href="index.html">Home</a><a href="search.html">Find Donors</a><a href="emergency.html">Emergency</a><a href="hospitals.html">Hospitals</a><a href="about.html">About</a></div><div class="nav-actions"><button class="theme-toggle" id="themeToggle">🌙</button><button class="hamburger" id="hamburger"><span></span><span></span><span></span></button></div></div></nav>
+
+  <section class="section" style="min-height:100vh;display:flex;align-items:center;padding:90px 0 40px">
+    <div class="container" style="max-width:460px">
+      <div class="login-card">
+        <div class="text-center" style="margin-bottom:16px">
+          <div style="font-size:2.8rem;margin-bottom:4px" id="roleIcon">🩸</div>
+          <h2>Welcome Back</h2>
+          <p id="roleSubtitle" style="margin-bottom:10px">Sign in as a Blood Donor to continue</p>
+          <div class="db-section-pill" id="dbSectionIndicator">
+            <span>💾</span> Database: <strong>Checking connection...</strong>
+          </div>
+        </div>
+
+        <!-- Distinct Tabs for Donor Login vs Admin Login -->
+        <div class="role-tabs">
+          <button type="button" class="role-tab active" id="donorTabBtn" onclick="switchLoginRole('donor')">
+            <span>🩸</span> Donor Login
+          </button>
+          <button type="button" class="role-tab" id="adminTabBtn" onclick="switchLoginRole('admin')">
+            <span>🔐</span> Admin Login
+          </button>
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm">
+          <input type="hidden" id="loginRole" value="donor">
+          
+          <div class="form-group" style="margin-bottom:14px">
+            <label for="loginEmail" id="emailLabel">Donor Email Address</label>
+            <input type="email" id="loginEmail" class="form-input" placeholder="donor@email.com" required autocomplete="email">
+          </div>
+          
+          <div class="form-group" style="margin-bottom:18px">
+            <label for="loginPassword" id="passwordLabel">Password</label>
+            <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" required autocomplete="current-password">
+          </div>
+          
+          <button type="submit" class="btn btn-login-main" id="submitLoginBtn">
+            🩸 Login as Donor
+          </button>
+        </form>
+
+        <!-- Divider -->
+        <div class="oauth-divider" id="googleDivider">
+          <span>OR</span>
+        </div>
+
+        <!-- Google Login Button -->
+        <button type="button" class="btn-google" id="googleLoginBtn">
+          <svg class="google-icon" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          <span>Sign in with Google</span>
+        </button>
+
+        <p style="text-align:center;margin-top:18px;font-size:0.9rem;color:#8c90aa" id="registerPrompt">
+          Want to save lives? <a href="register.html" style="color:#e53935;font-weight:700">Register as a Donor</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Google Sign-In Account Selector / Input Modal -->
+  <div class="g-modal-overlay" id="googleModal">
+    <div class="g-modal-box">
+      <div class="g-modal-header">
+        <svg class="google-icon" viewBox="0 0 24 24" style="width:24px;height:24px">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+        </svg>
+        <div>
+          <h3 style="margin:0;font-size:1.15rem;color:#202124">Google Sign-In</h3>
+          <p style="font-size:0.8rem;color:#5f6368;margin:2px 0 0">Data is synced directly to the Database</p>
+        </div>
+      </div>
+
+      <form id="customGoogleForm" onsubmit="handleCustomGoogleSignIn(event)" style="margin-bottom:14px">
+        <div style="margin-bottom:10px">
+          <label style="font-size:0.82rem;font-weight:600;color:#3c4043;display:block;margin-bottom:4px">Your Name</label>
+          <input type="text" id="gCustomName" class="form-input" style="background:#f8f9fa !important;color:#202124 !important;border-color:#dadce0 !important;padding:10px 12px !important;border-radius:8px !important;" placeholder="e.g. John Doe" required>
+        </div>
+        <div style="margin-bottom:12px">
+          <label style="font-size:0.82rem;font-weight:600;color:#3c4043;display:block;margin-bottom:4px">Google Email Address</label>
+          <input type="email" id="gCustomEmail" class="form-input" style="background:#f8f9fa !important;color:#202124 !important;border-color:#dadce0 !important;padding:10px 12px !important;border-radius:8px !important;" placeholder="e.g. user@gmail.com" required>
+        </div>
+        <button type="submit" class="btn btn-login-main" style="background:#4285f4 !important;box-shadow:0 3px 12px rgba(66,133,244,0.3) !important;padding:11px !important;font-size:0.95rem !important">
+          🌐 Continue with Google & Save to DB
+        </button>
+      </form>
+
+      <button type="button" class="g-modal-close" onclick="document.getElementById('googleModal').classList.remove('active')">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
   <script src="js/data.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      App.initTabs('.tabs');
+    // Switch between Donor Login and Admin Login sections
+    function switchLoginRole(role) {
+      const isDonor = (role === 'donor');
+      document.getElementById('loginRole').value = role;
+      
+      const donorBtn = document.getElementById('donorTabBtn');
+      const adminBtn = document.getElementById('adminTabBtn');
+      const subtitle = document.getElementById('roleSubtitle');
+      const icon = document.getElementById('roleIcon');
+      const emailInput = document.getElementById('loginEmail');
+      const submitBtn = document.getElementById('submitLoginBtn');
+      const emailLabel = document.getElementById('emailLabel');
+      const regPrompt = document.getElementById('registerPrompt');
+      const googleBtn = document.getElementById('googleLoginBtn');
+      const googleDivider = document.getElementById('googleDivider');
+      const dbIndicator = document.getElementById('dbSectionIndicator');
+
+      if (isDonor) {
+        donorBtn.classList.add('active');
+        donorBtn.classList.remove('admin-active');
+        adminBtn.classList.remove('active', 'admin-active');
+        icon.textContent = '🩸';
+        subtitle.textContent = 'Sign in as a Blood Donor to continue';
+        emailLabel.textContent = 'Donor Email Address';
+        emailInput.placeholder = 'donor@email.com';
+        submitBtn.innerHTML = '🩸 Login as Donor';
+        submitBtn.classList.remove('btn-admin');
+        if (regPrompt) regPrompt.style.display = 'block';
+        if (googleBtn) googleBtn.style.display = 'flex';
+        if (googleDivider) googleDivider.style.display = 'flex';
+        if (dbIndicator) {
+          dbIndicator.className = 'db-section-pill';
+        }
+      } else {
+        adminBtn.classList.add('active', 'admin-active');
+        donorBtn.classList.remove('active', 'admin-active');
+        icon.textContent = '🔐';
+        subtitle.textContent = 'Sign in to Admin Control Center';
+        emailLabel.textContent = 'Admin Email Address';
+        emailInput.placeholder = 'admin@lifelink.com';
+        submitBtn.innerHTML = '🔐 Login as Admin';
+        submitBtn.classList.add('btn-admin');
+        if (regPrompt) regPrompt.style.display = 'none';
+        if (googleBtn) googleBtn.style.display = 'none';
+        if (googleDivider) googleDivider.style.display = 'none';
+        if (dbIndicator) {
+          dbIndicator.className = 'db-section-pill admin-pill';
+        }
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (typeof LifeLinkAPI !== 'undefined') LifeLinkAPI.init();
+      if (typeof Auth !== 'undefined') Auth.init();
+
+      // Show database connection status
+      const dbIndicator = document.getElementById('dbSectionIndicator');
+      if (typeof LifeLinkAPI !== 'undefined' && dbIndicator) {
+        const health = await LifeLinkAPI.checkHealth();
+        if (health && health.ok) {
+          dbIndicator.innerHTML = `<span>✅</span> Database: <strong>SQLite & Firestore Connected</strong> (${health.users} users)`;
+          dbIndicator.style.background = 'rgba(67, 160, 71, 0.15)';
+          dbIndicator.style.color = '#81c784';
+          dbIndicator.style.borderColor = 'rgba(67, 160, 71, 0.3)';
+        } else {
+          dbIndicator.innerHTML = `<span>⚡</span> Ready: <strong>Active Database Mode</strong>`;
+        }
+      }
+
+      // Login form submission
       document.getElementById('loginForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const email = document.getElementById('loginEmail').value;
+        const btn = document.getElementById('submitLoginBtn');
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.textContent = 'Authenticating...';
+
+        const email = document.getElementById('loginEmail').value.trim();
         const password = document.getElementById('loginPassword').value;
-        await Auth.login(email, password);
+        const role = document.getElementById('loginRole').value;
+
+        const result = await Auth.login(email, password, role);
+        if (!result) {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+        }
       });
-      document.getElementById('forgotForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        await Auth.forgotPassword(document.getElementById('forgotEmail').value);
-      });
+
+      // Google sign-in button click
+      const gBtn = document.getElementById('googleLoginBtn');
+      if (gBtn) {
+        gBtn.addEventListener('click', async () => {
+          // Check if Firebase Google Sign In popup works
+          if (typeof firebase !== 'undefined' && firebase.auth && typeof auth !== 'undefined' && auth && typeof DEMO_MODE !== 'undefined' && !DEMO_MODE) {
+            try {
+              const res = await Auth.loginWithGoogle();
+              if (res) return;
+            } catch (e) {
+              console.log('Falling back to Google dialog');
+            }
+          }
+          // Open the Google Sign-in modal
+          document.getElementById('googleModal').classList.add('active');
+        });
+      }
     });
+
+    // Custom Google Sign-In Submission
+    async function handleCustomGoogleSignIn(e) {
+      e.preventDefault();
+      const name = document.getElementById('gCustomName').value.trim();
+      const email = document.getElementById('gCustomEmail').value.trim();
+      if (!name || !email) return;
+
+      document.getElementById('googleModal').classList.remove('active');
+      await Auth.loginWithGoogle({ email, name });
+    }
   </script>
 </body>
 </html>

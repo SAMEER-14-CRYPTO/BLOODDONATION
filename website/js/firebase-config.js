@@ -1,42 +1,68 @@
 // ============================================
-// LIFELINK – Firebase Configuration
+// LIFELINK – Firebase Configuration & Database
+// Project: LIFELINK APP (lifelink-app-9315f)
 // ============================================
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBRoujrcfoLg6T0hQZekqivufnlSblyf5o",
-  authDomain: "blood-donation-app-621d1.firebaseapp.com",
-  projectId: "blood-donation-app-621d1",
-  storageBucket: "blood-donation-app-621d1.firebasestorage.app",
-  messagingSenderId: "313909561664",
-  appId: "1:313909561664:web:5beb4c2b186a5bd98e52a5",
-  measurementId: "G-JGDM48H21Y"
+  apiKey: "AIzaSyCkw1YvaS98nyeSnUrHtBzUfz9wYkRFhbo",
+  authDomain: "lifelink-app-9315f.firebaseapp.com",
+  projectId: "lifelink-app-9315f",
+  storageBucket: "lifelink-app-9315f.firebasestorage.app",
+  messagingSenderId: "59407098111",
+  appId: "1:59407098111:web:df65e13d249cf26e67ecca",
+  measurementId: "G-DWZ6KX9GT5"
 };
 
-// Firebase CDN modules (loaded via script tags in HTML)
-let app, auth, db, storage, messaging;
+// Global Firebase services
+let app = null;
+let auth = null;
+let db = null;
+let storage = null;
+let messaging = null;
+let analytics = null;
+let DEMO_MODE = false;
 
 function initFirebase() {
   try {
     if (typeof firebase !== 'undefined') {
-      app = firebase.initializeApp(firebaseConfig);
-      auth = firebase.auth();
-      db = firebase.firestore();
-      
-      if (firebase.messaging && firebase.messaging.isSupported()) {
-        messaging = firebase.messaging();
+      // Initialize or reuse app
+      if (!firebase.apps.length) {
+        app = firebase.initializeApp(firebaseConfig);
+      } else {
+        app = firebase.app();
       }
-      console.log('✅ Firebase initialized and connected to blood-donation-app-621d1');
+
+      // Initialize Firestore & Auth
+      if (firebase.auth) auth = firebase.auth();
+      if (firebase.firestore) {
+        db = firebase.firestore();
+        // Enable offline cache persistence for reliable data sync
+        try {
+          db.enablePersistence({ synchronizeTabs: true }).catch((err) => {
+            // Already initialized or multiple tabs
+          });
+        } catch (e) {}
+      }
+
+      // Initialize Analytics
+      if (firebase.analytics) {
+        try {
+          analytics = firebase.analytics();
+        } catch (e) {}
+      }
+
+      DEMO_MODE = false;
+      console.log('🔥 Connected to Live Firebase Firestore & Auth Database: lifelink-app-9315f');
       return true;
     }
   } catch (e) {
-    console.warn('Firebase not loaded, using demo mode:', e.message);
+    console.warn('Firebase initialization notice:', e.message);
   }
+  
+  DEMO_MODE = true;
+  console.log('🔶 Local fallback mode active (offline/local storage)');
   return false;
 }
 
-// Demo mode flag - when Firebase is not configured
-const DEMO_MODE = !initFirebase() || firebaseConfig.apiKey === 'YOUR_API_KEY';
-
-if (DEMO_MODE) {
-  console.log('🔶 Running in DEMO MODE - Firebase not configured');
-}
+// Auto-initialize immediately on load
+initFirebase();
