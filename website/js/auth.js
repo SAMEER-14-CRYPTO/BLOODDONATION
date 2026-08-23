@@ -1,10 +1,12 @@
 // ============================================
 // LIFELINK – Authentication Module
-// Distinct Admin & Donor Authentication
+// 3-Role Auth: Donor, Receiver, Admin
+// No Google Sign-In. Admin is hardcoded.
 // ============================================
 
-// Admin secret code for registration
-const ADMIN_SECRET_CODE = 'ADMIN-SECURE';
+// Hardcoded Admin Credentials (only way to access admin)
+const ADMIN_EMAIL = 'sameeradmin@lifelink.com';
+const ADMIN_PASSWORD = 'Sameer@14';
 
 // Friendly error messages for Firebase Auth error codes
 function _friendlyAuthError(error) {
@@ -17,8 +19,7 @@ function _friendlyAuthError(error) {
     'auth/weak-password':         'Password must be at least 6 characters.',
     'auth/too-many-requests':     'Too many failed attempts. Please try again later.',
     'auth/network-request-failed':'Network error. Please check your internet connection.',
-    'auth/user-disabled':         'This account has been disabled. Contact support.',
-    'auth/popup-closed-by-user':  'Google sign-in was cancelled.'
+    'auth/user-disabled':         'This account has been disabled. Contact support.'
   };
   return map[error.code] || error.message || 'An unexpected error occurred.';
 }
@@ -68,11 +69,28 @@ const Auth = {
     }
   },
 
-  // ── Sign up (automatically routes to donor or admin section) ──
+  // ── Sign up (Donor or Receiver only — NO admin registration) ──
   async signup(data) {
-    const isAdmin = (data.adminCode && data.adminCode === ADMIN_SECRET_CODE);
-    const role = isAdmin ? 'admin' : 'donor';
+    const role = data.role || 'donor'; // 'donor' or 'receiver'
     const emailClean = data.email.trim().toLowerCase();
+
+    // Block admin registration
+    if (role === 'admin') {
+      App.showToast('Admin accounts cannot be registered. Contact the administrator.', 'error');
+      return null;
+    }
+
+    // Check if email already exists in the opposite role
+    const donorPasswords = DemoData.getDonorPasswords();
+    const receiverPasswords = DemoData.getReceiverPasswords();
+    if (role === 'donor' && receiverPasswords[emailClean]) {
+      App.showToast('This email is already registered as a Receiver. Please use a different email.', 'error');
+      return null;
+    }
+    if (role === 'receiver' && donorPasswords[emailClean]) {
+      App.showToast('This email is already registered as a Donor. Please use a different email.', 'error');
+      return null;
+    }
 
     // 1. Save to SQLite database via API (primary for PDD project)
     if (typeof LifeLinkAPI !== 'undefined') {
@@ -87,15 +105,14 @@ const Auth = {
           age: data.age,
           city: data.city,
           lastDonation: data.lastDonation,
-          adminCode: data.adminCode,
-          role: isAdmin ? 'admin' : 'donor'
+          role: role
         });
         if (result.user) {
           localStorage.setItem('lifelink_user', JSON.stringify(result.user));
           this.currentUser = result.user;
           App.showToast(`Account created in database! Welcome (${role.toUpperCase()})`, 'success');
           setTimeout(() => {
-            window.location.href = role === 'admin' ? 'admin.html' : 'dashboard.html';
+            window.location.href = role === 'receiver' ? 'search.html' : 'dashboard.html';
           }, 1000);
           return result.user;
         }
@@ -111,13 +128,13 @@ const Auth = {
     // 2. Compute geographic coordinates for mapping
     const coords = (typeof DemoData !== 'undefined' && DemoData.getCoordsForCity)
       ? DemoData.getCoordsForCity(data.city)
-      : { lat: 20.5937, lng: 78.9629 };
+      : { lat: 13.0827, lng: 80.2707 };
 
-    const uid = (isAdmin ? 'admin_' : 'donor_') + Date.now();
+    const uid = role + '_' + Date.now();
     const userProfile = {
       uid,
       email: emailClean,
-      password: data.password, // saved in profile record
+      password: data.password,
       displayName: data.fullName,
       fullName: data.fullName,
       phoneNumber: data.phone,
@@ -125,8 +142,8 @@ const Auth = {
       bloodGroup: data.bloodGroup || 'O+',
       gender: data.gender || 'Male',
       age: parseInt(data.age) || 21,
-      city: data.city || 'India',
-      address: `${data.city || 'India'}, India`,
+      city: data.city || 'Chennai',
+      address: `${data.city || 'Chennai'}, India`,
       lastDonation: data.lastDonation || 'Never',
       role: role,
       availability: true,
@@ -136,10 +153,16 @@ const Auth = {
       createdAt: new Date().toISOString()
     };
 
-    // Save credentials into the respective section's credential store
-    if (isAdmin) {
-      DemoData.saveAdminPassword(emailClean, data.password, uid);
-      await DemoData.addAdmin(userProfile);
+    // For receivers, also store what blood group they need
+    if (role === 'receiver') {
+      userProfile.bloodGroupNeeded = data.bloodGroupNeeded || data.bloodGroup || 'O+';
+      userProfile.hospital = data.hospital || '';
+    }
+
+    // Save to local data store
+    if (role === 'receiver') {
+      DemoData.saveReceiverPassword(emailClean, data.password, uid);
+      await DemoData.addReceiver(userProfile);
     } else {
       DemoData.saveDonorPassword(emailClean, data.password, uid);
       await DemoData.addDonor(userProfile);
@@ -154,7 +177,7 @@ const Auth = {
       try {
         const cred = await auth.createUserWithEmailAndPassword(data.email, data.password);
         await cred.user.updateProfile({ displayName: data.fullName });
-        const collectionName = isAdmin ? 'admins' : 'donors';
+        const collectionName = role === 'receiver' ? 'receivers' : 'donors';
         await db.collection(collectionName).doc(cred.user.uid).set({
           ...userProfile,
           uid: cred.user.uid,
@@ -172,7 +195,7 @@ const Auth = {
 
     App.showToast(`Account created successfully! 🎉 Welcome to LifeLink (${role.toUpperCase()})`, 'success');
     setTimeout(() => {
-      window.location.href = role === 'admin' ? 'admin.html' : 'dashboard.html';
+      window.location.href = role === 'receiver' ? 'search.html' : 'dashboard.html';
     }, 1000);
     return userProfile;
   },
@@ -188,7 +211,9 @@ const Auth = {
         if (result.user) {
           localStorage.setItem('lifelink_user', JSON.stringify(result.user));
           this.currentUser = result.user;
-          const dest = result.user.role === 'admin' ? 'admin.html' : 'dashboard.html';
+          let dest = 'dashboard.html';
+          if (result.user.role === 'admin') dest = 'admin.html';
+          else if (result.user.role === 'receiver') dest = 'search.html';
           App.showToast(`Welcome back, ${result.user.displayName || 'User'}! (Database login)`, 'success');
           setTimeout(() => {
             const params = new URLSearchParams(window.location.search);
@@ -206,23 +231,27 @@ const Auth = {
       }
     }
 
-    // 2. If role is explicitly admin or email indicates admin
-    if (roleHint === 'admin' || emailLower.includes('admin')) {
+    // 2. Admin login (hardcoded credentials only)
+    if (roleHint === 'admin') {
       const adminResult = await this.loginAdmin(emailLower, password);
       if (adminResult) return adminResult;
+      App.showToast('Invalid admin credentials. Access denied.', 'error');
+      return null;
     }
 
-    // 2. Otherwise try donor login
+    // 3. Receiver login
+    if (roleHint === 'receiver') {
+      const receiverResult = await this.loginReceiver(emailLower, password);
+      if (receiverResult) return receiverResult;
+      App.showToast('Invalid email or password. Please check your credentials or register first.', 'error');
+      return null;
+    }
+
+    // 4. Donor login
     const donorResult = await this.loginDonor(emailLower, password);
     if (donorResult) return donorResult;
 
-    // 3. Fallback: try admin login if donor failed and no explicit restriction
-    if (roleHint !== 'donor') {
-      const adminFallback = await this.loginAdmin(emailLower, password);
-      if (adminFallback) return adminFallback;
-    }
-
-    App.showToast('Invalid email or password. Please check your credentials.', 'error');
+    App.showToast('Invalid email or password. Please check your credentials or register first.', 'error');
     return null;
   },
 
@@ -242,8 +271,8 @@ const Auth = {
             email: emailLower,
             displayName: emailLower.split('@')[0],
             role: 'donor',
-            bloodGroup: 'B-',
-            city: 'India',
+            bloodGroup: 'O+',
+            city: 'Chennai',
             availability: true,
             verified: true
           };
@@ -283,172 +312,88 @@ const Auth = {
     return null;
   },
 
-  // ── Dedicated Admin Login ──
-  async loginAdmin(email, password) {
+  // ── Dedicated Receiver Login ──
+  async loginReceiver(email, password) {
     const emailLower = email.trim().toLowerCase();
-    const passwords = DemoData.getAdminPasswords();
+    const passwords = DemoData.getReceiverPasswords();
     const localCred = passwords[emailLower];
 
     if (localCred && localCred.password === password) {
       try {
-        const admins = await DemoData.getAdmins();
-        let admin = admins.find(a => a.email && a.email.toLowerCase() === emailLower);
-        if (!admin) {
-          admin = {
-            uid: localCred.uid || 'admin_' + Date.now(),
+        const receivers = await DemoData.getReceivers();
+        let receiver = receivers.find(r => r.email && r.email.toLowerCase() === emailLower);
+        if (!receiver) {
+          receiver = {
+            uid: localCred.uid || 'receiver_' + Date.now(),
             email: emailLower,
-            displayName: 'Admin User',
-            role: 'admin',
-            permissions: ['all'],
+            displayName: emailLower.split('@')[0],
+            role: 'receiver',
+            city: 'Chennai',
             verified: true
           };
-          await DemoData.addAdmin(admin);
+          await DemoData.addReceiver(receiver);
         }
 
-        localStorage.setItem('lifelink_user', JSON.stringify(admin));
-        this.currentUser = admin;
-        App.showToast(`Admin Authenticated! Welcome, ${admin.displayName} 🔐`, 'success');
+        localStorage.setItem('lifelink_user', JSON.stringify(receiver));
+        this.currentUser = receiver;
+        App.showToast(`Welcome back, ${receiver.displayName || 'Receiver'}! 🔍`, 'success');
         setTimeout(() => {
-          window.location.href = 'admin.html';
+          window.location.href = 'search.html';
         }, 800);
-        return admin;
+        return receiver;
       } catch (err) {
-        console.warn('[Auth] Admin lookup error:', err);
+        console.warn('[Auth] Receiver lookup error:', err);
       }
     }
 
-    // Check direct admin list fallback
+    // Check direct receiver list fallback
     try {
-      const admins = await DemoData.getAdmins();
-      const admin = admins.find(a => a.email && a.email.toLowerCase() === emailLower);
-      if (admin && (!admin.password || admin.password === password)) {
-        DemoData.saveAdminPassword(emailLower, password, admin.uid);
-        localStorage.setItem('lifelink_user', JSON.stringify(admin));
-        this.currentUser = admin;
-        App.showToast(`Admin Authenticated! Welcome, ${admin.displayName} 🔐`, 'success');
+      const receivers = await DemoData.getReceivers();
+      const receiver = receivers.find(r => r.email && r.email.toLowerCase() === emailLower);
+      if (receiver && (!receiver.password || receiver.password === password)) {
+        DemoData.saveReceiverPassword(emailLower, password, receiver.uid);
+        localStorage.setItem('lifelink_user', JSON.stringify(receiver));
+        this.currentUser = receiver;
+        App.showToast(`Welcome back, ${receiver.displayName || 'Receiver'}! 🔍`, 'success');
         setTimeout(() => {
-          window.location.href = 'admin.html';
+          window.location.href = 'search.html';
         }, 800);
-        return admin;
+        return receiver;
       }
     } catch (e) {
-      console.warn('[Auth] Admin list fallback error:', e);
+      console.warn('[Auth] Receiver list fallback error:', e);
     }
 
     return null;
   },
 
-  // ── Login with Google ──
-  async loginWithGoogle(accountOverride = null) {
-    const isLive = typeof DEMO_MODE !== 'undefined' ? !DEMO_MODE : (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length > 0);
-    let googleUser = null;
+  // ── Dedicated Admin Login (Hardcoded Only) ──
+  async loginAdmin(email, password) {
+    const emailLower = email.trim().toLowerCase();
 
-    // 1. Try Firebase Google Popup if no override specified and live Firebase auth is present
-    if (!accountOverride && isLive && typeof firebase !== 'undefined' && firebase.auth && typeof auth !== 'undefined' && auth) {
-      try {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        provider.setCustomParameters({ prompt: 'select_account' });
-        const res = await auth.signInWithPopup(provider);
-        const gUser = res.user;
-
-        googleUser = {
-          uid: 'g_' + gUser.uid,
-          email: gUser.email,
-          displayName: gUser.displayName || 'Google User',
-          fullName: gUser.displayName || 'Google User',
-          photoURL: gUser.photoURL || '',
-          phone: gUser.phoneNumber || '',
-          role: 'donor',
-          bloodGroup: 'B-',
-          city: 'India',
-          availability: true,
-          verified: true,
-          provider: 'google.com'
-        };
-      } catch (err) {
-        if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
-          console.log('[Auth] Google popup closed by user.');
-          return null;
-        }
-        console.warn('[Auth] Firebase Google login notice:', err);
-      }
-    }
-
-    // 2. If accountOverride was provided or popup was bypassed
-    if (!googleUser) {
-      const email = (accountOverride && accountOverride.email) ? accountOverride.email.trim().toLowerCase() : 'donor@gmail.com';
-      const name = (accountOverride && accountOverride.name) ? accountOverride.name : email.split('@')[0];
-      const isAdmin = (accountOverride && accountOverride.role === 'admin') || email.includes('admin');
-      const role = isAdmin ? 'admin' : 'donor';
-
-      googleUser = {
-        uid: (isAdmin ? 'admin_g_' : 'donor_g_') + Date.now(),
-        email: email,
-        displayName: name,
-        fullName: name,
-        phone: (accountOverride && accountOverride.phone) || '+91-9876543210',
-        bloodGroup: (accountOverride && accountOverride.bloodGroup) || (isAdmin ? 'O+' : 'B-'),
-        gender: 'Male',
-        age: 21,
-        city: (accountOverride && accountOverride.city) || 'India',
-        address: `${(accountOverride && accountOverride.city) || 'India'}, India`,
-        role: role,
-        availability: true,
-        verified: true,
-        provider: 'google.com',
-        createdAt: new Date().toISOString()
+    // Only hardcoded admin credentials work
+    if (emailLower === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+      const admins = await DemoData.getAdmins();
+      const admin = admins.find(a => a.email && a.email.toLowerCase() === ADMIN_EMAIL) || {
+        uid: 'sameer_admin',
+        email: ADMIN_EMAIL,
+        displayName: 'Sameer Admin',
+        fullName: 'Sameer Admin',
+        role: 'admin',
+        permissions: ['all', 'manage_users', 'manage_requests', 'broadcast'],
+        verified: true
       };
+
+      localStorage.setItem('lifelink_user', JSON.stringify(admin));
+      this.currentUser = admin;
+      App.showToast(`Admin Authenticated! Welcome, ${admin.displayName} 🔐`, 'success');
+      setTimeout(() => {
+        window.location.href = 'admin.html';
+      }, 800);
+      return admin;
     }
 
-    // A. Save to SQLite Database via API
-    if (typeof LifeLinkAPI !== 'undefined') {
-      try {
-        const apiRes = await LifeLinkAPI.googleAuth(googleUser);
-        if (apiRes && apiRes.user) {
-          googleUser = { ...googleUser, ...apiRes.user };
-        }
-      } catch (e) {
-        console.warn('[Auth] SQLite Google sync fallback:', e.message);
-      }
-    }
-
-    // B. Save to Firebase Firestore
-    if (typeof db !== 'undefined' && db) {
-      try {
-        const collectionName = googleUser.role === 'admin' ? 'admins' : 'donors';
-        await db.collection(collectionName).doc(googleUser.uid).set(googleUser, { merge: true });
-        await db.collection('users').doc(googleUser.uid).set(googleUser, { merge: true });
-        console.log(`🔥 Google user saved to Firestore database (${collectionName})`);
-      } catch (e) {
-        console.warn('[Auth] Firestore Google sync notice:', e.message);
-      }
-    }
-
-    // C. Save to Local Demo Data
-    if (typeof DemoData !== 'undefined') {
-      const coords = DemoData.getCoordsForCity(googleUser.city);
-      googleUser.lat = coords.lat;
-      googleUser.lng = coords.lng;
-      if (googleUser.role === 'admin') {
-        await DemoData.addAdmin(googleUser);
-      } else {
-        await DemoData.addDonor(googleUser);
-      }
-    }
-
-    // Persist login session
-    localStorage.setItem('lifelink_user', JSON.stringify(googleUser));
-    this.currentUser = googleUser;
-
-    const dest = googleUser.role === 'admin' ? 'admin.html' : 'dashboard.html';
-    App.showToast(`Signed in as ${googleUser.displayName} with Google! 🌐 (Saved to Database)`, 'success');
-    setTimeout(() => {
-      const params = new URLSearchParams(window.location.search);
-      const redirect = params.get('redirect');
-      window.location.href = redirect || dest;
-    }, 800);
-
-    return googleUser;
+    return null;
   },
 
   // ── Logout ──

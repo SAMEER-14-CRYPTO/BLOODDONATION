@@ -3,9 +3,83 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Register as a blood donor on LifeLink. Help save lives by making yourself available for blood donation.">
+  <meta name="description" content="Register on LifeLink as a Blood Donor or Receiver. Help save lives or find donors near you.">
   <title>Register – LifeLink</title>
   <link rel="stylesheet" href="css/main.css">
+  <style>
+    /* Role tabs for registration */
+    .reg-role-tabs {
+      display: flex;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: 50px;
+      padding: 5px;
+      margin-bottom: 28px;
+      gap: 4px;
+    }
+    .reg-role-tab {
+      flex: 1;
+      text-align: center;
+      padding: 14px 16px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .reg-role-tab.active {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 4px 15px var(--primary-glow);
+    }
+    .reg-role-tab.active.receiver-tab-active {
+      background: #43A047;
+      box-shadow: 0 4px 15px rgba(67, 160, 71, 0.4);
+    }
+    .reg-role-tab:not(.active):hover {
+      color: var(--text);
+      background: rgba(0,0,0,0.04);
+    }
+    .reg-role-tab:active {
+      transform: scale(0.95);
+    }
+
+    /* Receiver-specific form fields */
+    .receiver-fields { display: none; }
+    .donor-fields { display: block; }
+
+    /* Role info banner */
+    .role-info-banner {
+      background: rgba(229, 57, 53, 0.08);
+      border: 1px solid rgba(229, 57, 53, 0.2);
+      border-radius: 14px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s ease;
+    }
+    .role-info-banner.receiver-banner {
+      background: rgba(67, 160, 71, 0.08);
+      border-color: rgba(67, 160, 71, 0.2);
+    }
+    .role-info-banner .info-icon {
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+  </style>
   <!-- PWA Meta Tags -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#E53935">
@@ -22,13 +96,32 @@
   <section class="section" style="min-height:100vh;padding-top:120px">
     <div class="container" style="max-width:560px">
       <div class="card" style="padding:40px">
-        <div class="text-center" style="margin-bottom:32px">
-          <div style="font-size:3rem;margin-bottom:12px">🩸</div>
-          <h2>Become a <span class="text-primary">Donor</span></h2>
-          <p>Register now and start saving lives</p>
+        <div class="text-center" style="margin-bottom:24px">
+          <div style="font-size:3rem;margin-bottom:12px" id="regIcon">🩸</div>
+          <h2 id="regTitle">Become a <span class="text-primary">Donor</span></h2>
+          <p id="regSubtitle">Register now and start saving lives</p>
+        </div>
+
+        <!-- Role Tabs: Donor | Receiver -->
+        <div class="reg-role-tabs">
+          <button type="button" class="reg-role-tab active" id="regDonorTab" onclick="switchRegRole('donor')">
+            <span>🩸</span> Blood Donor
+          </button>
+          <button type="button" class="reg-role-tab" id="regReceiverTab" onclick="switchRegRole('receiver')">
+            <span>🔍</span> Blood Receiver
+          </button>
+        </div>
+
+        <!-- Role info banner -->
+        <div class="role-info-banner" id="roleInfoBanner">
+          <span class="info-icon">💉</span>
+          <span id="roleInfoText">As a <strong>Donor</strong>, you'll be visible to receivers searching for your blood group in your area.</span>
         </div>
 
         <form id="registerForm">
+          <input type="hidden" id="regRole" value="donor">
+
+          <!-- Common Fields -->
           <div class="grid grid-2 gap-2">
             <div class="form-group">
               <label for="regName">Full Name *</label>
@@ -53,46 +146,69 @@
               <input type="password" id="regConfirm" class="form-input" placeholder="Repeat password" required>
             </div>
           </div>
-          <div class="grid grid-2 gap-2">
-            <div class="form-group">
-              <label for="regBlood">Blood Group *</label>
-              <select id="regBlood" class="form-input" required>
-                <option value="">Select blood group</option>
-                <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
-                <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
-              </select>
+
+          <!-- Donor-specific fields -->
+          <div id="donorFields" class="donor-fields">
+            <div class="grid grid-2 gap-2">
+              <div class="form-group">
+                <label for="regBlood">Blood Group *</label>
+                <select id="regBlood" class="form-input" required>
+                  <option value="">Select blood group</option>
+                  <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                  <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="regGender">Gender *</label>
+                <select id="regGender" class="form-input" required>
+                  <option value="">Select gender</option>
+                  <option>Male</option><option>Female</option><option>Other</option>
+                </select>
+              </div>
+            </div>
+            <div class="grid grid-2 gap-2">
+              <div class="form-group">
+                <label for="regAge">Age *</label>
+                <input type="number" id="regAge" class="form-input" placeholder="Age" min="18" max="65" required>
+              </div>
+              <div class="form-group">
+                <label for="regCity">City *</label>
+                <input type="text" id="regCity" class="form-input" placeholder="e.g. Chennai, Tirupati" required>
+              </div>
             </div>
             <div class="form-group">
-              <label for="regGender">Gender *</label>
-              <select id="regGender" class="form-input" required>
-                <option value="">Select gender</option>
-                <option>Male</option><option>Female</option><option>Other</option>
-              </select>
+              <label for="regLastDonation">Last Donation Date (optional)</label>
+              <input type="date" id="regLastDonation" class="form-input">
             </div>
           </div>
-          <div class="grid grid-2 gap-2">
+
+          <!-- Receiver-specific fields -->
+          <div id="receiverFields" class="receiver-fields">
+            <div class="grid grid-2 gap-2">
+              <div class="form-group">
+                <label for="regBloodNeeded">Blood Group Needed *</label>
+                <select id="regBloodNeeded" class="form-input">
+                  <option value="">Select blood group needed</option>
+                  <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                  <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="regReceiverCity">Your City *</label>
+                <input type="text" id="regReceiverCity" class="form-input" placeholder="e.g. Chennai, Vijayawada">
+              </div>
+            </div>
             <div class="form-group">
-              <label for="regAge">Age *</label>
-              <input type="number" id="regAge" class="form-input" placeholder="Age" min="18" max="65" required>
-            </div>
-            <div class="form-group">
-              <label for="regCity">City *</label>
-              <input type="text" id="regCity" class="form-input" placeholder="Your city" required>
+              <label for="regHospital">Hospital Name (optional)</label>
+              <input type="text" id="regHospital" class="form-input" placeholder="e.g. Apollo Hospitals Chennai">
             </div>
           </div>
-          <div class="form-group">
-            <label for="regLastDonation">Last Donation Date (optional)</label>
-            <input type="date" id="regLastDonation" class="form-input">
-          </div>
-          <div class="form-group" style="margin-top: 10px;">
-            <label for="adminCode" style="font-size:0.85rem; color:var(--text-secondary);">Admin Registration Code (Optional)</label>
-            <input type="password" id="adminCode" class="form-input" placeholder="Leave blank for donor account">
-          </div>
+
           <div style="margin:20px 0;display:flex;align-items:start;gap:8px">
             <input type="checkbox" id="regTerms" required style="margin-top:4px">
             <label for="regTerms" style="font-size:0.85rem;color:var(--text-secondary);cursor:pointer">I agree to the Terms of Service and Privacy Policy. I confirm that the information provided is accurate.</label>
           </div>
-          <button type="submit" class="btn btn-primary btn-lg" style="width:100%">Create Account</button>
+          <button type="submit" class="btn btn-primary btn-lg" id="regSubmitBtn" style="width:100%">🩸 Create Donor Account</button>
         </form>
         <p style="text-align:center;margin-top:20px;font-size:0.9rem">
           Already have an account? <a href="login.html" style="color:var(--primary);font-weight:600">Login here</a>
@@ -112,6 +228,76 @@
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
   <script>
+    // Switch between Donor and Receiver registration
+    function switchRegRole(role) {
+      const isDonor = (role === 'donor');
+      document.getElementById('regRole').value = role;
+
+      const donorTab = document.getElementById('regDonorTab');
+      const receiverTab = document.getElementById('regReceiverTab');
+      const donorFields = document.getElementById('donorFields');
+      const receiverFields = document.getElementById('receiverFields');
+      const regIcon = document.getElementById('regIcon');
+      const regTitle = document.getElementById('regTitle');
+      const regSubtitle = document.getElementById('regSubtitle');
+      const submitBtn = document.getElementById('regSubmitBtn');
+      const banner = document.getElementById('roleInfoBanner');
+      const bannerText = document.getElementById('roleInfoText');
+
+      // Toggle tabs
+      donorTab.classList.remove('active', 'receiver-tab-active');
+      receiverTab.classList.remove('active', 'receiver-tab-active');
+
+      if (isDonor) {
+        donorTab.classList.add('active');
+        donorFields.style.display = 'block';
+        receiverFields.style.display = 'none';
+        regIcon.textContent = '🩸';
+        regTitle.innerHTML = 'Become a <span class="text-primary">Donor</span>';
+        regSubtitle.textContent = 'Register now and start saving lives';
+        submitBtn.innerHTML = '🩸 Create Donor Account';
+        submitBtn.style.background = '';
+        banner.className = 'role-info-banner';
+        bannerText.innerHTML = 'As a <strong>Donor</strong>, you\'ll be visible to receivers searching for your blood group in your area.';
+
+        // Make donor fields required, receiver fields not required
+        document.getElementById('regBlood').required = true;
+        document.getElementById('regGender').required = true;
+        document.getElementById('regAge').required = true;
+        document.getElementById('regCity').required = true;
+        document.getElementById('regBloodNeeded').required = false;
+        document.getElementById('regReceiverCity').required = false;
+      } else {
+        receiverTab.classList.add('active', 'receiver-tab-active');
+        donorFields.style.display = 'none';
+        receiverFields.style.display = 'block';
+        regIcon.textContent = '🔍';
+        regTitle.innerHTML = 'Register as <span style="color:#43A047">Receiver</span>';
+        regSubtitle.textContent = 'Find nearby blood donors when you need them';
+        submitBtn.innerHTML = '🔍 Create Receiver Account';
+        submitBtn.style.background = '#43A047';
+        banner.className = 'role-info-banner receiver-banner';
+        bannerText.innerHTML = 'As a <strong>Receiver</strong>, you can search for donors by blood group and see the nearest ones first.';
+
+        // Make receiver fields required, donor fields not required
+        document.getElementById('regBlood').required = false;
+        document.getElementById('regGender').required = false;
+        document.getElementById('regAge').required = false;
+        document.getElementById('regCity').required = false;
+        document.getElementById('regBloodNeeded').required = true;
+        document.getElementById('regReceiverCity').required = true;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check URL param for pre-selected role
+      const params = new URLSearchParams(window.location.search);
+      const preRole = params.get('role');
+      if (preRole === 'receiver') {
+        switchRegRole('receiver');
+      }
+    });
+
     document.getElementById('registerForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const pwd = document.getElementById('regPassword').value;
@@ -121,27 +307,43 @@
         return; 
       }
       
-      const submitBtn = e.target.querySelector('button[type=submit]');
+      const submitBtn = document.getElementById('regSubmitBtn');
       submitBtn.disabled = true;
       submitBtn.textContent = '⏳ Creating Account...';
 
+      const role = document.getElementById('regRole').value;
+
       try {
-        await Auth.signup({
-          fullName: document.getElementById('regName').value.trim(),
-          email: document.getElementById('regEmail').value.trim(),
-          phone: document.getElementById('regPhone').value.trim(),
-          password: pwd,
-          bloodGroup: document.getElementById('regBlood').value,
-          gender: document.getElementById('regGender').value,
-          age: parseInt(document.getElementById('regAge').value) || 21,
-          city: document.getElementById('regCity').value.trim(),
-          lastDonation: document.getElementById('regLastDonation').value,
-          adminCode: document.getElementById('adminCode').value.trim()
-        });
+        if (role === 'receiver') {
+          await Auth.signup({
+            fullName: document.getElementById('regName').value.trim(),
+            email: document.getElementById('regEmail').value.trim(),
+            phone: document.getElementById('regPhone').value.trim(),
+            password: pwd,
+            bloodGroupNeeded: document.getElementById('regBloodNeeded').value,
+            bloodGroup: document.getElementById('regBloodNeeded').value,
+            city: document.getElementById('regReceiverCity').value.trim(),
+            hospital: document.getElementById('regHospital').value.trim(),
+            role: 'receiver'
+          });
+        } else {
+          await Auth.signup({
+            fullName: document.getElementById('regName').value.trim(),
+            email: document.getElementById('regEmail').value.trim(),
+            phone: document.getElementById('regPhone').value.trim(),
+            password: pwd,
+            bloodGroup: document.getElementById('regBlood').value,
+            gender: document.getElementById('regGender').value,
+            age: parseInt(document.getElementById('regAge').value) || 21,
+            city: document.getElementById('regCity').value.trim(),
+            lastDonation: document.getElementById('regLastDonation').value,
+            role: 'donor'
+          });
+        }
       } catch (err) {
         console.error('Registration error:', err);
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Create Account';
+        submitBtn.textContent = role === 'receiver' ? '🔍 Create Receiver Account' : '🩸 Create Donor Account';
       }
     });
   </script>

@@ -202,7 +202,7 @@ const Admin = {
       { time: '5 min ago', event: 'Emergency SOS Broadcast engine verified' },
       { time: '20 min ago', event: 'Sameer Shaik verified in Donors database section' },
       { time: '1 hour ago', event: 'Admin permissions checked for sameeradmin@lifelink.com' },
-      { time: '3 hours ago', event: 'Emergency request for O+ blood logged in Mumbai' }
+      { time: '3 hours ago', event: 'Emergency request for O+ blood logged in Chennai' }
     ];
 
     container.innerHTML = activities.map(a => `

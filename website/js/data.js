@@ -1,32 +1,38 @@
 // ============================================
 // LIFELINK – Data Store & Firebase Sync
-// Distinct Admin & Donor Database Sections
+// Distinct Admin, Donor & Receiver Database Sections
+// Tamil Nadu & Andhra Pradesh Real Data
 // ============================================
 
 const DEFAULT_ADMIN_PASSWORDS = {
-  'sameeradmin@lifelink.com': { password: 'Sameer@14', uid: 'sameer_admin' },
-  'admin@lifelink.com':       { password: 'admin123',  uid: 'u8' }
+  'sameeradmin@lifelink.com': { password: 'Sameer@14', uid: 'sameer_admin' }
 };
 
 const DEFAULT_DONOR_PASSWORDS = {
   'sameershaik9184@gmail.com': { password: 'Sameer@14', uid: 'sameer_donor' },
-  'rahul@demo.com':            { password: 'demo123',   uid: 'u1' },
+  'karthik@demo.com':          { password: 'demo123',   uid: 'u1' },
   'priya@demo.com':            { password: 'demo123',   uid: 'u2' },
-  'amit@demo.com':             { password: 'demo123',   uid: 'u3' },
-  'vikram@demo.com':           { password: 'demo123',   uid: 'u5' },
-  'meera@demo.com':            { password: 'demo123',   uid: 'u6' },
-  'deepa@demo.com':            { password: 'demo123',   uid: 'u9' }
+  'vikram@demo.com':           { password: 'demo123',   uid: 'u3' },
+  'anitha@demo.com':           { password: 'demo123',   uid: 'u4' },
+  'rajesh@demo.com':           { password: 'demo123',   uid: 'u5' },
+  'meena@demo.com':            { password: 'demo123',   uid: 'u6' },
+  'suresh@demo.com':           { password: 'demo123',   uid: 'u7' },
+  'deepa@demo.com':            { password: 'demo123',   uid: 'u8' },
+  'arjun@demo.com':            { password: 'demo123',   uid: 'u9' },
+  'lakshmi@demo.com':          { password: 'demo123',   uid: 'u10' }
 };
+
+const DEFAULT_RECEIVER_PASSWORDS = {};
 
 const DemoData = {
   _key: 'lifelink_data',
   _isSeeding: false,
 
   // ────────────────────────────────────────────────────────────
-  // Database Schema: Distinct Admin & Donor Sections
+  // Database Schema: Admin, Donor & Receiver Sections
   // ────────────────────────────────────────────────────────────
   _defaults: {
-    // ── Dedicated Admin Section ──
+    // ── Dedicated Admin Section (Hardcoded – only Sameer) ──
     admins: [
       {
         uid: 'sameer_admin',
@@ -43,105 +49,116 @@ const DemoData = {
         permissions: ['all', 'manage_users', 'manage_requests', 'broadcast'],
         verified: true,
         availability: true,
+        lat: 14.0042,
+        lng: 79.3512,
         createdAt: '2026-08-18T10:00:00'
-      },
-      {
-        uid: 'u8',
-        displayName: 'Admin User',
-        fullName: 'LifeLink Admin',
-        email: 'admin@lifelink.com',
-        phone: '+91-9000000000',
-        bloodGroup: 'O+',
-        gender: 'Male',
-        age: 30,
-        city: 'Mumbai',
-        address: 'LifeLink HQ, BKC, Mumbai, Maharashtra 400051',
-        role: 'admin',
-        permissions: ['all', 'manage_users', 'manage_requests'],
-        verified: true,
-        availability: true,
-        createdAt: '2025-01-01T00:00:00'
       }
     ],
 
-    // ── Dedicated Donor Section ──
+    // ── Dedicated Donor Section (Tamil Nadu & Andhra Pradesh) ──
     donors: [
       { uid:'sameer_donor', displayName:'Sameer Shaik', fullName:'Sameer Shaik', email:'sameershaik9184@gmail.com', phone:'+91-9184000000', bloodGroup:'B-', gender:'Male', age:21, city:'Rly Kodur', address:'Rly Kodur, Andhra Pradesh', availability:true, verified:true, role:'donor', lastDonation:'2026-08-20', lat:14.0042, lng:79.3512, createdAt:'2026-08-18' },
-      { uid:'u1', displayName:'Rahul Sharma', fullName:'Rahul Sharma', email:'rahul@demo.com', phone:'+91-9876543210', bloodGroup:'O+', gender:'Male', age:28, city:'Mumbai', address:'42, Carter Road, Bandra West, Mumbai, Maharashtra 400050', availability:true, verified:true, role:'donor', lastDonation:'2025-12-15', lat:19.0596, lng:72.8295, createdAt:'2025-01-10' },
-      { uid:'u2', displayName:'Priya Patel', fullName:'Priya Patel', email:'priya@demo.com', phone:'+91-9876543211', bloodGroup:'A+', gender:'Female', age:25, city:'Delhi', address:'B-14, Connaught Place, New Delhi, Delhi 110001', availability:true, verified:true, role:'donor', lastDonation:'2026-01-20', lat:28.6315, lng:77.2167, createdAt:'2025-03-15' },
-      { uid:'u3', displayName:'Amit Kumar', fullName:'Amit Kumar', email:'amit@demo.com', phone:'+91-9876543212', bloodGroup:'B+', gender:'Male', age:32, city:'Bangalore', address:'15, MG Road, Ashok Nagar, Bengaluru, Karnataka 560001', availability:false, verified:true, role:'donor', lastDonation:'2025-11-10', lat:12.9756, lng:77.6062, createdAt:'2025-02-20' },
-      { uid:'u4', displayName:'Sara Khan', fullName:'Sara Khan', email:'sara@demo.com', phone:'+91-9876543213', bloodGroup:'AB+', gender:'Female', age:22, city:'Mumbai', address:'203, Sea View Apartments, Worli Sea Face, Mumbai, Maharashtra 400018', availability:true, verified:false, role:'donor', lat:19.0176, lng:72.8158, createdAt:'2025-06-01' },
-      { uid:'u5', displayName:'Vikram Singh', fullName:'Vikram Singh', email:'vikram@demo.com', phone:'+91-9876543214', bloodGroup:'O-', gender:'Male', age:35, city:'Chennai', address:'78, Anna Salai, Teynampet, Chennai, Tamil Nadu 600018', availability:true, verified:true, role:'donor', lastDonation:'2026-03-05', lat:13.0418, lng:80.2341, createdAt:'2025-04-10' },
-      { uid:'u6', displayName:'Meera Reddy', fullName:'Meera Reddy', email:'meera@demo.com', phone:'+91-9876543215', bloodGroup:'A-', gender:'Female', age:29, city:'Hyderabad', address:'Plot 35, Jubilee Hills Road No. 36, Hyderabad, Telangana 500033', availability:true, verified:true, role:'donor', lastDonation:'2026-02-14', lat:17.4260, lng:78.4085, createdAt:'2025-05-22' },
-      { uid:'u7', displayName:'Arjun Nair', fullName:'Arjun Nair', email:'arjun@demo.com', phone:'+91-9876543216', bloodGroup:'B-', gender:'Male', age:27, city:'Pune', address:'12, FC Road, Shivajinagar, Pune, Maharashtra 411004', availability:true, verified:true, role:'donor', lat:18.5308, lng:73.8474, createdAt:'2025-07-18' },
-      { uid:'u9', displayName:'Deepa Menon', fullName:'Deepa Menon', email:'deepa@demo.com', phone:'+91-9876543217', bloodGroup:'O+', gender:'Female', age:31, city:'Kochi', address:'22/B, MG Road, Ernakulam, Kochi, Kerala 682016', availability:true, verified:true, role:'donor', lastDonation:'2026-04-12', lat:9.9816, lng:76.2999, createdAt:'2025-08-05' },
-      { uid:'u10', displayName:'Ravi Deshmukh', fullName:'Ravi Deshmukh', email:'ravi@demo.com', phone:'+91-9876543218', bloodGroup:'A+', gender:'Male', age:40, city:'Nagpur', address:'15, Dharampeth, Seminary Hills, Nagpur, Maharashtra 440010', availability:true, verified:true, role:'donor', lastDonation:'2026-01-08', lat:21.1458, lng:79.0882, createdAt:'2025-09-12' },
-      { uid:'u11', displayName:'Ananya Gupta', fullName:'Ananya Gupta', email:'ananya@demo.com', phone:'+91-9876543219', bloodGroup:'AB-', gender:'Female', age:26, city:'Jaipur', address:'C-56, Vaishali Nagar, Jaipur, Rajasthan 302021', availability:true, verified:true, role:'donor', lastDonation:'2026-03-28', lat:26.9124, lng:75.7873, createdAt:'2025-10-20' },
-      { uid:'u12', displayName:'Karthik Iyer', fullName:'Karthik Iyer', email:'karthik@demo.com', phone:'+91-9876543220', bloodGroup:'B+', gender:'Male', age:33, city:'Coimbatore', address:'89, Avinashi Road, Peelamedu, Coimbatore, Tamil Nadu 641004', availability:false, verified:true, role:'donor', lastDonation:'2025-10-15', lat:11.0168, lng:76.9558, createdAt:'2025-11-02' },
-      { uid:'u13', displayName:'Fatima Begum', fullName:'Fatima Begum', email:'fatima@demo.com', phone:'+91-9876543221', bloodGroup:'O-', gender:'Female', age:28, city:'Lucknow', address:'45, Hazratganj, Lucknow, Uttar Pradesh 226001', availability:true, verified:true, role:'donor', lastDonation:'2026-02-20', lat:26.8467, lng:80.9462, createdAt:'2025-12-10' },
-      { uid:'u14', displayName:'Sanjay Thakur', fullName:'Sanjay Thakur', email:'sanjay@demo.com', phone:'+91-9876543222', bloodGroup:'A-', gender:'Male', age:38, city:'Kolkata', address:'7A, Park Street, Park Street Area, Kolkata, West Bengal 700016', availability:true, verified:true, role:'donor', lastDonation:'2026-04-01', lat:22.5511, lng:88.3520, createdAt:'2026-01-05' },
-      { uid:'u15', displayName:'Nisha Verma', fullName:'Nisha Verma', email:'nisha@demo.com', phone:'+91-9876543223', bloodGroup:'AB+', gender:'Female', age:24, city:'Ahmedabad', address:'202, CG Road, Navrangpura, Ahmedabad, Gujarat 380009', availability:true, verified:false, role:'donor', lat:23.0258, lng:72.5636, createdAt:'2026-02-14' },
-      { uid:'u16', displayName:'Rajesh Pillai', fullName:'Rajesh Pillai', email:'rajesh@demo.com', phone:'+91-9876543224', bloodGroup:'B-', gender:'Male', age:45, city:'Thiruvananthapuram', address:'TC 12/456, Vazhuthacaud, Thiruvananthapuram, Kerala 695014', availability:true, verified:true, role:'donor', lastDonation:'2026-03-10', lat:8.5074, lng:76.9730, createdAt:'2026-03-01' },
-      { uid:'u17', displayName:'Pooja Rawat', fullName:'Pooja Rawat', email:'pooja@demo.com', phone:'+91-9876543225', bloodGroup:'O+', gender:'Female', age:30, city:'Dehradun', address:'18, Rajpur Road, Dehradun, Uttarakhand 248001', availability:true, verified:true, role:'donor', lastDonation:'2026-04-22', lat:30.3165, lng:78.0322, createdAt:'2026-03-15' }
+      { uid:'u1', displayName:'Karthik Iyer', fullName:'Karthik Iyer', email:'karthik@demo.com', phone:'+91-9876543210', bloodGroup:'O+', gender:'Male', age:28, city:'Chennai', address:'42, Anna Nagar, Chennai, Tamil Nadu 600040', availability:true, verified:true, role:'donor', lastDonation:'2026-07-15', lat:13.0827, lng:80.2707, createdAt:'2026-01-10' },
+      { uid:'u2', displayName:'Priya Lakshmi', fullName:'Priya Lakshmi', email:'priya@demo.com', phone:'+91-9876543211', bloodGroup:'A+', gender:'Female', age:25, city:'Coimbatore', address:'15, RS Puram, Coimbatore, Tamil Nadu 641002', availability:true, verified:true, role:'donor', lastDonation:'2026-06-20', lat:11.0168, lng:76.9558, createdAt:'2026-03-15' },
+      { uid:'u3', displayName:'Vikram Reddy', fullName:'Vikram Reddy', email:'vikram@demo.com', phone:'+91-9876543212', bloodGroup:'B+', gender:'Male', age:32, city:'Visakhapatnam', address:'Dwaraka Nagar, Visakhapatnam, AP 530016', availability:true, verified:true, role:'donor', lastDonation:'2026-05-10', lat:17.6868, lng:83.2185, createdAt:'2026-02-20' },
+      { uid:'u4', displayName:'Anitha Devi', fullName:'Anitha Devi', email:'anitha@demo.com', phone:'+91-9876543213', bloodGroup:'AB+', gender:'Female', age:22, city:'Madurai', address:'KK Nagar, Madurai, Tamil Nadu 625020', availability:true, verified:true, role:'donor', lastDonation:'2026-04-05', lat:9.9252, lng:78.1198, createdAt:'2026-06-01' },
+      { uid:'u5', displayName:'Rajesh Kumar', fullName:'Rajesh Kumar', email:'rajesh@demo.com', phone:'+91-9876543214', bloodGroup:'O-', gender:'Male', age:35, city:'Vijayawada', address:'MG Road, Vijayawada, AP 520010', availability:true, verified:true, role:'donor', lastDonation:'2026-03-05', lat:16.5062, lng:80.6480, createdAt:'2026-04-10' },
+      { uid:'u6', displayName:'Meena Kumari', fullName:'Meena Kumari', email:'meena@demo.com', phone:'+91-9876543215', bloodGroup:'A-', gender:'Female', age:29, city:'Tirupati', address:'TPT Main Road, Tirupati, AP 517501', availability:true, verified:true, role:'donor', lastDonation:'2026-02-14', lat:13.6288, lng:79.4192, createdAt:'2026-05-22' },
+      { uid:'u7', displayName:'Suresh Babu', fullName:'Suresh Babu', email:'suresh@demo.com', phone:'+91-9876543216', bloodGroup:'B-', gender:'Male', age:27, city:'Salem', address:'Hasthampatti, Salem, Tamil Nadu 636007', availability:true, verified:true, role:'donor', lastDonation:'2026-07-18', lat:11.6643, lng:78.1460, createdAt:'2026-07-18' },
+      { uid:'u8', displayName:'Deepa Rajan', fullName:'Deepa Rajan', email:'deepa@demo.com', phone:'+91-9876543217', bloodGroup:'O+', gender:'Female', age:31, city:'Trichy', address:'Cantonment, Tiruchirappalli, TN 620001', availability:true, verified:true, role:'donor', lastDonation:'2026-04-12', lat:10.7905, lng:78.7047, createdAt:'2026-08-05' },
+      { uid:'u9', displayName:'Arjun Naidu', fullName:'Arjun Naidu', email:'arjun@demo.com', phone:'+91-9876543218', bloodGroup:'A+', gender:'Male', age:40, city:'Guntur', address:'Brodipet, Guntur, AP 522002', availability:true, verified:true, role:'donor', lastDonation:'2026-01-08', lat:16.3067, lng:80.4365, createdAt:'2026-09-12' },
+      { uid:'u10', displayName:'Lakshmi Priya', fullName:'Lakshmi Priya', email:'lakshmi@demo.com', phone:'+91-9876543219', bloodGroup:'AB-', gender:'Female', age:26, city:'Nellore', address:'Grand Trunk Road, Nellore, AP 524001', availability:true, verified:true, role:'donor', lastDonation:'2026-03-28', lat:14.4426, lng:79.9865, createdAt:'2026-10-20' },
+      { uid:'u11', displayName:'Ravi Shankar', fullName:'Ravi Shankar', email:'ravi@demo.com', phone:'+91-9876543220', bloodGroup:'B+', gender:'Male', age:33, city:'Vellore', address:'CMC Road, Vellore, Tamil Nadu 632004', availability:true, verified:true, role:'donor', lastDonation:'2026-06-15', lat:12.9165, lng:79.1325, createdAt:'2026-11-02' },
+      { uid:'u12', displayName:'Kavitha Selvi', fullName:'Kavitha Selvi', email:'kavitha@demo.com', phone:'+91-9876543221', bloodGroup:'O-', gender:'Female', age:28, city:'Puducherry', address:'MG Road, Puducherry 605001', availability:true, verified:true, role:'donor', lastDonation:'2026-02-20', lat:11.9416, lng:79.8083, createdAt:'2026-12-10' },
+      { uid:'u13', displayName:'Venkatesh Rao', fullName:'Venkatesh Rao', email:'venkatesh@demo.com', phone:'+91-9876543222', bloodGroup:'A-', gender:'Male', age:38, city:'Kadapa', address:'Railway Station Road, Kadapa, AP 516001', availability:true, verified:true, role:'donor', lastDonation:'2026-04-01', lat:14.4673, lng:78.8242, createdAt:'2026-01-05' },
+      { uid:'u14', displayName:'Sowmya Narayanan', fullName:'Sowmya Narayanan', email:'sowmya@demo.com', phone:'+91-9876543223', bloodGroup:'AB+', gender:'Female', age:24, city:'Erode', address:'Gandhiji Road, Erode, Tamil Nadu 638001', availability:true, verified:true, role:'donor', lastDonation:'2026-05-14', lat:11.3410, lng:77.7172, createdAt:'2026-02-14' },
+      { uid:'u15', displayName:'Prasad Varma', fullName:'Prasad Varma', email:'prasad@demo.com', phone:'+91-9876543224', bloodGroup:'B-', gender:'Male', age:45, city:'Kurnool', address:'Station Road, Kurnool, AP 518001', availability:true, verified:true, role:'donor', lastDonation:'2026-03-10', lat:15.8281, lng:78.0373, createdAt:'2026-03-01' },
+      { uid:'u16', displayName:'Divya Bharathi', fullName:'Divya Bharathi', email:'divya@demo.com', phone:'+91-9876543225', bloodGroup:'O+', gender:'Female', age:30, city:'Thanjavur', address:'South Main Street, Thanjavur, TN 613001', availability:true, verified:true, role:'donor', lastDonation:'2026-04-22', lat:10.7870, lng:79.1378, createdAt:'2026-03-15' },
+      { uid:'u17', displayName:'Manoj Kumar', fullName:'Manoj Kumar', email:'manoj@demo.com', phone:'+91-9876543226', bloodGroup:'A+', gender:'Male', age:29, city:'Anantapur', address:'Clock Tower Area, Anantapur, AP 515001', availability:true, verified:true, role:'donor', lastDonation:'2026-06-01', lat:14.6819, lng:77.6006, createdAt:'2026-04-10' }
     ],
+
+    // ── Dedicated Receiver Section ──
+    receivers: [],
 
     // ── Emergency Blood Requests Section ──
     requests: [
-      { id:'r1', requesterName:'Deepak Verma', patientName:'Sunita Verma', bloodGroupNeeded:'O+', unitsNeeded: 2, hospitalName:'Apollo Hospital, Mumbai', location:'Mumbai', phone:'+91-9876543210', notes:'Urgent requirement for cardiac surgery', urgencyLevel:'critical', status:'active', lat:19.0330, lng:73.0290, createdAt:'2026-05-12T08:00:00', responses:3 },
-      { id:'r2', requesterName:'Kavita Joshi', patientName:'Ram Joshi', bloodGroupNeeded:'A-', unitsNeeded: 1, hospitalName:'AIIMS, Delhi', location:'Delhi', phone:'+91-9876543211', notes:'Accident emergency in ICU Ward 4', urgencyLevel:'urgent', status:'active', lat:28.5670, lng:77.2100, createdAt:'2026-05-11T14:30:00', responses:1 },
-      { id:'r3', requesterName:'Suresh Iyer', patientName:'Lakshmi Iyer', bloodGroupNeeded:'B+', unitsNeeded: 3, hospitalName:'Fortis, Bangalore', location:'Bangalore', phone:'+91-9876543212', notes:'Regular transfusion requirement', urgencyLevel:'normal', status:'fulfilled', lat:12.8910, lng:77.5980, createdAt:'2026-05-10T09:15:00', responses:5 },
-      { id:'r4', requesterName:'Neha Gupta', patientName:'Anjali Gupta', bloodGroupNeeded:'AB+', unitsNeeded: 2, hospitalName:'Max Hospital, Delhi', location:'Delhi', phone:'+91-9876543213', notes:'Emergency delivery blood arrangement', urgencyLevel:'critical', status:'active', lat:28.5285, lng:77.2111, createdAt:'2026-05-12T06:45:00', responses:0 }
+      { id:'r1', requesterName:'Deepak Naidu', patientName:'Sunita Naidu', bloodGroupNeeded:'O+', unitsNeeded:2, hospitalName:'Apollo Hospital, Chennai', location:'Chennai', phone:'+91-9876543210', notes:'Urgent requirement for cardiac surgery', urgencyLevel:'critical', status:'active', lat:13.0067, lng:80.2206, createdAt:'2026-05-12T08:00:00', responses:3 },
+      { id:'r2', requesterName:'Kavita Reddy', patientName:'Ram Reddy', bloodGroupNeeded:'A-', unitsNeeded:1, hospitalName:'SVIMS Hospital, Tirupati', location:'Tirupati', phone:'+91-9876543211', notes:'Accident emergency in ICU Ward 4', urgencyLevel:'urgent', status:'active', lat:13.6288, lng:79.4192, createdAt:'2026-05-11T14:30:00', responses:1 },
+      { id:'r3', requesterName:'Suresh Iyer', patientName:'Lakshmi Iyer', bloodGroupNeeded:'B+', unitsNeeded:3, hospitalName:'CMC Hospital, Vellore', location:'Vellore', phone:'+91-9876543212', notes:'Regular transfusion requirement', urgencyLevel:'normal', status:'fulfilled', lat:12.9165, lng:79.1325, createdAt:'2026-05-10T09:15:00', responses:5 },
+      { id:'r4', requesterName:'Neha Sharma', patientName:'Anjali Sharma', bloodGroupNeeded:'AB+', unitsNeeded:2, hospitalName:'JIPMER Hospital, Puducherry', location:'Puducherry', phone:'+91-9876543213', notes:'Emergency delivery blood arrangement', urgencyLevel:'critical', status:'active', lat:11.9570, lng:79.7969, createdAt:'2026-05-12T06:45:00', responses:0 }
     ],
 
+    // ── Hospitals: Tamil Nadu & Andhra Pradesh Only ──
     hospitals: [
-      { id:'h1', name:'Apollo Hospital', address:'Plot 13, Parsik Hill Road, Sector 23, CBD Belapur, Navi Mumbai, Maharashtra 400614', contact:'+91-22-12345678', bloodAvailability:{ 'O+':15, 'A+':8, 'B+':12, 'AB+':3, 'O-':5, 'A-':2, 'B-':4, 'AB-':1 }, lat:19.033, lng:73.029 },
-      { id:'h2', name:'AIIMS Hospital', address:'Sri Aurobindo Marg, Ansari Nagar, Ansari Nagar East, New Delhi, Delhi 110029', contact:'+91-11-26588500', bloodAvailability:{ 'O+':20, 'A+':15, 'B+':10, 'AB+':6, 'O-':8, 'A-':5, 'B-':3, 'AB-':2 }, lat:28.567, lng:77.210 },
-      { id:'h3', name:'Fortis Hospital', address:'154/9, Bannerghatta Main Road, Opposite IIM, Bengaluru, Karnataka 560076', contact:'+91-80-66214444', bloodAvailability:{ 'O+':12, 'A+':7, 'B+':9, 'AB+':4, 'O-':3, 'A-':2, 'B-':5, 'AB-':1 }, lat:12.891, lng:77.598 },
-      { id:'h4', name:'Medanta Hospital', address:'CH Baktawar Singh Road, Sector 38, Gurugram, Haryana 122001', contact:'+91-124-4141414', bloodAvailability:{ 'O+':18, 'A+':11, 'B+':14, 'AB+':5, 'O-':6, 'A-':4, 'B-':3, 'AB-':2 }, lat:28.440, lng:77.041 },
-      { id:'h5', name:'Narayana Health', address:'258/A, Bommasandra Industrial Area, Hosur Road, Bengaluru, Karnataka 560099', contact:'+91-80-71222222', bloodAvailability:{ 'O+':10, 'A+':6, 'B+':8, 'AB+':2, 'O-':4, 'A-':3, 'B-':2, 'AB-':1 }, lat:12.895, lng:77.600 },
-      { id:'h6', name:'Max Super Speciality Hospital', address:'1, 2, Press Enclave Road, Saket, New Delhi, Delhi 110017', contact:'+91-11-26515050', bloodAvailability:{ 'O+':22, 'A+':14, 'B+':11, 'AB+':7, 'O-':9, 'A-':6, 'B-':4, 'AB-':3 }, lat:28.5285, lng:77.2111 },
-      { id:'h7', name:'Kokilaben Dhirubhai Ambani Hospital', address:'Rao Saheb Achutrao Patwardhan Marg, Four Bungalows, Andheri West, Mumbai, Maharashtra 400053', contact:'+91-22-42696969', bloodAvailability:{ 'O+':17, 'A+':10, 'B+':13, 'AB+':5, 'O-':7, 'A-':4, 'B-':3, 'AB-':2 }, lat:19.1307, lng:72.8253 }
+      // Tamil Nadu Hospitals
+      { id:'h1', name:'Apollo Hospitals Chennai', address:'No. 21, Greams Lane, Off Greams Road, Chennai, Tamil Nadu 600006', contact:'+91-44-28293333', bloodAvailability:{ 'O+':18, 'A+':12, 'B+':15, 'AB+':5, 'O-':6, 'A-':3, 'B-':4, 'AB-':2 }, lat:13.0067, lng:80.2206 },
+      { id:'h2', name:'JIPMER Hospital', address:'Dhanvantri Nagar, Gorimedu, Puducherry 605006', contact:'+91-413-2272380', bloodAvailability:{ 'O+':22, 'A+':16, 'B+':14, 'AB+':6, 'O-':8, 'A-':5, 'B-':4, 'AB-':2 }, lat:11.9570, lng:79.7969 },
+      { id:'h3', name:'Christian Medical College (CMC)', address:'Ida Scudder Road, Vellore, Tamil Nadu 632004', contact:'+91-416-2281000', bloodAvailability:{ 'O+':25, 'A+':18, 'B+':12, 'AB+':7, 'O-':10, 'A-':6, 'B-':5, 'AB-':3 }, lat:12.9237, lng:79.1350 },
+      { id:'h4', name:'Madurai Meenakshi Mission Hospital', address:'Lake Area, Melur Road, Madurai, Tamil Nadu 625107', contact:'+91-452-4350000', bloodAvailability:{ 'O+':15, 'A+':9, 'B+':11, 'AB+':4, 'O-':5, 'A-':3, 'B-':3, 'AB-':1 }, lat:9.9468, lng:78.1565 },
+      { id:'h5', name:'Government General Hospital Chennai', address:'Park Town, Chennai, Tamil Nadu 600003', contact:'+91-44-25305000', bloodAvailability:{ 'O+':30, 'A+':20, 'B+':18, 'AB+':8, 'O-':12, 'A-':7, 'B-':6, 'AB-':3 }, lat:13.0785, lng:80.2747 },
+      { id:'h6', name:'PSG Hospitals', address:'Peelamedu, Coimbatore, Tamil Nadu 641004', contact:'+91-422-2570170', bloodAvailability:{ 'O+':14, 'A+':8, 'B+':10, 'AB+':3, 'O-':4, 'A-':2, 'B-':3, 'AB-':1 }, lat:11.0245, lng:77.0028 },
+      { id:'h7', name:'SRM Medical College Hospital', address:'SRM Nagar, Kattankulathur, Tamil Nadu 603203', contact:'+91-44-27455510', bloodAvailability:{ 'O+':16, 'A+':10, 'B+':12, 'AB+':4, 'O-':5, 'A-':3, 'B-':4, 'AB-':2 }, lat:12.8231, lng:80.0442 },
+      { id:'h8', name:'KMCH (Kovai Medical Center)', address:'99, Avinashi Road, Coimbatore, Tamil Nadu 641014', contact:'+91-422-4323800', bloodAvailability:{ 'O+':12, 'A+':7, 'B+':9, 'AB+':3, 'O-':4, 'A-':2, 'B-':3, 'AB-':1 }, lat:11.0283, lng:76.9647 },
+      { id:'h9', name:'Sri Ramachandra Medical Centre', address:'No. 1 Ramachandra Nagar, Porur, Chennai, TN 600116', contact:'+91-44-24768027', bloodAvailability:{ 'O+':17, 'A+':11, 'B+':13, 'AB+':5, 'O-':6, 'A-':4, 'B-':4, 'AB-':2 }, lat:13.0346, lng:80.1417 },
+      { id:'h10', name:'Stanley Medical College Hospital', address:'Old Jail Road, Royapuram, Chennai, TN 600001', contact:'+91-44-25281066', bloodAvailability:{ 'O+':20, 'A+':14, 'B+':11, 'AB+':5, 'O-':7, 'A-':4, 'B-':3, 'AB-':2 }, lat:13.1145, lng:80.2879 },
+      // Andhra Pradesh Hospitals
+      { id:'h11', name:'SVIMS Hospital Tirupati', address:'Alipiri Road, Tirupati, Andhra Pradesh 517507', contact:'+91-877-2287777', bloodAvailability:{ 'O+':20, 'A+':14, 'B+':12, 'AB+':6, 'O-':7, 'A-':4, 'B-':5, 'AB-':2 }, lat:13.6450, lng:79.4100 },
+      { id:'h12', name:'NRI Hospital Guntur', address:'Chinakakani, Mangalagiri, Guntur, AP 522503', contact:'+91-863-2878999', bloodAvailability:{ 'O+':15, 'A+':10, 'B+':11, 'AB+':4, 'O-':5, 'A-':3, 'B-':3, 'AB-':1 }, lat:16.4307, lng:80.5525 },
+      { id:'h13', name:'Apollo Hospitals Visakhapatnam', address:'Waltair Main Road, Visakhapatnam, AP 530002', contact:'+91-891-2727272', bloodAvailability:{ 'O+':18, 'A+':12, 'B+':14, 'AB+':5, 'O-':6, 'A-':4, 'B-':4, 'AB-':2 }, lat:17.7231, lng:83.3013 },
+      { id:'h14', name:'Andhra Hospitals Vijayawada', address:'Governorpet, Vijayawada, AP 520002', contact:'+91-866-2577788', bloodAvailability:{ 'O+':16, 'A+':11, 'B+':13, 'AB+':4, 'O-':5, 'A-':3, 'B-':4, 'AB-':1 }, lat:16.5087, lng:80.6326 },
+      { id:'h15', name:'KIMS Hospital Nellore', address:'Narasaraopet Road, Nellore, AP 524004', contact:'+91-861-2322288', bloodAvailability:{ 'O+':12, 'A+':8, 'B+':9, 'AB+':3, 'O-':4, 'A-':2, 'B-':3, 'AB-':1 }, lat:14.4373, lng:79.9690 },
+      { id:'h16', name:'Narayana Medical College', address:'Chinthareddypalem, Nellore, AP 524003', contact:'+91-861-2317962', bloodAvailability:{ 'O+':14, 'A+':9, 'B+':10, 'AB+':3, 'O-':5, 'A-':3, 'B-':3, 'AB-':1 }, lat:14.4197, lng:79.9748 },
+      { id:'h17', name:'King George Hospital (KGH)', address:'Maharanipeta, Visakhapatnam, AP 530002', contact:'+91-891-2564891', bloodAvailability:{ 'O+':24, 'A+':16, 'B+':14, 'AB+':6, 'O-':9, 'A-':5, 'B-':5, 'AB-':2 }, lat:17.7146, lng:83.3037 },
+      { id:'h18', name:'Government General Hospital Kurnool', address:'Budhawarpet, Kurnool, AP 518001', contact:'+91-8518-224242', bloodAvailability:{ 'O+':18, 'A+':12, 'B+':10, 'AB+':4, 'O-':6, 'A-':3, 'B-':4, 'AB-':1 }, lat:15.8267, lng:78.0400 },
+      { id:'h19', name:'RIMS Hospital Kadapa', address:'Putlampalli, Kadapa, AP 516004', contact:'+91-8562-252275', bloodAvailability:{ 'O+':12, 'A+':8, 'B+':9, 'AB+':3, 'O-':4, 'A-':2, 'B-':3, 'AB-':1 }, lat:14.4750, lng:78.8300 },
+      { id:'h20', name:'Government General Hospital Vijayawada', address:'Gunadala, Vijayawada, AP 520004', contact:'+91-866-2420385', bloodAvailability:{ 'O+':22, 'A+':15, 'B+':12, 'AB+':5, 'O-':8, 'A-':4, 'B-':4, 'AB-':2 }, lat:16.5150, lng:80.6237 }
     ],
 
+    // ── Blood Banks: Tamil Nadu & Andhra Pradesh Only ──
     bloodBanks: [
-      { id:'bb1', name:'Indian Red Cross Blood Bank', address:'1, Red Cross Road, Near Bombay Hospital, Marine Lines, Mumbai, Maharashtra 400020', contact:'+91-22-23621573', lat:18.9441, lng:72.8302, stocks:{ 'O+':45, 'A+':30, 'B+':38, 'AB+':12, 'O-':15, 'A-':8, 'B-':10, 'AB-':4 }},
-      { id:'bb2', name:'Rotary Blood Bank', address:'56-57, Institutional Area, Tughlakabad, New Delhi, Delhi 110062', contact:'+91-11-29960044', lat:28.5085, lng:77.2580, stocks:{ 'O+':55, 'A+':40, 'B+':35, 'AB+':15, 'O-':20, 'A-':12, 'B-':8, 'AB-':6 }},
-      { id:'bb3', name:'Prathama Blood Centre', address:'Opposite Kiran Hospital, University Road, Satellite, Ahmedabad, Gujarat 380015', contact:'+91-79-26921111', lat:23.0225, lng:72.5299, stocks:{ 'O+':38, 'A+':25, 'B+':30, 'AB+':10, 'O-':12, 'A-':7, 'B-':9, 'AB-':3 }},
-      { id:'bb4', name:'Rashtreeya Vidyalaya Blood Bank', address:'41, Bapuji Nagar, Basavanagudi, Bengaluru, Karnataka 560004', contact:'+91-80-26576985', lat:12.9387, lng:77.5650, stocks:{ 'O+':32, 'A+':20, 'B+':25, 'AB+':8, 'O-':10, 'A-':5, 'B-':7, 'AB-':2 }},
-      { id:'bb5', name:'Thalassemia & Sickle Cell Society Blood Bank', address:'6-1-91, Padmarao Nagar, Secunderabad, Hyderabad, Telangana 500025', contact:'+91-40-27803894', lat:17.4340, lng:78.5060, stocks:{ 'O+':28, 'A+':18, 'B+':22, 'AB+':6, 'O-':8, 'A-':4, 'B-':6, 'AB-':2 }}
+      // Tamil Nadu Blood Banks
+      { id:'bb1', name:'Tamil Nadu State Blood Bank', address:'Kilpauk, Chennai, Tamil Nadu 600010', contact:'+91-44-26432804', lat:13.0843, lng:80.2399, stocks:{ 'O+':50, 'A+':35, 'B+':40, 'AB+':12, 'O-':18, 'A-':10, 'B-':12, 'AB-':5 }},
+      { id:'bb2', name:'Red Cross Blood Bank Chennai', address:'179, Anna Salai, Chennai, Tamil Nadu 600002', contact:'+91-44-28520068', lat:13.0580, lng:80.2579, stocks:{ 'O+':42, 'A+':28, 'B+':32, 'AB+':10, 'O-':14, 'A-':8, 'B-':10, 'AB-':4 }},
+      { id:'bb3', name:'Lions Blood Bank Madurai', address:'Bibi Kulam Road, Madurai, Tamil Nadu 625002', contact:'+91-452-2337344', lat:9.9276, lng:78.1176, stocks:{ 'O+':30, 'A+':20, 'B+':25, 'AB+':8, 'O-':10, 'A-':5, 'B-':7, 'AB-':3 }},
+      { id:'bb4', name:'Rotary Blood Bank Coimbatore', address:'DB Road, RS Puram, Coimbatore, Tamil Nadu 641002', contact:'+91-422-2543444', lat:11.0090, lng:76.9547, stocks:{ 'O+':35, 'A+':22, 'B+':28, 'AB+':9, 'O-':12, 'A-':6, 'B-':8, 'AB-':3 }},
+      { id:'bb5', name:'GRH Blood Bank Trichy', address:'Thanjavur Road, Trichy, Tamil Nadu 620001', contact:'+91-431-2407576', lat:10.8003, lng:78.6939, stocks:{ 'O+':28, 'A+':18, 'B+':22, 'AB+':7, 'O-':9, 'A-':5, 'B-':6, 'AB-':2 }},
+      { id:'bb6', name:'Tirunelveli Medical College Blood Bank', address:'High Ground, Tirunelveli, Tamil Nadu 627011', contact:'+91-462-2572726', lat:8.7284, lng:77.7131, stocks:{ 'O+':25, 'A+':16, 'B+':20, 'AB+':6, 'O-':8, 'A-':4, 'B-':5, 'AB-':2 }},
+      { id:'bb7', name:'Salem Government Blood Bank', address:'Shanmuga Nagar, Salem, Tamil Nadu 636007', contact:'+91-427-2313333', lat:11.6596, lng:78.1542, stocks:{ 'O+':22, 'A+':14, 'B+':18, 'AB+':5, 'O-':7, 'A-':4, 'B-':5, 'AB-':2 }},
+      { id:'bb8', name:'Thanjavur Medical College Blood Bank', address:'Medical College Road, Thanjavur, TN 613004', contact:'+91-4362-231091', lat:10.7768, lng:79.1318, stocks:{ 'O+':20, 'A+':12, 'B+':15, 'AB+':5, 'O-':6, 'A-':3, 'B-':4, 'AB-':2 }},
+      // Andhra Pradesh Blood Banks
+      { id:'bb9', name:'Red Cross Blood Bank Vijayawada', address:'Eluru Road, Vijayawada, AP 520001', contact:'+91-866-2573456', lat:16.5101, lng:80.6320, stocks:{ 'O+':40, 'A+':25, 'B+':30, 'AB+':10, 'O-':14, 'A-':7, 'B-':9, 'AB-':4 }},
+      { id:'bb10', name:'Government Blood Bank Tirupati', address:'Alipiri Road, Tirupati, AP 517507', contact:'+91-877-2264567', lat:13.6350, lng:79.4200, stocks:{ 'O+':35, 'A+':22, 'B+':26, 'AB+':8, 'O-':12, 'A-':6, 'B-':8, 'AB-':3 }},
+      { id:'bb11', name:'KGH Blood Bank Visakhapatnam', address:'Maharanipeta, Visakhapatnam, AP 530002', contact:'+91-891-2564900', lat:17.7146, lng:83.3037, stocks:{ 'O+':45, 'A+':30, 'B+':35, 'AB+':12, 'O-':16, 'A-':8, 'B-':10, 'AB-':4 }},
+      { id:'bb12', name:'NRI Blood Bank Guntur', address:'Chinakakani, Mangalagiri, Guntur, AP 522503', contact:'+91-863-2878990', lat:16.4307, lng:80.5525, stocks:{ 'O+':28, 'A+':18, 'B+':22, 'AB+':7, 'O-':9, 'A-':5, 'B-':6, 'AB-':2 }},
+      { id:'bb13', name:'Government Blood Bank Nellore', address:'Grand Trunk Road, Nellore, AP 524001', contact:'+91-861-2314567', lat:14.4426, lng:79.9865, stocks:{ 'O+':22, 'A+':14, 'B+':18, 'AB+':5, 'O-':7, 'A-':4, 'B-':5, 'AB-':2 }},
+      { id:'bb14', name:'RIMS Blood Bank Kadapa', address:'Putlampalli, Kadapa, AP 516004', contact:'+91-8562-252280', lat:14.4750, lng:78.8300, stocks:{ 'O+':18, 'A+':12, 'B+':14, 'AB+':4, 'O-':6, 'A-':3, 'B-':4, 'AB-':1 }},
+      { id:'bb15', name:'Kurnool Government Blood Bank', address:'Budhawarpet, Kurnool, AP 518001', contact:'+91-8518-224250', lat:15.8267, lng:78.0400, stocks:{ 'O+':20, 'A+':13, 'B+':16, 'AB+':5, 'O-':7, 'A-':3, 'B-':5, 'AB-':2 }}
     ],
 
     donations: [
-      { id:'d1', donorId:'u1', donorName:'Rahul Sharma', bloodGroup:'O+', date:'2025-12-15', hospital:'Apollo Hospital', remarks:'Routine donation' },
-      { id:'d2', donorId:'u2', donorName:'Priya Patel', bloodGroup:'A+', date:'2026-01-20', hospital:'AIIMS Hospital', remarks:'Emergency donation' },
-      { id:'d3', donorId:'u5', donorName:'Vikram Singh', bloodGroup:'O-', date:'2026-03-05', hospital:'Fortis Hospital', remarks:'Scheduled donation' }
+      { id:'d1', donorId:'u1', donorName:'Karthik Iyer', bloodGroup:'O+', date:'2026-07-15', hospital:'Apollo Hospitals Chennai', remarks:'Routine donation' },
+      { id:'d2', donorId:'u2', donorName:'Priya Lakshmi', bloodGroup:'A+', date:'2026-06-20', hospital:'PSG Hospitals Coimbatore', remarks:'Emergency donation' },
+      { id:'d3', donorId:'u3', donorName:'Vikram Reddy', bloodGroup:'B+', date:'2026-05-10', hospital:'Apollo Hospitals Visakhapatnam', remarks:'Scheduled donation' }
     ],
 
     notifications: [
-      { id:'n1', userId:'sameer_donor', message:'Emergency: O+ blood needed at Apollo Hospital, Mumbai', type:'emergency', read:false, createdAt:'2026-05-12T08:00:00' },
-      { id:'n2', userId:'u1', message:'Emergency: O+ blood needed at Apollo Hospital', type:'emergency', read:false, createdAt:'2026-05-12T08:00:00' },
+      { id:'n1', userId:'sameer_donor', message:'Emergency: O+ blood needed at Apollo Hospitals, Chennai', type:'emergency', read:false, createdAt:'2026-05-12T08:00:00' },
+      { id:'n2', userId:'u1', message:'Emergency: O+ blood needed at Apollo Hospitals Chennai', type:'emergency', read:false, createdAt:'2026-05-12T08:00:00' },
       { id:'n3', userId:'u2', message:'Your blood donation is due. Last donation was 3 months ago.', type:'reminder', read:false, createdAt:'2026-05-11T09:00:00' },
       { id:'n4', userId:'u1', message:'Thank you for responding to the blood request!', type:'success', read:true, createdAt:'2026-05-10T15:30:00' }
     ]
   },
 
   // ────────────────────────────────────────────────────────────
-  // Credential Stores: Separate Admin & Donor Password Stores
+  // Credential Stores: Separate Admin, Donor & Receiver Password Stores
   // ────────────────────────────────────────────────────────────
   getAdminPasswords() {
-    const stored = localStorage.getItem('lifelink_admin_passwords');
-    let map = { ...DEFAULT_ADMIN_PASSWORDS };
-    if (stored) {
-      try { map = { ...map, ...JSON.parse(stored) }; } catch (e) {}
-    }
-    return map;
+    // Admin is hardcoded — no external registration allowed
+    return { ...DEFAULT_ADMIN_PASSWORDS };
   },
 
   saveAdminPassword(email, password, uid) {
-    if (!email) return;
-    const map = this.getAdminPasswords();
-    map[email.trim().toLowerCase()] = { password, uid };
-    localStorage.setItem('lifelink_admin_passwords', JSON.stringify(map));
+    // No-op: Admin credentials are hardcoded and cannot be changed
   },
 
   getDonorPasswords() {
@@ -160,9 +177,25 @@ const DemoData = {
     localStorage.setItem('lifelink_donor_passwords', JSON.stringify(map));
   },
 
+  getReceiverPasswords() {
+    const stored = localStorage.getItem('lifelink_receiver_passwords');
+    let map = { ...DEFAULT_RECEIVER_PASSWORDS };
+    if (stored) {
+      try { map = { ...map, ...JSON.parse(stored) }; } catch (e) {}
+    }
+    return map;
+  },
+
+  saveReceiverPassword(email, password, uid) {
+    if (!email) return;
+    const map = this.getReceiverPasswords();
+    map[email.trim().toLowerCase()] = { password, uid };
+    localStorage.setItem('lifelink_receiver_passwords', JSON.stringify(map));
+  },
+
   // Get local cache data (auto-resets if version mismatch)
   getData() {
-    const DATA_VERSION = 'v5_partitioned'; // version update for separated schema
+    const DATA_VERSION = 'v6_tn_ap_receiver'; // version update for TN/AP + receivers
     const storedVer = localStorage.getItem(this._key + '_ver');
     if (storedVer !== DATA_VERSION) {
       localStorage.removeItem(this._key);
@@ -174,6 +207,7 @@ const DemoData = {
         const parsed = JSON.parse(stored);
         if (!parsed.admins) parsed.admins = JSON.parse(JSON.stringify(this._defaults.admins));
         if (!parsed.donors) parsed.donors = JSON.parse(JSON.stringify(this._defaults.donors));
+        if (!parsed.receivers) parsed.receivers = [];
         if (!parsed.requests) parsed.requests = JSON.parse(JSON.stringify(this._defaults.requests));
         return parsed;
       } catch(e) {
@@ -195,7 +229,21 @@ const DemoData = {
   },
 
   // ────────────────────────────────────────────────────────────
-  // Distinct Section Readers: Donors & Admins
+  // Haversine Distance Calculation (km)
+  // ────────────────────────────────────────────────────────────
+  getDistanceBetween(lat1, lng1, lat2, lng2) {
+    const R = 6371; // Earth radius in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return Math.round(R * c * 10) / 10; // 1 decimal place
+  },
+
+  // ────────────────────────────────────────────────────────────
+  // Distinct Section Readers: Donors, Admins & Receivers
   // ────────────────────────────────────────────────────────────
   async getDonors() {
     if (typeof LifeLinkAPI !== 'undefined' && LifeLinkAPI.connected !== false) {
@@ -228,31 +276,28 @@ const DemoData = {
   },
 
   async getAdmins() {
+    // Admin is hardcoded — always return from defaults
+    return this.getData().admins || [];
+  },
+
+  async getReceivers() {
     if (typeof db !== 'undefined' && db) {
       try {
-        const snap = await db.collection('admins').get();
+        const snap = await db.collection('receivers').get();
         if (!snap.empty) {
-          const fsAdmins = snap.docs.map(doc => ({ uid: doc.id, ...doc.data() }));
-          const localAdmins = this.getData().admins || [];
-          const adminMap = new Map();
-          fsAdmins.forEach(a => adminMap.set(a.uid || a.email, a));
-          localAdmins.forEach(a => {
-            const key = a.uid || a.email;
-            if (!adminMap.has(key)) adminMap.set(key, a);
-          });
-          return Array.from(adminMap.values());
+          return snap.docs.map(doc => ({ uid: doc.id, ...doc.data() }));
         }
       } catch (e) {
-        console.warn('Firestore getAdmins fallback:', e.message);
+        console.warn('Firestore getReceivers fallback:', e.message);
       }
     }
-    return this.getData().admins || [];
+    return this.getData().receivers || [];
   },
 
   // Combined users view for global queries
   async getUsers() {
-    const [donors, admins] = await Promise.all([this.getDonors(), this.getAdmins()]);
-    return [...donors, ...admins];
+    const [donors, admins, receivers] = await Promise.all([this.getDonors(), this.getAdmins(), this.getReceivers()]);
+    return [...donors, ...admins, ...receivers];
   },
 
   // ────────────────────────────────────────────────────────────
@@ -341,52 +386,78 @@ const DemoData = {
     }
   },
 
-  // Predefined City Coordinates for quick accurate mapping across India
+  // Predefined City Coordinates: Tamil Nadu & Andhra Pradesh
   _cityCoords: {
+    // Andhra Pradesh
     'rly kodur': { lat: 14.0042, lng: 79.3512 },
     'railway kodur': { lat: 14.0042, lng: 79.3512 },
     'kodur': { lat: 14.0042, lng: 79.3512 },
     'kadapa': { lat: 14.4673, lng: 78.8242 },
+    'cuddapah': { lat: 14.4673, lng: 78.8242 },
     'tirupati': { lat: 13.6288, lng: 79.4192 },
-    'mumbai': { lat: 19.0760, lng: 72.8777 },
-    'delhi': { lat: 28.6139, lng: 77.2090 },
-    'new delhi': { lat: 28.6139, lng: 77.2090 },
-    'bangalore': { lat: 12.9716, lng: 77.5946 },
-    'bengaluru': { lat: 12.9716, lng: 77.5946 },
-    'hyderabad': { lat: 17.3850, lng: 78.4867 },
-    'chennai': { lat: 13.0827, lng: 80.2707 },
-    'kolkata': { lat: 22.5726, lng: 88.3639 },
-    'pune': { lat: 18.5204, lng: 73.8567 },
-    'ahmedabad': { lat: 23.0225, lng: 72.5714 },
-    'jaipur': { lat: 26.9124, lng: 75.7873 },
-    'lucknow': { lat: 26.8467, lng: 80.9462 },
-    'kochi': { lat: 9.9816, lng: 76.2999 },
-    'nagpur': { lat: 21.1458, lng: 79.0882 },
-    'coimbatore': { lat: 11.0168, lng: 76.9558 },
-    'thiruvananthapuram': { lat: 8.5074, lng: 76.9730 },
-    'trivandrum': { lat: 8.5074, lng: 76.9730 },
-    'dehradun': { lat: 30.3165, lng: 78.0322 },
     'vijayawada': { lat: 16.5062, lng: 80.6480 },
     'visakhapatnam': { lat: 17.6868, lng: 83.2185 },
     'vizag': { lat: 17.6868, lng: 83.2185 },
     'guntur': { lat: 16.3067, lng: 80.4365 },
     'nellore': { lat: 14.4426, lng: 79.9865 },
     'kurnool': { lat: 15.8281, lng: 78.0373 },
-    'anantapur': { lat: 14.6819, lng: 77.6006 }
+    'anantapur': { lat: 14.6819, lng: 77.6006 },
+    'rajahmundry': { lat: 17.0005, lng: 81.8040 },
+    'kakinada': { lat: 16.9891, lng: 82.2475 },
+    'eluru': { lat: 16.7107, lng: 81.0952 },
+    'ongole': { lat: 15.5057, lng: 80.0499 },
+    'chittoor': { lat: 13.2172, lng: 79.1003 },
+    'srikakulam': { lat: 18.2949, lng: 83.8938 },
+    'machilipatnam': { lat: 16.1875, lng: 81.1389 },
+    'tenali': { lat: 16.2428, lng: 80.6400 },
+    'proddatur': { lat: 14.7502, lng: 78.5481 },
+    'adoni': { lat: 15.6265, lng: 77.2747 },
+    'amaravati': { lat: 16.5131, lng: 80.5150 },
+    // Tamil Nadu
+    'chennai': { lat: 13.0827, lng: 80.2707 },
+    'madras': { lat: 13.0827, lng: 80.2707 },
+    'coimbatore': { lat: 11.0168, lng: 76.9558 },
+    'madurai': { lat: 9.9252, lng: 78.1198 },
+    'tiruchirappalli': { lat: 10.7905, lng: 78.7047 },
+    'trichy': { lat: 10.7905, lng: 78.7047 },
+    'salem': { lat: 11.6643, lng: 78.1460 },
+    'tirunelveli': { lat: 8.7284, lng: 77.7131 },
+    'erode': { lat: 11.3410, lng: 77.7172 },
+    'vellore': { lat: 12.9165, lng: 79.1325 },
+    'thanjavur': { lat: 10.7870, lng: 79.1378 },
+    'tanjore': { lat: 10.7870, lng: 79.1378 },
+    'dindigul': { lat: 10.3624, lng: 77.9695 },
+    'thoothukudi': { lat: 8.7642, lng: 78.1348 },
+    'tuticorin': { lat: 8.7642, lng: 78.1348 },
+    'nagercoil': { lat: 8.1833, lng: 77.4119 },
+    'kanchipuram': { lat: 12.8342, lng: 79.7036 },
+    'kumbakonam': { lat: 10.9602, lng: 79.3845 },
+    'karur': { lat: 10.9601, lng: 78.0766 },
+    'sivakasi': { lat: 9.4533, lng: 77.7967 },
+    'namakkal': { lat: 11.2189, lng: 78.1674 },
+    'puducherry': { lat: 11.9416, lng: 79.8083 },
+    'pondicherry': { lat: 11.9416, lng: 79.8083 },
+    'hosur': { lat: 12.7409, lng: 77.8253 },
+    'tirupur': { lat: 11.1085, lng: 77.3411 },
+    'cuddalore': { lat: 11.7447, lng: 79.7689 },
+    'ramanathapuram': { lat: 9.3639, lng: 78.8395 },
+    'krishnagiri': { lat: 12.5186, lng: 78.2137 },
+    'villupuram': { lat: 11.9401, lng: 79.4861 }
   },
 
   getCoordsForCity(cityName) {
-    if (!cityName) return { lat: 20.5937, lng: 78.9629 };
+    if (!cityName) return { lat: 13.0827, lng: 80.2707 }; // Default: Chennai
     const clean = cityName.trim().toLowerCase();
     for (const [key, coords] of Object.entries(this._cityCoords)) {
       if (clean.includes(key) || key.includes(clean)) {
         return coords;
       }
     }
+    // Fallback: generate coords in TN/AP region
     let hash = 0;
     for (let i = 0; i < clean.length; i++) hash = clean.charCodeAt(i) + ((hash << 5) - hash);
-    const lat = 12.0 + Math.abs(hash % 1600) / 100;
-    const lng = 74.0 + Math.abs((hash >> 3) % 1200) / 100;
+    const lat = 9.0 + Math.abs(hash % 1000) / 100; // 9.0 – 19.0 range
+    const lng = 77.0 + Math.abs((hash >> 3) % 700) / 100; // 77.0 – 84.0 range
     return { lat, lng };
   },
 
@@ -431,38 +502,53 @@ const DemoData = {
     return donor;
   },
 
-  async addAdmin(admin) {
-    admin.role = 'admin';
+  async addReceiver(receiver) {
+    if (receiver.lat == null || receiver.lng == null) {
+      const coords = this.getCoordsForCity(receiver.city || receiver.address);
+      receiver.lat = coords.lat;
+      receiver.lng = coords.lng;
+    }
+    if (!receiver.address && receiver.city) {
+      receiver.address = `${receiver.city}, India`;
+    }
+    receiver.role = 'receiver';
+
     const data = this.getData();
-    if (!data.admins) data.admins = [];
-    const idx = data.admins.findIndex(a => a.uid === admin.uid || (a.email && admin.email && a.email.toLowerCase() === admin.email.toLowerCase()));
+    if (!data.receivers) data.receivers = [];
+    const idx = data.receivers.findIndex(r => r.uid === receiver.uid || (r.email && receiver.email && r.email.toLowerCase() === receiver.email.toLowerCase()));
     if (idx > -1) {
-      data.admins[idx] = { ...data.admins[idx], ...admin };
+      data.receivers[idx] = { ...data.receivers[idx], ...receiver };
     } else {
-      data.admins.unshift(admin);
+      data.receivers.unshift(receiver);
     }
     this.saveData(data);
 
-    if (admin.password) {
-      this.saveAdminPassword(admin.email, admin.password, admin.uid);
+    if (receiver.password) {
+      this.saveReceiverPassword(receiver.email, receiver.password, receiver.uid);
     }
 
     if (typeof db !== 'undefined' && db) {
       try {
-        await db.collection('admins').doc(admin.uid).set(admin, { merge: true });
-        await db.collection('users').doc(admin.uid).set(admin, { merge: true });
-        console.log('🔥 Admin saved to database section: admins /', admin.uid);
+        await db.collection('receivers').doc(receiver.uid).set(receiver, { merge: true });
+        await db.collection('users').doc(receiver.uid).set(receiver, { merge: true });
+        console.log('🔥 Receiver saved to database section: receivers /', receiver.uid);
       } catch (e) {
-        console.warn('Firestore addAdmin notice:', e.message);
+        console.warn('Firestore addReceiver notice:', e.message);
       }
     }
-    return admin;
+    return receiver;
+  },
+
+  async addAdmin(admin) {
+    // Admin cannot be added dynamically — hardcoded only
+    console.warn('[DemoData] Admin accounts are hardcoded and cannot be created dynamically.');
+    return null;
   },
 
   // General addUser router
   async addUser(user) {
-    if (user.role === 'admin' || (user.email && user.email.toLowerCase().includes('admin'))) {
-      return this.addAdmin(user);
+    if (user.role === 'receiver') {
+      return this.addReceiver(user);
     }
     return this.addDonor(user);
   },
@@ -553,6 +639,14 @@ const DemoData = {
         updated = true;
       }
     }
+    // Check receivers section
+    if (data.receivers) {
+      const rIdx = data.receivers.findIndex(u => u.uid === uid);
+      if (rIdx > -1) {
+        data.receivers[rIdx] = { ...data.receivers[rIdx], ...updates };
+        updated = true;
+      }
+    }
     // Check admins section
     if (data.admins) {
       const aIdx = data.admins.findIndex(u => u.uid === uid);
@@ -571,6 +665,7 @@ const DemoData = {
       try {
         await db.collection('users').doc(uid).update(updates);
         await db.collection('donors').doc(uid).update(updates).catch(() => {});
+        await db.collection('receivers').doc(uid).update(updates).catch(() => {});
         await db.collection('admins').doc(uid).update(updates).catch(() => {});
       } catch (e) {
         console.warn('Firestore updateUser fallback:', e.message);
@@ -645,14 +740,15 @@ const DemoData = {
   async deleteUser(uid) {
     const data = this.getData();
     if (data.donors) data.donors = data.donors.filter(u => u.uid !== uid);
-    if (data.admins) data.admins = data.admins.filter(u => u.uid !== uid);
+    if (data.receivers) data.receivers = data.receivers.filter(u => u.uid !== uid);
+    // Admins cannot be deleted
     this.saveData(data);
 
     const isLive = typeof DEMO_MODE !== 'undefined' ? !DEMO_MODE : false;
     if (isLive && typeof db !== 'undefined' && db) {
       try {
         await db.collection('donors').doc(uid).delete().catch(() => {});
-        await db.collection('admins').doc(uid).delete().catch(() => {});
+        await db.collection('receivers').doc(uid).delete().catch(() => {});
         await db.collection('users').doc(uid).delete().catch(() => {});
       } catch (e) {
         console.warn('Firestore deleteUser fallback:', e.message);
@@ -678,14 +774,25 @@ const DemoData = {
     if (filters.availableOnly) {
       results = results.filter(d => d.availability);
     }
+
+    // Sort by distance from receiver/user location if provided
+    if (filters.userLat != null && filters.userLng != null) {
+      results = results.map(d => ({
+        ...d,
+        distance: this.getDistanceBetween(filters.userLat, filters.userLng, d.lat || 0, d.lng || 0)
+      }));
+      results.sort((a, b) => a.distance - b.distance);
+    }
+
     return results;
   },
 
   async getStats() {
     try {
-      const [donors, admins, reqs, dons, hosps, banks] = await Promise.all([
+      const [donors, admins, receivers, reqs, dons, hosps, banks] = await Promise.all([
         this.getDonors(),
         this.getAdmins(),
+        this.getReceivers(),
         this.getRequests(),
         this.getDonations(),
         this.getHospitals(),
@@ -696,6 +803,7 @@ const DemoData = {
         totalDonors: donors.length,
         activeDonors: donors.filter(u => u.availability).length,
         totalAdmins: admins.length,
+        totalReceivers: receivers.length,
         totalRequests: reqs.length,
         activeRequests: reqs.filter(r => r.status === 'active').length,
         fulfilledRequests: reqs.filter(r => r.status === 'fulfilled').length,

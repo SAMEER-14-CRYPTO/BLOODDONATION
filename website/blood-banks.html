@@ -61,16 +61,63 @@
     </div>
   </div>
 
+  <meta name="msapplication-TileImage" content="icons/icon-512x512.png">
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-brand">
+        <div class="logo-icon">🩸</div>
+        <span>Life<span class="text-primary">Link</span></span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="search.html">Find Donors</a>
+        <a href="emergency.html">Emergency</a>
+        <a href="hospitals.html">Hospitals</a>
+        <a href="blood-banks.html" class="active">Blood Banks</a>
+        <a href="about.html">About</a>
+      </div>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌙</button>
+        <a href="login.html" class="btn btn-sm btn-outline auth-btn">Login</a>
+        <a href="dashboard.html" class="btn btn-sm btn-primary user-btn" style="display:none">Dashboard</a>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="container">
+      <span class="badge badge-primary">🏦 Blood Supply</span>
+      <h1>Blood Bank <span class="text-primary">Directory</span></h1>
+      <div class="breadcrumb"><a href="index.html">Home</a><span>/</span><span>Blood Banks</span></div>
+    </div>
+  </div>
+
   <section class="section" style="padding-top:40px">
     <div class="container">
 
       <!-- Map -->
       <div id="bloodBankMap" class="map-container" style="height:360px;margin-bottom:32px"></div>
 
-      <!-- Search + locate -->
+      <!-- State Filter Tabs & Search -->
+      <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center;justify-content:space-between">
+        <div class="tabs" id="stateTabs">
+          <button class="tab active" data-state="all" onclick="filterByState('all', this)">All South India (TN & AP)</button>
+          <button class="tab" data-state="tn" onclick="filterByState('tn', this)">Tamil Nadu</button>
+          <button class="tab" data-state="ap" onclick="filterByState('ap', this)">Andhra Pradesh</button>
+        </div>
+        <div style="font-size:0.85rem;font-weight:600;color:var(--text-secondary)">
+          Showing <span id="bankCount" style="color:var(--primary);font-weight:700">0</span> Blood Banks
+        </div>
+      </div>
+
       <div style="display:flex;gap:12px;align-items:center;margin-bottom:24px;flex-wrap:wrap">
         <input type="text" id="bbSearch" class="form-input" style="flex:1;min-width:200px"
-               placeholder="Search blood bank by name or city…">
+               placeholder="Search by city (e.g. Chennai, Tirupati, Coimbatore, Vijayawada)…">
         <button class="btn btn-primary" id="bbSearchBtn">🔍 Search</button>
         <button class="btn btn-outline" id="bbGeoBtn">📍 Near Me</button>
       </div>
@@ -98,11 +145,15 @@
   <script src="js/app.js"></script>
   <script>
     let allBanks = [];
+    let currentState = 'all';
 
     function renderBanks(banks) {
       const container = document.getElementById('bloodBankList');
+      const countEl = document.getElementById('bankCount');
+      if (countEl) countEl.textContent = banks.length;
+
       if (banks.length === 0) {
-        container.innerHTML = '<div class="text-center" style="padding:40px"><p>No blood banks found.</p></div>';
+        container.innerHTML = '<div class="text-center" style="padding:40px"><p>No blood banks found for this search.</p></div>';
         return;
       }
       container.innerHTML = banks.map(b => {
@@ -143,29 +194,42 @@
       if (b && b.lat && b.lng) Maps.setCenter({ lat: b.lat, lng: b.lng }, 15);
     }
 
+    function filterByState(state, btn) {
+      currentState = state;
+      document.querySelectorAll('#stateTabs .tab').forEach(t => t.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      filterBanks();
+    }
+
     function filterBanks() {
-      const q = document.getElementById('bbSearch').value.toLowerCase();
-      const list = allBanks.filter(b =>
-        !q || b.name.toLowerCase().includes(q) || b.address.toLowerCase().includes(q)
-      );
+      const q = document.getElementById('bbSearch').value.toLowerCase().trim();
+      let list = allBanks;
+
+      if (currentState === 'tn') {
+        list = list.filter(b => b.address.toLowerCase().includes('tamil nadu') || b.address.toLowerCase().includes('chennai') || b.address.toLowerCase().includes('tn'));
+      } else if (currentState === 'ap') {
+        list = list.filter(b => b.address.toLowerCase().includes('andhra') || b.address.toLowerCase().includes('ap') || b.address.toLowerCase().includes('tirupati') || b.address.toLowerCase().includes('vijayawada'));
+      }
+
+      if (q) {
+        list = list.filter(b =>
+          b.name.toLowerCase().includes(q) || b.address.toLowerCase().includes(q)
+        );
+      }
+
       renderBanks(list);
       Maps.clearMarkers();
       Maps.addBloodBankMarkers(list);
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      // Add lat/lng to blood banks for demo (data.js doesn't have them)
       DemoData.getBloodBanks().then(banks => {
-        allBanks = banks.map((b, i) => ({
-          ...b,
-          lat: b.lat || [19.059, 28.637, 23.033, 12.938, 17.434][i] || null,
-          lng: b.lng || [72.835, 77.078, 72.615, 77.565, 78.506][i] || null
-        }));
+        allBanks = banks;
 
         LeafletLoader.load(() => {
           Maps.init('bloodBankMap', {
             center: LIFELINK_CONFIG.defaultCenter,
-            zoom: 5,
+            zoom: LIFELINK_CONFIG.defaultZoom,
             onMapReady: () => Maps.addBloodBankMarkers(allBanks)
           });
         });

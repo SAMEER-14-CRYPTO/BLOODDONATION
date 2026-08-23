@@ -4,12 +4,12 @@
 // ✅ No API Key needed! Maps powered by Leaflet + OpenStreetMap (100% free)
 
 const LIFELINK_CONFIG = {
-  // Default map center (India)
-  defaultCenter: { lat: 20.5937, lng: 78.9629 },
-  defaultZoom: 5,
+  // Default map center (Tamil Nadu & Andhra Pradesh region)
+  defaultCenter: { lat: 13.0827, lng: 79.8877 },
+  defaultZoom: 7,
 
   // App version
-  version: '3.0.0'
+  version: '3.1.0'
 };
 
 // Safe global fallbacks for Firebase & Demo Mode
