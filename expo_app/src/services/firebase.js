@@ -2,7 +2,6 @@
 // Project ID: lifelink-app-9315f
 
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
 import { 
   getFirestore, collection, doc, setDoc, getDoc, 
   getDocs, addDoc, updateDoc, query, orderBy, onSnapshot, serverTimestamp 
@@ -19,8 +18,9 @@ export const firebaseConfig = {
 };
 
 // Initialize Firebase App
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-export const auth = getAuth(app);
+export const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+
+// Initialize Firestore Database (Exact same database as Web Application)
 export const db = getFirestore(app);
 
 // Firestore Collections Constants (Exact same collections as Web App)
@@ -42,6 +42,7 @@ export async function saveUserToFirestore(uid, userData) {
       ...userData,
       updatedAt: serverTimestamp()
     }, { merge: true });
+    console.log('User saved to Firebase Firestore:', uid);
     return { success: true };
   } catch (e) {
     console.log('Firestore user save error:', e.message);
@@ -59,6 +60,7 @@ export async function postEmergencyRequestToFirestore(requestData) {
       responses: 0,
       createdAt: serverTimestamp()
     });
+    console.log('Emergency request posted to Firebase Firestore:', docRef.id);
     return { success: true, id: docRef.id };
   } catch (e) {
     console.log('Firestore request post error:', e.message);
