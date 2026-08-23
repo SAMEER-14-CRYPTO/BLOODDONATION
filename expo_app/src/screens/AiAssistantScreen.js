@@ -7,7 +7,9 @@ const QUICK_PROMPTS = [
   '🩸 Find O+ in Chennai',
   '⚡ Find B+ in Tirupati',
   '❓ Can A+ give to B+?',
-  '💉 Donation rules'
+  '💉 Donation rules',
+  '🏥 Hospitals Network',
+  '🚨 Emergency SOS'
 ];
 
 export default function AiAssistantScreen() {
@@ -48,24 +50,40 @@ export default function AiAssistantScreen() {
     }, 300);
   };
 
+  const handleClear = () => {
+    setMessages([
+      {
+        id: '1',
+        sender: 'bot',
+        text: '👋 **Chat cleared!** How can I assist you with blood donation today?',
+        donors: []
+      }
+    ]);
+  };
+
   const renderDonorCard = (donor) => {
+    const theme = Colors.bloodThemes[donor.bloodGroup] || Colors.bloodThemes['O+'];
     return (
       <View key={donor.uid} style={styles.aiDonorCard}>
         <View style={styles.donorHeader}>
+          <View style={[styles.miniBloodBadge, { backgroundColor: theme.bg, borderColor: theme.border }]}>
+            <Text style={[styles.miniBloodText, { color: theme.text }]}>{donor.bloodGroup}</Text>
+          </View>
           <View style={styles.donorInfo}>
-            <Text style={styles.donorName}>🩸 {donor.displayName} ({donor.bloodGroup})</Text>
-            <Text style={styles.donorMeta}>📍 {donor.address || donor.city} • {donor.distance} km away</Text>
+            <Text style={styles.donorName}>{donor.displayName}</Text>
+            <Text style={styles.donorMeta}>📍 {donor.address || donor.city} • <strong>{donor.distance} km</strong></Text>
           </View>
           <View style={styles.aiScoreBadge}>
             <Text style={styles.aiScoreText}>{donor.aiScore}% Match</Text>
           </View>
         </View>
+
         <View style={styles.btnRow}>
           <TouchableOpacity 
             style={styles.callSmallBtn}
             onPress={() => Linking.openURL(`tel:${donor.phone}`)}
           >
-            <Text style={styles.callSmallBtnText}>📞 Call</Text>
+            <Text style={styles.callSmallBtnText}>📞 Direct Call</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style={styles.waSmallBtn}
@@ -80,15 +98,34 @@ export default function AiAssistantScreen() {
 
   const renderMessage = ({ item }) => {
     const isUser = item.sender === 'user';
+    const lines = item.text.split('\n');
+
     return (
       <View style={[styles.msgRow, isUser ? styles.msgRowUser : styles.msgRowBot]}>
         {!isUser && <View style={styles.botAvatar}><Text style={{ fontSize: 13 }}>🤖</Text></View>}
         <View style={[styles.msgBubble, isUser ? styles.bubbleUser : styles.bubbleBot]}>
-          <Text style={[styles.msgText, isUser && styles.msgTextUser]}>
-            {item.text.replace(/\*\*(.*?)\*\*/g, '$1')}
-          </Text>
+          {lines.map((line, idx) => {
+            const isBullet = line.trim().startsWith('•') || line.trim().startsWith('-');
+            const isHeader = line.includes('**') && !line.includes('•');
+            const cleanLine = line.replace(/\*\*(.*?)\*\*/g, '$1');
+
+            return (
+              <Text 
+                key={idx} 
+                style={[
+                  styles.msgText, 
+                  isUser && styles.msgTextUser,
+                  isHeader && styles.headerLineText,
+                  isBullet && styles.bulletLineText
+                ]}
+              >
+                {cleanLine}
+              </Text>
+            );
+          })}
+
           {item.donors && item.donors.length > 0 && (
-            <View style={{ marginTop: 10, gap: 8 }}>
+            <View style={{ marginTop: 12, gap: 8 }}>
               {item.donors.map(d => renderDonorCard(d))}
             </View>
           )}
@@ -103,7 +140,15 @@ export default function AiAssistantScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
-      {/* Quick Prompts */}
+      {/* Top Controls Bar */}
+      <View style={styles.topControlBar}>
+        <Text style={styles.aiStatusText}>🟢 Smart Medical NLP Active</Text>
+        <TouchableOpacity onPress={handleClear}>
+          <Text style={styles.clearChatText}>🧹 Clear Chat</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Quick Prompts Bar */}
       <View style={styles.quickPromptsBar}>
         <FlatList
           horizontal
@@ -153,6 +198,26 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.bgDark,
   },
+  topControlBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: Colors.cardDark,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.borderDark,
+    alignItems: 'center',
+  },
+  aiStatusText: {
+    fontSize: 11,
+    color: Colors.success,
+    fontWeight: '700',
+  },
+  clearChatText: {
+    fontSize: 11,
+    color: Colors.textMuted,
+    fontWeight: '600',
+  },
   quickPromptsBar: {
     paddingVertical: 10,
     borderBottomWidth: 1,
@@ -192,9 +257,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   msgBubble: {
-    maxWidth: '82%',
-    padding: 12,
-    borderRadius: 14,
+    maxWidth: '85%',
+    padding: 14,
+    borderRadius: 16,
   },
   bubbleUser: {
     backgroundColor: Colors.info,
@@ -209,23 +274,47 @@ const styles = StyleSheet.create({
   msgText: {
     color: '#FFFFFF',
     fontSize: 13,
-    lineHeight: 18,
+    lineHeight: 19,
+    marginBottom: 4,
   },
   msgTextUser: {
     color: '#FFFFFF',
     fontWeight: '600',
+  },
+  headerLineText: {
+    fontWeight: '800',
+    color: '#FFFFFF',
+    fontSize: 14,
+    marginBottom: 6,
+  },
+  bulletLineText: {
+    color: 'rgba(255, 255, 255, 0.9)',
+    paddingLeft: 4,
+    marginBottom: 3,
   },
   aiDonorCard: {
     backgroundColor: Colors.bgDark,
     borderWidth: 1,
     borderColor: Colors.borderDark,
     borderRadius: 12,
-    padding: 10,
+    padding: 12,
   },
   donorHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    gap: 8,
+  },
+  miniBloodBadge: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  miniBloodText: {
+    fontSize: 12,
+    fontWeight: '900',
   },
   donorInfo: {
     flex: 1,
@@ -242,7 +331,7 @@ const styles = StyleSheet.create({
   },
   aiScoreBadge: {
     backgroundColor: 'rgba(67, 160, 71, 0.2)',
-    paddingHorizontal: 6,
+    paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
   },
@@ -254,29 +343,31 @@ const styles = StyleSheet.create({
   btnRow: {
     flexDirection: 'row',
     gap: 8,
-    marginTop: 8,
+    marginTop: 10,
   },
   callSmallBtn: {
+    flex: 1,
     backgroundColor: Colors.primary,
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-    borderRadius: 6,
+    paddingVertical: 6,
+    borderRadius: 8,
+    alignItems: 'center',
   },
   callSmallBtnText: {
     color: '#FFFFFF',
     fontSize: 11,
-    fontWeight: '700',
+    fontWeight: '800',
   },
   waSmallBtn: {
+    flex: 1,
     backgroundColor: 'rgba(30, 136, 229, 0.2)',
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-    borderRadius: 6,
+    paddingVertical: 6,
+    borderRadius: 8,
+    alignItems: 'center',
   },
   waSmallBtnText: {
     color: '#42A5F5',
     fontSize: 11,
-    fontWeight: '700',
+    fontWeight: '800',
   },
   inputBar: {
     flexDirection: 'row',

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, Linking, Alert } from 'react-native';
 import { Colors } from '../constants/theme';
-import { BloodBanksList } from '../data/mockData';
+import { BloodBanksList, CityCoordinates } from '../data/mockData';
+import InteractiveMap from '../components/InteractiveMap';
 
 export default function BloodBanksScreen() {
   const [search, setSearch] = useState('');
+  const [showMap, setShowMap] = useState(true);
 
   const filtered = BloodBanksList.filter(b => 
     !search.trim() || 
@@ -18,6 +20,18 @@ export default function BloodBanksScreen() {
       Alert.alert('Contact', phone);
     });
   };
+
+  const mapMarkers = filtered.map(b => {
+    const coords = CityCoordinates[b.city] || { lat: 13.0827, lng: 80.2707 };
+    return {
+      lat: coords.lat,
+      lng: coords.lng,
+      name: b.name,
+      address: b.address,
+      contact: b.contact,
+      type: 'bloodbank'
+    };
+  });
 
   const renderBankCard = ({ item }) => {
     return (
@@ -76,9 +90,15 @@ export default function BloodBanksScreen() {
         <Text style={styles.countText}>
           Showing <Text style={{ color: Colors.primary, fontWeight: '800' }}>{filtered.length}</Text> Certified Centres
         </Text>
+        <TouchableOpacity onPress={() => setShowMap(!showMap)}>
+          <Text style={styles.mapToggleBtn}>{showMap ? '🗺️ Hide Map' : '🗺️ Show Map'}</Text>
+        </TouchableOpacity>
       </View>
 
       <FlatList
+        ListHeaderComponent={
+          showMap ? <InteractiveMap markers={mapMarkers} height={200} /> : null
+        }
         data={filtered}
         keyExtractor={item => item.id}
         renderItem={renderBankCard}
@@ -108,13 +128,21 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   headerInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 6,
+    alignItems: 'center',
   },
   countText: {
     color: Colors.textMuted,
     fontSize: 12,
     fontWeight: '600',
+  },
+  mapToggleBtn: {
+    color: '#42A5F5',
+    fontSize: 12,
+    fontWeight: '700',
   },
   card: {
     backgroundColor: Colors.cardDark,

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, Linking, Alert } from 'react-native';
 import { Colors } from '../constants/theme';
-import { DonorsList, CityCoordinates } from '../data/mockData';
-import { rankDonors } from '../services/aiMatching';
+import { DonorsList } from '../data/mockData';
+import InteractiveMap from '../components/InteractiveMap';
 
 const BLOOD_GROUPS = ['ALL', 'A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
 
@@ -10,6 +10,7 @@ export default function SearchDonorsScreen() {
   const [selectedGroup, setSelectedGroup] = useState('ALL');
   const [searchCity, setSearchCity] = useState('');
   const [availableOnly, setAvailableOnly] = useState(false);
+  const [showMap, setShowMap] = useState(true);
 
   const filteredDonors = DonorsList.filter(d => {
     const matchGroup = selectedGroup === 'ALL' || d.bloodGroup === selectedGroup;
@@ -33,6 +34,16 @@ export default function SearchDonorsScreen() {
       Alert.alert('WhatsApp unavailable', 'Could not launch WhatsApp.');
     });
   };
+
+  const mapMarkers = filteredDonors.map(d => ({
+    lat: d.lat,
+    lng: d.lng,
+    name: d.displayName,
+    bloodGroup: d.bloodGroup,
+    address: d.address || d.city,
+    phone: d.phone,
+    type: 'donor'
+  }));
 
   const renderDonorCard = ({ item }) => {
     const theme = Colors.bloodThemes[item.bloodGroup] || Colors.bloodThemes['O+'];
@@ -110,20 +121,25 @@ export default function SearchDonorsScreen() {
         />
       </View>
 
-      {/* Donor Count */}
+      {/* Map and Count Header */}
       <View style={styles.countRow}>
         <Text style={styles.countText}>
           Showing <Text style={{ color: Colors.primary, fontWeight: '800' }}>{filteredDonors.length}</Text> Donors
         </Text>
-        <TouchableOpacity onPress={() => setAvailableOnly(!availableOnly)}>
-          <Text style={[styles.availToggle, availableOnly && { color: Colors.success }]}>
-            {availableOnly ? '🟢 Available only' : '⚪ All statuses'}
+        <TouchableOpacity onPress={() => setShowMap(!showMap)}>
+          <Text style={styles.mapToggleBtn}>
+            {showMap ? '🗺️ Hide Map' : '🗺️ Show Map'}
           </Text>
         </TouchableOpacity>
       </View>
 
-      {/* Donors List */}
+      {/* Donors List with Embedded Interactive Map */}
       <FlatList
+        ListHeaderComponent={
+          showMap ? (
+            <InteractiveMap markers={mapMarkers} height={220} />
+          ) : null
+        }
         data={filteredDonors}
         keyExtractor={item => item.uid}
         renderItem={renderDonorCard}
@@ -186,15 +202,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingVertical: 6,
+    alignItems: 'center',
   },
   countText: {
     color: Colors.textMuted,
     fontSize: 12,
     fontWeight: '600',
   },
-  availToggle: {
-    color: Colors.textMuted,
+  mapToggleBtn: {
+    color: '#42A5F5',
     fontSize: 12,
     fontWeight: '700',
   },
