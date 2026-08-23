@@ -86,21 +86,17 @@
   <section class="section" style="padding-top:40px">
     <div class="container">
 
-      <!-- State Filter Tabs -->
-      <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center;justify-content:space-between">
-        <div class="tabs" id="hospStateTabs">
-          <button class="tab active" data-state="all" onclick="filterHospByState('all', this)">All South India (TN & AP)</button>
-          <button class="tab" data-state="tn" onclick="filterHospByState('tn', this)">Tamil Nadu</button>
-          <button class="tab" data-state="ap" onclick="filterHospByState('ap', this)">Andhra Pradesh</button>
-        </div>
-        <div style="font-size:0.85rem;font-weight:600;color:var(--text-secondary)">
-          Showing <span id="hospCount" style="color:var(--primary);font-weight:700">0</span> Hospitals
+      <!-- Search & Filter Bar -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+        <h3 style="margin:0">🏥 Hospitals Network (Tamil Nadu & Andhra Pradesh)</h3>
+        <div style="font-size:0.9rem;font-weight:600;color:var(--text-secondary)">
+          Showing <span id="hospCount" style="color:var(--primary);font-weight:700">0</span> Verified Hospitals
         </div>
       </div>
 
       <!-- Search bar for hospitals -->
-      <div class="hosp-search">
-        <input type="text" id="hospCityFilter" placeholder="Search by hospital name or city (e.g. Chennai, Tirupati, Coimbatore, Vizag, Kadapa)…">
+      <div class="hosp-search" style="margin-bottom:24px">
+        <input type="text" id="hospCityFilter" placeholder="Search hospital name, city or district (e.g. Chennai, Tirupati, Coimbatore, Vizag, Madurai, Kadapa, Rly Kodur)…">
         <select id="hospBloodFilter" class="form-input" style="max-width:160px">
           <option value="all">All Blood Groups</option>
           <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
@@ -115,8 +111,8 @@
 
       <!-- Hospital Cards -->
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-        <h3>🏥 South Indian Partner Hospitals</h3>
-        <span class="badge badge-success">🟢 Live Availability</span>
+        <h3>🏥 Verified Hospitals</h3>
+        <span class="badge badge-success">🟢 Live Blood Availability</span>
       </div>
       <div id="hospitalList" class="grid grid-2 gap-3"></div>
     </div>
@@ -142,7 +138,6 @@
   <script src="js/app.js"></script>
   <script>
     let allHospitals = [];
-    let currentHospState = 'all';
 
     function renderHospitals(hospitals) {
       const container = document.getElementById('hospitalList');
@@ -186,24 +181,11 @@
       if (h && h.lat && h.lng) Maps.setCenter({ lat: h.lat, lng: h.lng }, 15);
     }
 
-    function filterHospByState(state, btn) {
-      currentHospState = state;
-      document.querySelectorAll('#hospStateTabs .tab').forEach(t => t.classList.remove('active'));
-      if (btn) btn.classList.add('active');
-      filterHospitals();
-    }
-
     function filterHospitals() {
       const query = document.getElementById('hospCityFilter').value.toLowerCase().trim();
       const blood = document.getElementById('hospBloodFilter').value;
       
       let list = allHospitals;
-
-      if (currentHospState === 'tn') {
-        list = list.filter(h => h.address.toLowerCase().includes('tamil nadu') || h.address.toLowerCase().includes('chennai') || h.address.toLowerCase().includes('tn') || h.address.toLowerCase().includes('puducherry'));
-      } else if (currentHospState === 'ap') {
-        list = list.filter(h => h.address.toLowerCase().includes('andhra') || h.address.toLowerCase().includes('ap') || h.address.toLowerCase().includes('tirupati') || h.address.toLowerCase().includes('vijayawada') || h.address.toLowerCase().includes('guntur'));
-      }
 
       if (query || blood !== 'all') {
         list = list.filter(h => {

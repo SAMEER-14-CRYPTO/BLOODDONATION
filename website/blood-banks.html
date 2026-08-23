@@ -103,21 +103,17 @@
       <!-- Map -->
       <div id="bloodBankMap" class="map-container" style="height:360px;margin-bottom:32px"></div>
 
-      <!-- State Filter Tabs & Search -->
-      <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center;justify-content:space-between">
-        <div class="tabs" id="stateTabs">
-          <button class="tab active" data-state="all" onclick="filterByState('all', this)">All South India (TN & AP)</button>
-          <button class="tab" data-state="tn" onclick="filterByState('tn', this)">Tamil Nadu</button>
-          <button class="tab" data-state="ap" onclick="filterByState('ap', this)">Andhra Pradesh</button>
-        </div>
-        <div style="font-size:0.85rem;font-weight:600;color:var(--text-secondary)">
-          Showing <span id="bankCount" style="color:var(--primary);font-weight:700">0</span> Blood Banks
+      <!-- Title & Search Bar -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+        <h3 style="margin:0">🏦 Blood Bank & Component Centres (Tamil Nadu & Andhra Pradesh)</h3>
+        <div style="font-size:0.9rem;font-weight:600;color:var(--text-secondary)">
+          Showing <span id="bankCount" style="color:var(--primary);font-weight:700">0</span> Certified Centres
         </div>
       </div>
 
       <div style="display:flex;gap:12px;align-items:center;margin-bottom:24px;flex-wrap:wrap">
         <input type="text" id="bbSearch" class="form-input" style="flex:1;min-width:200px"
-               placeholder="Search by city (e.g. Chennai, Tirupati, Coimbatore, Vijayawada)…">
+               placeholder="Search by blood bank name, city or district (e.g. Chennai, Tirupati, Coimbatore, Vijayawada, Vizag, Nellore, Kadapa)…">
         <button class="btn btn-primary" id="bbSearchBtn">🔍 Search</button>
         <button class="btn btn-outline" id="bbGeoBtn">📍 Near Me</button>
       </div>
@@ -145,7 +141,6 @@
   <script src="js/app.js"></script>
   <script>
     let allBanks = [];
-    let currentState = 'all';
 
     function renderBanks(banks) {
       const container = document.getElementById('bloodBankList');
@@ -158,21 +153,22 @@
       }
       container.innerHTML = banks.map(b => {
         const stockBars = Object.entries(b.stocks || {}).map(([g, c]) => {
-          const pct   = Math.min(c / 60 * 100, 100);
-          const color = pct > 50 ? 'var(--success)' : pct > 20 ? 'var(--warning)' : 'var(--danger)';
-          return `<div style="flex:1;min-width:80px">
-            <div style="display:flex;justify-content:space-between;font-size:0.8rem;font-weight:600;margin-bottom:4px">
-              <span>${g}</span><span>${c} units</span>
-            </div>
-            <div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden">
-              <div style="height:100%;width:${pct}%;background:${color};border-radius:4px;transition:width 0.5s"></div>
-            </div>
-          </div>`;
+          const max = 60;
+          const pct = Math.min(100, Math.round((c / max) * 100));
+          const cls = c > 10 ? 'high' : c > 3 ? 'medium' : 'low';
+          return `
+            <div style="flex:1;min-width:70px;text-align:center">
+              <div style="font-weight:700;font-size:0.9rem;margin-bottom:4px">${g}</div>
+              <div style="background:#e0e0e0;border-radius:4px;height:6px;overflow:hidden;margin-bottom:4px">
+                <div class="stock-fill ${cls}" style="width:${pct}%;height:100%;border-radius:4px"></div>
+              </div>
+              <span style="font-size:0.75rem;color:var(--text-secondary)">${c} units</span>
+            </div>`;
         }).join('');
 
         return `
-          <div class="card" style="padding:28px" id="bb-${b.id}">
-            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+          <div class="card" style="padding:24px" id="bank-${b.id}">
+            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:16px;flex-wrap:wrap;gap:12px">
               <div>
                 <h3 style="margin-bottom:4px">🏦 ${b.name}</h3>
                 <p style="font-size:0.85rem;margin-bottom:2px">📍 ${b.address}</p>
@@ -194,22 +190,9 @@
       if (b && b.lat && b.lng) Maps.setCenter({ lat: b.lat, lng: b.lng }, 15);
     }
 
-    function filterByState(state, btn) {
-      currentState = state;
-      document.querySelectorAll('#stateTabs .tab').forEach(t => t.classList.remove('active'));
-      if (btn) btn.classList.add('active');
-      filterBanks();
-    }
-
     function filterBanks() {
       const q = document.getElementById('bbSearch').value.toLowerCase().trim();
       let list = allBanks;
-
-      if (currentState === 'tn') {
-        list = list.filter(b => b.address.toLowerCase().includes('tamil nadu') || b.address.toLowerCase().includes('chennai') || b.address.toLowerCase().includes('tn'));
-      } else if (currentState === 'ap') {
-        list = list.filter(b => b.address.toLowerCase().includes('andhra') || b.address.toLowerCase().includes('ap') || b.address.toLowerCase().includes('tirupati') || b.address.toLowerCase().includes('vijayawada'));
-      }
 
       if (q) {
         list = list.filter(b =>
