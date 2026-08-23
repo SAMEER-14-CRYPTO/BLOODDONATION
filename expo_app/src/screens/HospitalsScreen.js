@@ -1,0 +1,183 @@
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, Linking, Alert } from 'react-native';
+import { Colors } from '../constants/theme';
+import { HospitalsList } from '../data/mockData';
+
+export default function HospitalsScreen() {
+  const [search, setSearch] = useState('');
+
+  const filtered = HospitalsList.filter(h => 
+    !search.trim() || 
+    h.name.toLowerCase().includes(search.toLowerCase()) || 
+    h.city.toLowerCase().includes(search.toLowerCase()) ||
+    h.address.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const handleCall = (phone) => {
+    Linking.openURL(`tel:${phone}`).catch(() => {
+      Alert.alert('Phone', phone);
+    });
+  };
+
+  const renderHospitalCard = ({ item }) => {
+    return (
+      <View style={styles.card}>
+        <View style={styles.headerRow}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.hospName}>🏥 {item.name}</Text>
+            <Text style={styles.addressText}>📍 {item.address}</Text>
+            <Text style={styles.phoneText}>📞 {item.contact}</Text>
+          </View>
+          <TouchableOpacity 
+            style={styles.callBtn}
+            onPress={() => handleCall(item.contact)}
+          >
+            <Text style={styles.callBtnText}>Call</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Live Blood Availability Badges */}
+        <Text style={styles.stockTitle}>Live Blood Availability:</Text>
+        <View style={styles.stocksGrid}>
+          {Object.entries(item.bloodAvailability || {}).map(([group, count]) => {
+            const theme = Colors.bloodThemes[group] || Colors.bloodThemes['O+'];
+            return (
+              <View 
+                key={group} 
+                style={[styles.stockPill, { backgroundColor: theme.bg, borderColor: theme.border }]}
+              >
+                <Text style={[styles.stockGroup, { color: theme.text }]}>{group}</Text>
+                <Text style={[styles.stockCount, { color: theme.text }]}>{count}u</Text>
+              </View>
+            );
+          })}
+        </View>
+      </View>
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.searchBar}>
+        <TextInput
+          style={styles.input}
+          placeholder="Search hospital name or city (e.g. Chennai, Tirupati)…"
+          placeholderTextColor={Colors.textMuted}
+          value={search}
+          onChangeText={setSearch}
+        />
+      </View>
+
+      <View style={styles.headerInfo}>
+        <Text style={styles.countText}>
+          Showing <Text style={{ color: Colors.primary, fontWeight: '800' }}>{filtered.length}</Text> Verified Hospitals
+        </Text>
+      </View>
+
+      <FlatList
+        data={filtered}
+        keyExtractor={item => item.id}
+        renderItem={renderHospitalCard}
+        contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: Colors.bgDark,
+  },
+  searchBar: {
+    padding: 16,
+    paddingBottom: 6,
+  },
+  input: {
+    backgroundColor: Colors.cardDark,
+    borderWidth: 1,
+    borderColor: Colors.borderDark,
+    borderRadius: 12,
+    color: '#FFFFFF',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    fontSize: 13,
+  },
+  headerInfo: {
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+  },
+  countText: {
+    color: Colors.textMuted,
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  card: {
+    backgroundColor: Colors.cardDark,
+    borderWidth: 1,
+    borderColor: Colors.borderDark,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+    marginBottom: 12,
+  },
+  hospName: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    marginBottom: 4,
+  },
+  addressText: {
+    fontSize: 12,
+    color: Colors.textMuted,
+    marginBottom: 2,
+  },
+  phoneText: {
+    fontSize: 12,
+    color: Colors.textMuted,
+  },
+  callBtn: {
+    backgroundColor: Colors.primary,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 10,
+  },
+  callBtnText: {
+    color: '#FFFFFF',
+    fontWeight: '800',
+    fontSize: 12,
+  },
+  stockTitle: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: Colors.textMuted,
+    marginBottom: 8,
+  },
+  stocksGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  stockPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  stockGroup: {
+    fontSize: 11,
+    fontWeight: '800',
+  },
+  stockCount: {
+    fontSize: 11,
+    fontWeight: '600',
+  },
+});

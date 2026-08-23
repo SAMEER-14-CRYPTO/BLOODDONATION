@@ -33,15 +33,6 @@ class _EmergencyRequestScreenState extends State<EmergencyRequestScreen> with Si
   late AnimationController _animCtrl;
   late Animation<double> _scaleAnim;
 
-  final Map<String, List<double>> _cityCoordinates = {
-    'Chennai': [13.0827, 80.2707],
-    'Bengaluru': [12.9716, 77.5946],
-    'Hyderabad': [17.3850, 78.4867],
-    'Coimbatore': [11.0168, 76.9558],
-    'Madurai': [9.9252, 78.1198],
-    'Kochi': [9.9312, 76.2673],
-    'Trivandrum': [8.5241, 76.9366],
-    'Vijayawada': [16.5062, 80.6480],
   final Map<String, List<double>> _cityCoords = {
     'Rly Kodur': [14.0042, 79.3512],
     'Tirupati': [13.6288, 79.4192],
