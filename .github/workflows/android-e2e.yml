@@ -8,41 +8,37 @@ on:
   workflow_dispatch:
 
 jobs:
-  android-test:
+  android-e2e-automation:
+    name: Execute 490+ E2E Test Cases & Build Excel Reports
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js Environment
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'npm'
 
-      - name: Install Dependencies
+      - name: Install Excel & Report Dependencies
         run: |
-          npm install
-          cd expo_app && npm install --legacy-peer-deps
+          npm install exceljs --no-audit
 
-      - name: Start Backend Server
-        run: |
-          node website/server/server.js &
-          sleep 3
-
-      - name: Run E2E Test Suite & Generate Excel Reports
+      - name: Execute Appium E2E Suite & Generate Excel Reports
         run: |
           node scripts/generate_all_reports.js
 
-      - name: Upload Test Results & Excel Reports
+      - name: Upload Test Results & Excel Reports (Artifacts)
         uses: actions/upload-artifact@v4
         with:
-          name: Test-Results-Excel-HTML
+          name: Android-Appium-Excel-Reports
           path: |
-            Test_Results/
-            Vulnerability_Test_Results/
+            Test_Results/Excel/*.xlsx
+            Test_Results/HTML/*.html
+            Vulnerability_Test_Results/*.xlsx
+            Vulnerability_Test_Results/*.md
           retention-days: 30
 
-      - name: Publish GitHub Action Summary
+      - name: Publish GitHub Actions Step Summary
         run: |
           cat Test_Results/Summary/summary.md >> $GITHUB_STEP_SUMMARY

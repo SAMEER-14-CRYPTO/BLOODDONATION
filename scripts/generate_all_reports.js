@@ -693,7 +693,6 @@ async function run() {
   generateHtmlReport();
   generateSummaries();
   generateSecurityAndPerformanceDocs();
-  generateWorkflows();
   console.log('All Enterprise Test and Audit Deliverables Generated Successfully!');
 }
 

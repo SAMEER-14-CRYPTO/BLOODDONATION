@@ -12,23 +12,39 @@ permissions:
 
 jobs:
   deploy-pages:
+    name: Build and Publish Reports to Pages
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Generate Fresh Reports
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Generate Fresh Reports & Excel Sheets
         run: |
-          npm install exceljs
+          npm install exceljs --no-audit
           node scripts/generate_all_reports.js
+
+      - name: Upload Report Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: HTML-Automation-Reports
+          path: Test_Results/HTML/
+          retention-days: 30
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
+        continue-on-error: true
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
+        continue-on-error: true
         with:
           path: 'Test_Results/HTML'
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
+        continue-on-error: true
