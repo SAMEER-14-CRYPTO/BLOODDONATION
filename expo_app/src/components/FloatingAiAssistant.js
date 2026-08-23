@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   View, Text, StyleSheet, Modal, TextInput, TouchableOpacity, 
-  FlatList, Linking, KeyboardAvoidingView, Platform, Dimensions 
+  FlatList, Linking, KeyboardAvoidingView, Platform 
 } from 'react-native';
 import { Colors } from '../constants/theme';
 import { answerAiPrompt } from '../services/aiMatching';
@@ -10,7 +10,8 @@ const QUICK_PROMPTS = [
   '🩸 Find O+ in Chennai',
   '⚡ Find B+ in Tirupati',
   '❓ Can A+ give to B+?',
-  '💉 Donation rules'
+  '💉 Donation rules',
+  '🏥 Hospitals Network'
 ];
 
 export default function FloatingAiAssistant() {
@@ -84,7 +85,7 @@ export default function FloatingAiAssistant() {
             style={styles.callSmallBtn}
             onPress={() => Linking.openURL(`tel:${donor.phone}`)}
           >
-            <Text style={styles.callSmallBtnText}>📞 Direct Call</Text>
+            <Text style={styles.callSmallBtnText}>📞 Call</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style={styles.waSmallBtn}
@@ -103,7 +104,7 @@ export default function FloatingAiAssistant() {
 
     return (
       <View style={[styles.msgRow, isUser ? styles.msgRowUser : styles.msgRowBot]}>
-        {!isUser && <View style={styles.botAvatar}><Text style={{ fontSize: 12 }}>🤖</Text></View>}
+        {!isUser && <View style={styles.botAvatar}><Text style={{ fontSize: 13 }}>🤖</Text></View>}
         <View style={[styles.msgBubble, isUser ? styles.bubbleUser : styles.bubbleBot]}>
           {lines.map((line, idx) => {
             const isBullet = line.trim().startsWith('•') || line.trim().startsWith('-');
@@ -137,18 +138,17 @@ export default function FloatingAiAssistant() {
 
   return (
     <>
-      {/* 🤖 Floating Side Trigger Button (Exact Web-Style) */}
+      {/* 🤖 Floating Circular AI Trigger Button */}
       <TouchableOpacity 
-        style={styles.floatingTrigger}
+        style={styles.circleTrigger}
         onPress={() => setIsOpen(true)}
         activeOpacity={0.85}
       >
-        <View style={styles.triggerPulse} />
-        <Text style={styles.triggerIcon}>🤖</Text>
-        <Text style={styles.triggerLabel}>LifeLink AI</Text>
+        <Text style={styles.circleIcon}>🤖</Text>
+        <View style={styles.onlineDot} />
       </TouchableOpacity>
 
-      {/* Full ChatGPT-Style Modal Window */}
+      {/* Full Screen ChatGPT-Style Chatbot Modal */}
       <Modal visible={isOpen} animationType="slide" transparent={true}>
         <KeyboardAvoidingView 
           style={styles.modalOverlay}
@@ -228,50 +228,49 @@ export default function FloatingAiAssistant() {
 }
 
 const styles = StyleSheet.create({
-  floatingTrigger: {
+  circleTrigger: {
     position: 'absolute',
     bottom: 24,
-    right: 18,
-    flexDirection: 'row',
-    alignItems: 'center',
+    right: 20,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     backgroundColor: '#7B1FA2',
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
     shadowColor: '#7B1FA2',
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.6,
     shadowRadius: 10,
-    elevation: 10,
+    elevation: 12,
     zIndex: 999,
-    gap: 8,
-    borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.35)',
   },
-  triggerPulse: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+  circleIcon: {
+    fontSize: 26,
+  },
+  onlineDot: {
+    position: 'absolute',
+    top: 2,
+    right: 2,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
     backgroundColor: '#43A047',
-  },
-  triggerIcon: {
-    fontSize: 16,
-  },
-  triggerLabel: {
-    color: '#FFFFFF',
-    fontWeight: '800',
-    fontSize: 13,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
     justifyContent: 'flex-end',
   },
   chatWindow: {
-    height: '82%',
+    height: '84%',
     backgroundColor: Colors.bgDark,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    borderTopLeftRadius: 26,
+    borderTopRightRadius: 26,
     borderWidth: 1,
     borderColor: Colors.borderDark,
     overflow: 'hidden',
@@ -287,9 +286,9 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.borderDark,
   },
   headerAvatar: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     backgroundColor: '#7B1FA2',
     alignItems: 'center',
     justifyContent: 'center',
@@ -310,9 +309,9 @@ const styles = StyleSheet.create({
     color: Colors.textMuted,
   },
   headerBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
     backgroundColor: 'rgba(255, 255, 255, 0.08)',
     alignItems: 'center',
     justifyContent: 'center',
