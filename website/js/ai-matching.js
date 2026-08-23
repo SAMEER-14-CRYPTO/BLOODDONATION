@@ -257,7 +257,7 @@ ${bg === 'AB+' ? '🌟 *Note: AB+ is the Universal Recipient.*' : ''}`
     if (lower.includes('hospital') || lower.includes('blood bank') || lower.includes('clinic')) {
       return {
         type: 'text',
-        text: `🏥 **Verified Medical Network (Tamil Nadu & Andhra Pradesh):**
+        text: `🏥 **Verified Medical Network:**
 
 - **Hospitals Directory:** View 27+ super-speciality hospitals across Chennai, Tirupati, Coimbatore, Vijayawada, Vizag, and Kadapa on our **[Hospitals Page](hospitals.html)**.
 - **Blood Banks Directory:** Check live blood stock units across certified Red Cross & Govt blood banks on our **[Blood Banks Page](blood-banks.html)**.`
@@ -278,7 +278,7 @@ ${bg === 'AB+' ? '🌟 *Note: AB+ is the Universal Recipient.*' : ''}`
     // 7. DEFAULT HELPFUL FALLBACK
     return {
       type: 'text',
-      text: `I'm here to assist with all blood donation requirements across Tamil Nadu & Andhra Pradesh!
+      text: `I'm here to assist with all blood donation requirements!
 
 💡 **Try typing:**
 - *"Find A+ in Coimbatore"*
@@ -344,7 +344,7 @@ ${bg === 'AB+' ? '🌟 *Note: AB+ is the Universal Recipient.*' : ''}`
                 LifeLink AI
                 <span class="ai-status-dot" title="AI Ready"></span>
               </div>
-              <div style="font-size:0.75rem;color:var(--text-secondary)">Tamil Nadu & AP Medical Assistant</div>
+              <div style="font-size:0.75rem;color:var(--text-secondary)">Medical Assistant</div>
             </div>
           </div>
           <div style="display:flex;align-items:center;gap:6px">
@@ -360,7 +360,7 @@ ${bg === 'AB+' ? '🌟 *Note: AB+ is the Universal Recipient.*' : ''}`
             <div class="ai-msg-avatar">🤖</div>
             <div class="ai-msg-bubble">
               <p style="margin:0 0 8px">👋 <strong>Hi! I'm your LifeLink AI Assistant.</strong></p>
-              <p style="margin:0 0 10px;font-size:0.88rem">Ask me anything about finding blood donors, checking compatibility, or hospital availability across Tamil Nadu & Andhra Pradesh.</p>
+              <p style="margin:0 0 10px;font-size:0.88rem">Ask me anything about finding blood donors, checking compatibility, or hospital availability.</p>
               
               <!-- Quick Prompt Pills -->
               <div class="ai-quick-prompts">
