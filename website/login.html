@@ -110,26 +110,37 @@
     }
     .form-input {
       background: #111422 !important;
+      background-color: #111422 !important;
       border: 1px solid #242942 !important;
       border-radius: 14px !important;
       color: #ffffff !important;
       padding: 14px 18px !important;
       font-size: 0.95rem !important;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease !important;
       width: 100%;
+      outline: none !important;
+      -webkit-tap-highlight-color: transparent !important;
     }
     .form-input:focus {
       border-color: #e53935 !important;
       box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.25) !important;
-      background: #151829 !important;
+      background: #111422 !important;
+      background-color: #111422 !important;
+      outline: none !important;
     }
     .form-input.receiver-focus:focus {
       border-color: #43A047 !important;
       box-shadow: 0 0 0 3px rgba(67, 160, 71, 0.25) !important;
+      background: #111422 !important;
+      background-color: #111422 !important;
+      outline: none !important;
     }
     .form-input.admin-focus:focus {
       border-color: #1e88e5 !important;
       box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.25) !important;
+      background: #111422 !important;
+      background-color: #111422 !important;
+      outline: none !important;
     }
     .form-input::placeholder {
       color: #494c63 !important;
@@ -157,16 +168,19 @@
       color: #ffffff !important;
       background-color: #111422 !important;
       background-image: none !important;
-      transition: background-color 50000s ease-in-out 0s, color 50000s ease-in-out 0s !important;
-      border-color: #242942 !important;
+      filter: none !important;
+      outline: none !important;
+      border: 1px solid #242942 !important;
+      transition: background-color 999999s ease-in-out 0s, color 999999s ease-in-out 0s !important;
     }
     input:-webkit-autofill:focus,
     input:autofill:focus,
     .form-input:-webkit-autofill:focus,
     .form-input:autofill:focus {
       border-color: #e53935 !important;
-      -webkit-box-shadow: 0 0 0 1000px #151829 inset, 0 0 0 3px rgba(229, 57, 53, 0.25) !important;
-      box-shadow: 0 0 0 1000px #151829 inset, 0 0 0 3px rgba(229, 57, 53, 0.25) !important;
+      -webkit-box-shadow: 0 0 0 1000px #111422 inset, 0 0 0 3px rgba(229, 57, 53, 0.25) !important;
+      box-shadow: 0 0 0 1000px #111422 inset, 0 0 0 3px rgba(229, 57, 53, 0.25) !important;
+      outline: none !important;
     }
     input.receiver-focus:-webkit-autofill,
     input.receiver-focus:-webkit-autofill:hover,
@@ -184,14 +198,16 @@
       caret-color: #ffffff !important;
       color: #ffffff !important;
       background-color: #111422 !important;
+      outline: none !important;
     }
     input.receiver-focus:-webkit-autofill:focus,
     input.receiver-focus:autofill:focus,
     .form-input.receiver-focus:-webkit-autofill:focus,
     .form-input.receiver-focus:autofill:focus {
       border-color: #43A047 !important;
-      -webkit-box-shadow: 0 0 0 1000px #151829 inset, 0 0 0 3px rgba(67, 160, 71, 0.25) !important;
-      box-shadow: 0 0 0 1000px #151829 inset, 0 0 0 3px rgba(67, 160, 71, 0.25) !important;
+      -webkit-box-shadow: 0 0 0 1000px #111422 inset, 0 0 0 3px rgba(67, 160, 71, 0.25) !important;
+      box-shadow: 0 0 0 1000px #111422 inset, 0 0 0 3px rgba(67, 160, 71, 0.25) !important;
+      outline: none !important;
     }
     input.admin-focus:-webkit-autofill,
     input.admin-focus:-webkit-autofill:hover,
@@ -209,14 +225,16 @@
       caret-color: #ffffff !important;
       color: #ffffff !important;
       background-color: #111422 !important;
+      outline: none !important;
     }
     input.admin-focus:-webkit-autofill:focus,
     input.admin-focus:autofill:focus,
     .form-input.admin-focus:-webkit-autofill:focus,
     .form-input.admin-focus:autofill:focus {
       border-color: #1e88e5 !important;
-      -webkit-box-shadow: 0 0 0 1000px #151829 inset, 0 0 0 3px rgba(30, 136, 229, 0.25) !important;
-      box-shadow: 0 0 0 1000px #151829 inset, 0 0 0 3px rgba(30, 136, 229, 0.25) !important;
+      -webkit-box-shadow: 0 0 0 1000px #111422 inset, 0 0 0 3px rgba(30, 136, 229, 0.25) !important;
+      box-shadow: 0 0 0 1000px #111422 inset, 0 0 0 3px rgba(30, 136, 229, 0.25) !important;
+      outline: none !important;
     }
 
     /* Primary Login Button */
