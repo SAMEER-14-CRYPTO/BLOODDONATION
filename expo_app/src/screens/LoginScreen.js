@@ -155,7 +155,7 @@ export default function LoginScreen() {
               <Text style={[styles.label, { color: theme.text }]}>{role === 'admin' ? 'Administrator Email' : 'Email Address'}</Text>
               <View style={[styles.inputBox, { backgroundColor: theme.inputBg, borderColor: theme.border }]}>
                 <TextInput
-                  style={[styles.inputInner, { color: theme.text }]}
+                  style={[styles.inputInner, { backgroundColor: theme.inputBg, color: theme.text }]}
                   placeholder={role === 'admin' ? 'sameeradmin@lifelink.com' : 'Enter your email address'}
                   placeholderTextColor={theme.textMuted}
                   value={email}
@@ -164,7 +164,7 @@ export default function LoginScreen() {
                   keyboardType="email-address"
                   autoComplete="off"
                   textContentType="none"
-                  importantForAutofill="no"
+                  importantForAutofill="noExcludeDescendants"
                   underlineColorAndroid="transparent"
                   cursorColor={role === 'donor' ? Colors.primary : role === 'receiver' ? Colors.success : Colors.info}
                   selectionColor={role === 'donor' ? 'rgba(229, 57, 53, 0.3)' : role === 'receiver' ? 'rgba(67, 160, 71, 0.3)' : 'rgba(30, 136, 229, 0.3)'}
@@ -174,14 +174,14 @@ export default function LoginScreen() {
               <Text style={[styles.label, { color: theme.text }]}>Password</Text>
               <View style={[styles.inputBox, { backgroundColor: theme.inputBg, borderColor: theme.border }]}>
                 <TextInput
-                  style={[styles.inputInner, { color: theme.text }]}
+                  style={[styles.inputInner, { backgroundColor: theme.inputBg, color: theme.text }]}
                   placeholder="Enter password"
                   placeholderTextColor={theme.textMuted}
                   secureTextEntry
                   maxLength={12}
                   autoComplete="off"
                   textContentType="none"
-                  importantForAutofill="no"
+                  importantForAutofill="noExcludeDescendants"
                   underlineColorAndroid="transparent"
                   cursorColor={role === 'donor' ? Colors.primary : role === 'receiver' ? Colors.success : Colors.info}
                   selectionColor={role === 'donor' ? 'rgba(229, 57, 53, 0.3)' : role === 'receiver' ? 'rgba(67, 160, 71, 0.3)' : 'rgba(30, 136, 229, 0.3)'}
@@ -263,13 +263,13 @@ export default function LoginScreen() {
               <Text style={[styles.label, { color: theme.text }]}>Full Name *</Text>
               <View style={[styles.inputBox, { backgroundColor: theme.inputBg, borderColor: theme.border }]}>
                 <TextInput
-                  style={[styles.inputInner, { color: theme.text }]}
+                  style={[styles.inputInner, { backgroundColor: theme.inputBg, color: theme.text }]}
                   placeholder="e.g. Ramesh Kumar"
                   placeholderTextColor={theme.textMuted}
                   value={fullName}
                   onChangeText={setFullName}
                   autoComplete="off"
-                  importantForAutofill="no"
+                  importantForAutofill="noExcludeDescendants"
                   underlineColorAndroid="transparent"
                   cursorColor={role === 'donor' ? Colors.primary : Colors.success}
                 />
@@ -278,7 +278,7 @@ export default function LoginScreen() {
               <Text style={[styles.label, { color: theme.text }]}>Email Address *</Text>
               <View style={[styles.inputBox, { backgroundColor: theme.inputBg, borderColor: theme.border }]}>
                 <TextInput
-                  style={[styles.inputInner, { color: theme.text }]}
+                  style={[styles.inputInner, { backgroundColor: theme.inputBg, color: theme.text }]}
                   placeholder="e.g. ramesh@example.com"
                   placeholderTextColor={theme.textMuted}
                   value={regEmail}
@@ -287,7 +287,7 @@ export default function LoginScreen() {
                   keyboardType="email-address"
                   autoComplete="off"
                   textContentType="none"
-                  importantForAutofill="no"
+                  importantForAutofill="noExcludeDescendants"
                   underlineColorAndroid="transparent"
                   cursorColor={role === 'donor' ? Colors.primary : Colors.success}
                 />
@@ -296,14 +296,14 @@ export default function LoginScreen() {
               <Text style={[styles.label, { color: theme.text }]}>Password *</Text>
               <View style={[styles.inputBox, { backgroundColor: theme.inputBg, borderColor: theme.border }]}>
                 <TextInput
-                  style={[styles.inputInner, { color: theme.text }]}
+                  style={[styles.inputInner, { backgroundColor: theme.inputBg, color: theme.text }]}
                   placeholder="Enter password (8 to 12 chars)"
                   placeholderTextColor={theme.textMuted}
                   secureTextEntry
                   maxLength={12}
                   autoComplete="off"
                   textContentType="none"
-                  importantForAutofill="no"
+                  importantForAutofill="noExcludeDescendants"
                   underlineColorAndroid="transparent"
                   cursorColor={role === 'donor' ? Colors.primary : Colors.success}
                   value={regPassword}
@@ -314,12 +314,12 @@ export default function LoginScreen() {
               <Text style={[styles.label, { color: theme.text }]}>Contact Phone *</Text>
               <View style={[styles.inputBox, { backgroundColor: theme.inputBg, borderColor: theme.border }]}>
                 <TextInput
-                  style={[styles.inputInner, { color: theme.text }]}
+                  style={[styles.inputInner, { backgroundColor: theme.inputBg, color: theme.text }]}
                   placeholder="+91-9876543210"
                   placeholderTextColor={theme.textMuted}
                   keyboardType="phone-pad"
                   autoComplete="off"
-                  importantForAutofill="no"
+                  importantForAutofill="noExcludeDescendants"
                   underlineColorAndroid="transparent"
                   cursorColor={role === 'donor' ? Colors.primary : Colors.success}
                   value={phone}
