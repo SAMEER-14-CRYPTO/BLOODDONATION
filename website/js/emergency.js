@@ -7,6 +7,14 @@ const Emergency = {
     this.prefillUser();
     this.bindForm();
     this.loadActiveRequests();
+
+    // Subscribe to live real-time Firestore emergency updates from Mobile/Web
+    if (typeof DemoData !== 'undefined' && DemoData.subscribeToRequests) {
+      DemoData.subscribeToRequests((liveRequests) => {
+        const active = liveRequests.filter(r => r.status === 'active');
+        this.renderRequestsList(active);
+      });
+    }
   },
 
   prefillUser() {
@@ -79,43 +87,8 @@ const Emergency = {
     };
 
     try {
-      // Prefer database API when logged in
-      if (typeof LifeLinkAPI !== 'undefined' && LifeLinkAPI.getToken()) {
-        const result = await LifeLinkAPI.createEmergencyRequest({
-          patientName,
-          bloodGroupNeeded,
-          unitsNeeded,
-          hospitalName,
-          location,
-          requesterName,
-          phone,
-          notes,
-          urgencyLevel,
-          lat: coords.lat,
-          lng: coords.lng
-        });
-        if (result.request) {
-          App.showToast('🚨 Emergency request saved to database! Nearby donors alerted.', 'success');
-          form.reset();
-          this.prefillUser();
-          const coordsEl = document.getElementById('reqCoords');
-          if (coordsEl) coordsEl.textContent = '';
-          window.reqPickedCoords = null;
-          await this.loadActiveRequests();
-          const allDonors = await DemoData.getDonors();
-          const matchingCount = allDonors.filter(u =>
-            u.availability &&
-            (u.bloodGroup === bloodGroupNeeded || bloodGroupNeeded === 'all')
-          ).length;
-          setTimeout(() => {
-            App.showToast(`📢 ${matchingCount || 4} matching ${bloodGroupNeeded} donors alerted!`, 'info');
-          }, 1200);
-          return;
-        }
-      }
-
       const savedReq = await DemoData.addRequest(requestData);
-      App.showToast('🚨 Emergency request broadcasted successfully! Nearby donors alerted.', 'success');
+      App.showToast('🚨 Emergency SOS broadcasted & saved to database! Nearby donors alerted.', 'success');
       form.reset();
 
       // Re-prefill if user is logged in
@@ -151,65 +124,68 @@ const Emergency = {
     }
   },
 
-  async loadActiveRequests() {
+  renderRequestsList(active) {
     const container = document.getElementById('activeRequests');
     if (!container) return;
 
+    if (!active || active.length === 0) {
+      container.innerHTML = `
+        <div class="text-center" style="padding:32px 16px;color:var(--text-secondary);background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius)">
+          <div style="font-size:2rem;margin-bottom:8px">🕊️</div>
+          <p style="margin:0;font-weight:600">No active emergency requests right now</p>
+        </div>`;
+      return;
+    }
+
+    container.innerHTML = active.map(r => `
+      <div class="request-card" style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:14px;box-shadow:var(--shadow-sm);transition:var(--transition);border-left:4px solid ${r.urgencyLevel === 'critical' ? '#E53935' : '#FB8C00'}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+          <div style="font-weight:700;font-size:1.08rem;color:var(--primary)">
+            🩸 ${r.bloodGroupNeeded} needed (${r.unitsNeeded || 1} Unit${(r.unitsNeeded || 1) > 1 ? 's' : ''})
+          </div>
+          <span class="badge badge-${r.urgencyLevel === 'critical' ? 'primary' : 'warning'}" style="text-transform:uppercase;font-size:0.75rem;padding:4px 10px;border-radius:20px">
+            ${r.urgencyLevel || 'Urgent'}
+          </span>
+        </div>
+
+        <div style="font-weight:600;font-size:0.92rem;color:var(--text);margin-bottom:6px">
+          Patient: ${r.patientName} ${r.requesterName ? `<span style="font-size:0.8rem;color:var(--text-secondary);font-weight:normal">(Requested by ${r.requesterName})</span>` : ''}
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:5px;font-size:0.85rem;color:var(--text-secondary);margin-bottom:14px">
+          <div>🏥 <strong>${r.hospitalName}</strong></div>
+          <div>📍 ${r.location} · ⏰ ${App.timeAgo ? App.timeAgo(r.createdAt) : 'Just now'}</div>
+          ${r.phone ? `<div>📞 <a href="tel:${r.phone}" style="color:var(--primary);font-weight:600">${r.phone}</a></div>` : ''}
+          ${r.notes ? `<div style="margin-top:4px;padding:6px 10px;background:rgba(229,57,53,0.06);border-radius:6px;font-style:italic;color:var(--text)">📝 "${r.notes}"</div>` : ''}
+          <div style="margin-top:2px">👥 <strong>${r.responses || 0}</strong> donor response${(r.responses || 0) !== 1 ? 's' : ''}</div>
+        </div>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-sm btn-primary" style="flex:1" onclick="Emergency.respondToRequest('${r.id}')">
+            🩸 I Can Donate
+          </button>
+          ${r.phone ? `
+            <a href="tel:${r.phone}" class="btn btn-sm btn-outline" style="padding:6px 12px" title="Call Requester">
+              📞 Call
+            </a>
+            <a href="https://wa.me/${r.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent('Hi, I saw your emergency request on LifeLink for ' + r.bloodGroupNeeded + ' blood for ' + r.patientName + '. I want to help.')}" target="_blank" class="btn btn-sm btn-outline" style="padding:6px 12px" title="WhatsApp Requester">
+              💬 WhatsApp
+            </a>
+          ` : ''}
+        </div>
+      </div>
+    `).join('');
+  },
+
+  async loadActiveRequests() {
     try {
       const requests = await DemoData.getRequests();
       const active = requests.filter(r => r.status === 'active');
-
-      if (active.length === 0) {
-        container.innerHTML = `
-          <div class="text-center" style="padding:32px 16px;color:var(--text-secondary);background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius)">
-            <div style="font-size:2rem;margin-bottom:8px">🕊️</div>
-            <p style="margin:0;font-weight:600">No active emergency requests right now</p>
-          </div>`;
-        return;
-      }
-
-      container.innerHTML = active.map(r => `
-        <div class="request-card" style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:14px;box-shadow:var(--shadow-sm);transition:var(--transition);border-left:4px solid ${r.urgencyLevel === 'critical' ? '#E53935' : '#FB8C00'}">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
-            <div style="font-weight:700;font-size:1.08rem;color:var(--primary)">
-              🩸 ${r.bloodGroupNeeded} needed (${r.unitsNeeded || 1} Unit${(r.unitsNeeded || 1) > 1 ? 's' : ''})
-            </div>
-            <span class="badge badge-${r.urgencyLevel === 'critical' ? 'primary' : 'warning'}" style="text-transform:uppercase;font-size:0.75rem;padding:4px 10px;border-radius:20px">
-              ${r.urgencyLevel || 'Urgent'}
-            </span>
-          </div>
-
-          <div style="font-weight:600;font-size:0.92rem;color:var(--text);margin-bottom:6px">
-            Patient: ${r.patientName} ${r.requesterName ? `<span style="font-size:0.8rem;color:var(--text-secondary);font-weight:normal">(Requested by ${r.requesterName})</span>` : ''}
-          </div>
-
-          <div style="display:flex;flex-direction:column;gap:5px;font-size:0.85rem;color:var(--text-secondary);margin-bottom:14px">
-            <div>🏥 <strong>${r.hospitalName}</strong></div>
-            <div>📍 ${r.location} · ⏰ ${App.timeAgo ? App.timeAgo(r.createdAt) : 'Just now'}</div>
-            ${r.phone ? `<div>📞 <a href="tel:${r.phone}" style="color:var(--primary);font-weight:600">${r.phone}</a></div>` : ''}
-            ${r.notes ? `<div style="margin-top:4px;padding:6px 10px;background:rgba(229,57,53,0.06);border-radius:6px;font-style:italic;color:var(--text)">📝 "${r.notes}"</div>` : ''}
-            <div style="margin-top:2px">👥 <strong>${r.responses || 0}</strong> donor response${(r.responses || 0) !== 1 ? 's' : ''}</div>
-          </div>
-
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn btn-sm btn-primary" style="flex:1" onclick="Emergency.respondToRequest('${r.id}')">
-              🩸 I Can Donate
-            </button>
-            ${r.phone ? `
-              <a href="tel:${r.phone}" class="btn btn-sm btn-outline" style="padding:6px 12px" title="Call Requester">
-                📞 Call
-              </a>
-              <a href="https://wa.me/${r.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent('Hi, I saw your emergency request on LifeLink for ' + r.bloodGroupNeeded + ' blood for ' + r.patientName + '. I want to help.')}" target="_blank" class="btn btn-sm btn-outline" style="padding:6px 12px" title="WhatsApp Requester">
-                💬 WhatsApp
-              </a>
-            ` : ''}
-          </div>
-        </div>
-      `).join('');
-
+      this.renderRequestsList(active);
     } catch (e) {
       console.error('Error loading active requests:', e);
-      container.innerHTML = '<p class="text-center text-danger">Error loading requests</p>';
+      const container = document.getElementById('activeRequests');
+      if (container) container.innerHTML = '<p class="text-center text-danger">Error loading requests</p>';
     }
   },
 

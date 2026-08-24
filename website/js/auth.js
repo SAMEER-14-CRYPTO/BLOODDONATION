@@ -80,6 +80,12 @@ const Auth = {
       return null;
     }
 
+    // Enforce 8-12 character password length
+    if (!data.password || data.password.length < 8 || data.password.length > 12) {
+      App.showToast('Password must be between 8 and 12 characters long.', 'error');
+      return null;
+    }
+
     // Check if email already exists in the opposite role
     const donorPasswords = DemoData.getDonorPasswords();
     const receiverPasswords = DemoData.getReceiverPasswords();
@@ -172,24 +178,36 @@ const Auth = {
     localStorage.setItem('lifelink_user', JSON.stringify(userProfile));
     this.currentUser = userProfile;
 
-    // Try Firebase in background if configured and not DEMO_MODE
-    if (!DEMO_MODE && typeof auth !== 'undefined' && auth && typeof db !== 'undefined' && db) {
+    // Sync to Shared Cloud Firestore (lifelink-app-9315f) for Web & Mobile
+    if (typeof db !== 'undefined' && db) {
+      try {
+        const collectionName = role === 'receiver' ? 'receivers' : 'donors';
+        const fsPayload = {
+          ...userProfile,
+          contactNumber: userProfile.phone || '',
+          latitude: userProfile.lat,
+          longitude: userProfile.lng,
+          createdAt: (typeof firebase !== 'undefined' && firebase.firestore?.FieldValue)
+            ? firebase.firestore.FieldValue.serverTimestamp()
+            : new Date().toISOString()
+        };
+        await db.collection(collectionName).doc(userProfile.uid).set(fsPayload, { merge: true });
+        await db.collection('users').doc(userProfile.uid).set(fsPayload, { merge: true });
+        console.log('🔥 User profile synced to Firestore:', userProfile.uid);
+      } catch (e) {
+        console.warn('[Auth] Firestore direct save notice:', e.message);
+      }
+    }
+
+    // Try Firebase Auth in background if available
+    if (typeof auth !== 'undefined' && auth) {
       try {
         const cred = await auth.createUserWithEmailAndPassword(data.email, data.password);
-        await cred.user.updateProfile({ displayName: data.fullName });
-        const collectionName = role === 'receiver' ? 'receivers' : 'donors';
-        await db.collection(collectionName).doc(cred.user.uid).set({
-          ...userProfile,
-          uid: cred.user.uid,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        await db.collection('users').doc(cred.user.uid).set({
-          ...userProfile,
-          uid: cred.user.uid,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
+        if (cred?.user) {
+          await cred.user.updateProfile({ displayName: data.fullName });
+        }
       } catch (e) {
-        console.warn('[Auth] Firebase background sync notice:', e.code);
+        console.warn('[Auth] Firebase Auth background notice:', e.message);
       }
     }
 
@@ -202,7 +220,12 @@ const Auth = {
 
   // ── Unified Login with role awareness ──
   async login(email, password, roleHint = 'donor') {
-    const emailLower = email.trim().toLowerCase();
+    const emailLower = (email || '').trim().toLowerCase();
+
+    if (!password || password.length < 8 || password.length > 12) {
+      App.showToast('Password must be between 8 and 12 characters.', 'error');
+      return null;
+    }
 
     // 1. Authenticate against SQLite database via API (primary for PDD)
     if (typeof LifeLinkAPI !== 'undefined') {

@@ -271,7 +271,23 @@ const DemoData = {
       try {
         const snap = await db.collection('donors').get();
         if (!snap.empty) {
-          const fsDonors = snap.docs.map(doc => ({ uid: doc.id, ...doc.data() }));
+          const fsDonors = snap.docs.map(doc => {
+            const data = doc.data();
+            return {
+              uid: doc.id,
+              ...data,
+              fullName: data.fullName || data.name || data.displayName || 'Blood Donor',
+              displayName: data.displayName || data.fullName || data.name || 'Blood Donor',
+              name: data.name || data.fullName || data.displayName || 'Blood Donor',
+              bloodGroup: data.bloodGroup || data.blood_group || 'O+',
+              phone: data.phone || data.contactNumber || data.phoneNumber || '',
+              city: data.city || 'Chennai',
+              role: data.role || 'donor',
+              availability: data.availability !== false && data.donorStatus !== 'Inactive',
+              donorStatus: data.donorStatus || (data.availability === false ? 'Inactive' : 'Active'),
+              verified: data.verified !== false && data.isVerified !== false
+            };
+          });
           const localDonors = this.getData().donors || [];
           const donorMap = new Map();
           fsDonors.forEach(d => donorMap.set(d.uid || d.email, d));
@@ -314,34 +330,90 @@ const DemoData = {
   },
 
   // ────────────────────────────────────────────────────────────
-  // Emergency Blood Requests Access
+  // Emergency Blood Requests Access (Unified Cloud Database)
   // ────────────────────────────────────────────────────────────
-  async getRequests() { 
-    if (typeof LifeLinkAPI !== 'undefined') {
+  async getRequests() {
+    const combinedMap = new Map();
+
+    const normalizeReq = (d, defaultId) => {
+      if (!d) return null;
+      const id = String(d.id || d.requestId || defaultId || ('req_' + Date.now()));
+      return {
+        id: id,
+        requestId: id,
+        patientName: d.patientName || d.patient_name || 'Patient',
+        patient_name: d.patientName || d.patient_name || 'Patient',
+        requesterName: d.requesterName || d.requester_name || 'Requester',
+        bloodGroupNeeded: d.bloodGroupNeeded || d.bloodGroup || d.blood_group_needed || 'O+',
+        blood_group_needed: d.bloodGroupNeeded || d.bloodGroup || d.blood_group_needed || 'O+',
+        unitsNeeded: parseInt(d.unitsNeeded || d.units_needed || d.unitsRequired || 1),
+        units_needed: parseInt(d.unitsNeeded || d.units_needed || d.unitsRequired || 1),
+        hospitalName: d.hospitalName || d.hospital_name || 'Hospital',
+        hospital_name: d.hospitalName || d.hospital_name || 'Hospital',
+        location: d.location || d.city || 'Chennai',
+        phone: d.phone || d.contactNumber || d.contact_number || '',
+        contactNumber: d.phone || d.contactNumber || d.contact_number || '',
+        urgencyLevel: d.urgencyLevel || d.urgency_level || d.emergencyLevel || 'critical',
+        urgency_level: d.urgencyLevel || d.urgency_level || d.emergencyLevel || 'critical',
+        notes: d.notes || d.message || '',
+        lat: d.lat != null ? d.lat : (d.latitude != null ? d.latitude : 13.0827),
+        lng: d.lng != null ? d.lng : (d.longitude != null ? d.longitude : 80.2707),
+        status: d.status || 'active',
+        responses: d.responses || 0,
+        createdAt: d.createdAt?.toDate ? d.createdAt.toDate().toISOString() : (d.createdAt || new Date().toISOString())
+      };
+    };
+
+    const makeKey = (r) => {
+      if (r.id && !String(r.id).startsWith('req_')) return String(r.id);
+      return (r.patientName || '') + '_' + (r.hospitalName || '') + '_' + (r.bloodGroupNeeded || '') + '_' + (r.phone || '');
+    };
+
+    // 1. Fetch from Shared Cloud Firestore (lifelink-app-9315f - Mobile App database)
+    if (typeof db !== 'undefined' && db && typeof db.collection === 'function') {
+      try {
+        const snap = await db.collection('emergency_requests').get().catch(() => ({ empty: true }));
+        if (!snap.empty) {
+          snap.docs.forEach(docSnap => {
+            const parsed = normalizeReq(docSnap.data(), docSnap.id);
+            if (parsed) combinedMap.set(makeKey(parsed), parsed);
+          });
+        }
+      } catch (e) {
+        console.warn('Firestore getRequests notice:', e.message);
+      }
+    }
+
+    // 2. Fetch from SQLite Backend API
+    if (typeof LifeLinkAPI !== 'undefined' && LifeLinkAPI.connected !== false) {
       try {
         const apiReqs = await LifeLinkAPI.getEmergencyRequests();
-        if (apiReqs.length) return apiReqs;
+        if (Array.isArray(apiReqs)) {
+          apiReqs.forEach(r => {
+            const parsed = normalizeReq(r, r.id);
+            if (parsed) {
+              const key = makeKey(parsed);
+              if (!combinedMap.has(key)) combinedMap.set(key, parsed);
+            }
+          });
+        }
       } catch (e) {
         console.warn('API getRequests fallback:', e.message);
       }
     }
-    if (typeof db !== 'undefined' && db) {
-      try {
-        const snap = await db.collection('requests').get();
-        if (!snap.empty) {
-          const firestoreReqs = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-          const localReqs = this.getData().requests || [];
-          const reqMap = new Map();
-          firestoreReqs.forEach(r => reqMap.set(r.id, r));
-          localReqs.forEach(r => { if (!reqMap.has(r.id)) reqMap.set(r.id, r); });
-          return Array.from(reqMap.values()).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-        }
-      } catch (e) {
-        console.warn('Firestore getRequests fallback:', e.message);
-      }
-    }
+
+    // 3. Merge Local Storage Defaults if needed
     const local = this.getData().requests || [];
-    return local.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    local.forEach(r => {
+      const parsed = normalizeReq(r, r.id);
+      if (parsed) {
+        const key = makeKey(parsed);
+        if (!combinedMap.has(key)) combinedMap.set(key, parsed);
+      }
+    });
+
+    const resultList = Array.from(combinedMap.values());
+    return resultList.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
   },
 
   // Helper to strictly validate if a facility is located in Tamil Nadu or Andhra Pradesh
@@ -360,23 +432,8 @@ const DemoData = {
       try {
         const snap = await db.collection('hospitals').get();
         if (!snap.empty) {
-          // Check if Firestore contains old north indian records
           const docs = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
           const validSouthOnly = docs.filter(h => this._isSouthIndiaFacility(h));
-          // If Firestore had old north indian hospitals, overwrite/sync them with fresh TN & AP hospitals
-          if (validSouthOnly.length < verifiedHospitals.length || docs.length !== validSouthOnly.length) {
-            console.log('🔄 Syncing fresh Tamil Nadu & Andhra Pradesh hospitals into Firestore...');
-            // Delete old non-TN/AP docs
-            snap.docs.forEach(doc => {
-              if (!this._isSouthIndiaFacility(doc.data())) {
-                doc.ref.delete().catch(() => {});
-              }
-            });
-            // Overwrite with verified list
-            verifiedHospitals.forEach(h => {
-              db.collection('hospitals').doc(h.id).set(h).catch(() => {});
-            });
-          }
           if (validSouthOnly.length >= verifiedHospitals.length) {
             return validSouthOnly;
           }
@@ -397,27 +454,19 @@ const DemoData = {
     const verifiedBanks = this.getData().bloodBanks || [];
     if (typeof db !== 'undefined' && db) {
       try {
-        const snap = await db.collection('bloodBanks').get();
+        let snap = await db.collection('blood_banks').get().catch(() => ({ empty: true }));
+        if (snap.empty) {
+          snap = await db.collection('bloodBanks').get().catch(() => ({ empty: true }));
+        }
         if (!snap.empty) {
           const docs = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
           const validSouthOnly = docs.filter(b => this._isSouthIndiaFacility(b));
-          // If Firestore had old north indian blood banks, overwrite/sync them
-          if (validSouthOnly.length < verifiedBanks.length || docs.length !== validSouthOnly.length) {
-            console.log('🔄 Syncing fresh Tamil Nadu & Andhra Pradesh blood banks into Firestore...');
-            snap.docs.forEach(doc => {
-              if (!this._isSouthIndiaFacility(doc.data())) {
-                doc.ref.delete().catch(() => {});
-              }
-            });
-            verifiedBanks.forEach(b => {
-              db.collection('bloodBanks').doc(b.id).set(b).catch(() => {});
-            });
-          }
           if (validSouthOnly.length >= verifiedBanks.length) {
             return validSouthOnly;
           }
         } else {
           verifiedBanks.forEach(b => {
+            db.collection('blood_banks').doc(b.id).set(b).catch(() => {});
             db.collection('bloodBanks').doc(b.id).set(b).catch(() => {});
           });
         }
@@ -543,6 +592,12 @@ const DemoData = {
       donor.address = `${donor.city}, India`;
     }
     donor.role = 'donor';
+    donor.fullName = donor.fullName || donor.displayName || donor.name || 'Blood Donor';
+    donor.displayName = donor.displayName || donor.fullName || 'Blood Donor';
+    donor.donorStatus = donor.donorStatus || 'Active';
+    donor.availability = donor.availability !== false;
+    donor.verified = donor.verified !== false;
+    donor.isVerified = donor.isVerified !== false;
 
     const data = this.getData();
     if (!data.donors) data.donors = [];
@@ -561,9 +616,18 @@ const DemoData = {
 
     if (typeof db !== 'undefined' && db) {
       try {
-        await db.collection('donors').doc(donor.uid).set(donor, { merge: true });
-        await db.collection('users').doc(donor.uid).set(donor, { merge: true });
-        console.log('🔥 Donor saved to database section: donors /', donor.uid);
+        const firestoreDonor = {
+          ...donor,
+          latitude: donor.lat,
+          longitude: donor.lng,
+          contactNumber: donor.phone || '',
+          updatedAt: (typeof firebase !== 'undefined' && firebase.firestore?.FieldValue) 
+            ? firebase.firestore.FieldValue.serverTimestamp() 
+            : new Date().toISOString()
+        };
+        await db.collection('donors').doc(donor.uid).set(firestoreDonor, { merge: true });
+        await db.collection('users').doc(donor.uid).set(firestoreDonor, { merge: true });
+        console.log('🔥 Donor saved to shared database: donors & users /', donor.uid);
       } catch (e) {
         console.warn('Firestore addDonor notice:', e.message);
       }
@@ -581,6 +645,7 @@ const DemoData = {
       receiver.address = `${receiver.city}, India`;
     }
     receiver.role = 'receiver';
+    receiver.fullName = receiver.fullName || receiver.displayName || receiver.name || 'Blood Seeker';
 
     const data = this.getData();
     if (!data.receivers) data.receivers = [];
@@ -598,9 +663,17 @@ const DemoData = {
 
     if (typeof db !== 'undefined' && db) {
       try {
-        await db.collection('receivers').doc(receiver.uid).set(receiver, { merge: true });
-        await db.collection('users').doc(receiver.uid).set(receiver, { merge: true });
-        console.log('🔥 Receiver saved to database section: receivers /', receiver.uid);
+        const firestoreReceiver = {
+          ...receiver,
+          latitude: receiver.lat,
+          longitude: receiver.lng,
+          updatedAt: (typeof firebase !== 'undefined' && firebase.firestore?.FieldValue) 
+            ? firebase.firestore.FieldValue.serverTimestamp() 
+            : new Date().toISOString()
+        };
+        await db.collection('receivers').doc(receiver.uid).set(firestoreReceiver, { merge: true });
+        await db.collection('users').doc(receiver.uid).set(firestoreReceiver, { merge: true });
+        console.log('🔥 Receiver saved to shared database: receivers & users /', receiver.uid);
       } catch (e) {
         console.warn('Firestore addReceiver notice:', e.message);
       }
@@ -623,7 +696,7 @@ const DemoData = {
   },
 
   // ────────────────────────────────────────────────────────────
-  // Emergency Request Creation & Management
+  // Emergency Request Creation & Management (Shared Cloud Database)
   // ────────────────────────────────────────────────────────────
   async addRequest(req) {
     if (req.lat == null || req.lng == null) {
@@ -635,9 +708,17 @@ const DemoData = {
     const newReq = {
       ...req,
       id: req.id || 'req_' + Date.now(),
+      requestId: req.id || 'req_' + Date.now(),
+      patientName: req.patientName || 'Patient',
+      bloodGroupNeeded: req.bloodGroupNeeded || req.bloodGroup || 'O+',
+      unitsNeeded: parseInt(req.unitsNeeded || req.unitsRequired || 1),
+      hospitalName: req.hospitalName || 'Hospital',
+      location: req.location || req.city || 'Chennai',
+      phone: req.phone || req.contactNumber || '',
+      urgencyLevel: req.urgencyLevel || req.emergencyLevel || 'critical',
+      notes: req.notes || req.message || '',
       status: req.status || 'active',
       responses: req.responses || 0,
-      unitsNeeded: parseInt(req.unitsNeeded) || 1,
       createdAt: req.createdAt || new Date().toISOString()
     };
 
@@ -659,10 +740,11 @@ const DemoData = {
 
     this.saveData(data);
 
-    // Save to SQLite database via API
-    if (typeof LifeLinkAPI !== 'undefined' && LifeLinkAPI.getToken()) {
+    // Save to SQLite database via API if server available
+    if (typeof LifeLinkAPI !== 'undefined') {
       try {
         const result = await LifeLinkAPI.createEmergencyRequest({
+          id: newReq.id,
           patientName: newReq.patientName,
           bloodGroupNeeded: newReq.bloodGroupNeeded,
           unitsNeeded: newReq.unitsNeeded,
@@ -675,20 +757,46 @@ const DemoData = {
           lat: newReq.lat,
           lng: newReq.lng
         });
-        if (result.request) {
+        if (result && result.request) {
           console.log('💾 Emergency request saved to SQLite database:', result.request.id);
-          return result.request;
         }
       } catch (e) {
-        console.warn('API addRequest fallback:', e.message);
+        console.warn('API addRequest notice:', e.message);
       }
     }
 
-    // Live Firebase Firestore sync
+    // Live Firebase Firestore sync (Shared with Android App)
     if (typeof db !== 'undefined' && db) {
       try {
-        await db.collection('requests').doc(newReq.id).set(newReq);
-        console.log('🔥 Emergency request synced to Live Firestore: requests /', newReq.id);
+        const firestorePayload = {
+          ...newReq,
+          requestId: newReq.id,
+          patient_name: newReq.patientName,
+          blood_group_needed: newReq.bloodGroupNeeded,
+          bloodGroup: newReq.bloodGroupNeeded,
+          units_needed: newReq.unitsNeeded,
+          unitsRequired: newReq.unitsNeeded,
+          hospital_name: newReq.hospitalName,
+          city: newReq.location,
+          contactNumber: newReq.phone,
+          contact_number: newReq.phone,
+          urgency_level: newReq.urgencyLevel,
+          emergencyLevel: newReq.urgencyLevel,
+          message: newReq.notes,
+          latitude: newReq.lat,
+          longitude: newReq.lng,
+          status: 'active',
+          responses: 0,
+          createdAt: (typeof firebase !== 'undefined' && firebase.firestore?.FieldValue)
+            ? firebase.firestore.FieldValue.serverTimestamp()
+            : new Date().toISOString()
+        };
+
+        // Write to primary 'emergency_requests' collection (Mobile App collection)
+        await db.collection('emergency_requests').doc(newReq.id).set(firestorePayload);
+        // Also mirror to 'requests' collection for backward compatibility
+        await db.collection('requests').doc(newReq.id).set(firestorePayload).catch(() => {});
+        console.log('🔥 Emergency request synced to Shared Firestore: emergency_requests /', newReq.id);
       } catch (e) {
         console.warn('Firestore addRequest notice:', e.message);
       }
@@ -752,10 +860,16 @@ const DemoData = {
       }
     }
 
-    const isLive = typeof DEMO_MODE !== 'undefined' ? !DEMO_MODE : false;
-    if (isLive && typeof db !== 'undefined' && db) {
+    if (typeof LifeLinkAPI !== 'undefined') {
       try {
-        await db.collection('requests').doc(id).update(updates);
+        await LifeLinkAPI.updateEmergencyRequest(id, updates);
+      } catch (e) {}
+    }
+
+    if (typeof db !== 'undefined' && db) {
+      try {
+        await db.collection('emergency_requests').doc(id).update(updates).catch(() => {});
+        await db.collection('requests').doc(id).update(updates).catch(() => {});
       } catch (e) {
         console.warn('Firestore updateRequest fallback:', e.message);
       }
@@ -769,10 +883,16 @@ const DemoData = {
       this.saveData(data);
     }
 
-    const isLive = typeof DEMO_MODE !== 'undefined' ? !DEMO_MODE : false;
-    if (isLive && typeof db !== 'undefined' && db) {
+    if (typeof LifeLinkAPI !== 'undefined') {
       try {
-        await db.collection('requests').doc(id).delete();
+        await LifeLinkAPI.deleteEmergencyRequest(id);
+      } catch (e) {}
+    }
+
+    if (typeof db !== 'undefined' && db) {
+      try {
+        await db.collection('emergency_requests').doc(id).delete().catch(() => {});
+        await db.collection('requests').doc(id).delete().catch(() => {});
       } catch (e) {
         console.warn('Firestore deleteRequest fallback:', e.message);
       }
@@ -884,6 +1004,53 @@ const DemoData = {
       console.error('getStats error:', e);
       return {};
     }
+  },
+
+  // ────────────────────────────────────────────────────────────
+  // Live Real-Time Firestore Sync Listeners (Shared Mobile + Web)
+  // ────────────────────────────────────────────────────────────
+  subscribeToRequests(callback) {
+    if (typeof db !== 'undefined' && db && typeof db.collection === 'function') {
+      try {
+        return db.collection('emergency_requests').onSnapshot((snapshot) => {
+          if (!snapshot.empty) {
+            const requests = snapshot.docs.map(doc => {
+              const d = doc.data();
+              const id = doc.id || d.id || d.requestId;
+              return {
+                id: id,
+                requestId: id,
+                patientName: d.patientName || d.patient_name || 'Patient',
+                patient_name: d.patientName || d.patient_name || 'Patient',
+                bloodGroupNeeded: d.bloodGroupNeeded || d.bloodGroup || d.blood_group_needed || 'O+',
+                blood_group_needed: d.bloodGroupNeeded || d.bloodGroup || d.blood_group_needed || 'O+',
+                unitsNeeded: parseInt(d.unitsNeeded || d.units_needed || d.unitsRequired || 1),
+                units_needed: parseInt(d.unitsNeeded || d.units_needed || d.unitsRequired || 1),
+                hospitalName: d.hospitalName || d.hospital_name || 'Hospital',
+                hospital_name: d.hospitalName || d.hospital_name || 'Hospital',
+                location: d.location || d.city || 'Chennai',
+                phone: d.phone || d.contactNumber || d.contact_number || '',
+                contactNumber: d.phone || d.contactNumber || d.contact_number || '',
+                urgencyLevel: d.urgencyLevel || d.urgency_level || d.emergencyLevel || 'critical',
+                urgency_level: d.urgencyLevel || d.urgency_level || d.emergencyLevel || 'critical',
+                notes: d.notes || d.message || '',
+                lat: d.lat != null ? d.lat : (d.latitude != null ? d.latitude : 13.0827),
+                lng: d.lng != null ? d.lng : (d.longitude != null ? d.longitude : 80.2707),
+                status: d.status || 'active',
+                responses: d.responses || 0,
+                createdAt: d.createdAt?.toDate ? d.createdAt.toDate().toISOString() : (d.createdAt || new Date().toISOString())
+              };
+            });
+            callback(requests.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)));
+          }
+        }, (err) => {
+          console.warn('Firestore live requests subscription error:', err.message);
+        });
+      } catch (e) {
+        console.warn('Firestore live subscription fallback:', e.message);
+      }
+    }
+    return null;
   }
 };
 

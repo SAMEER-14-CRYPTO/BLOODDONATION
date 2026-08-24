@@ -4,9 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Login to LifeLink. Access your donor dashboard, receiver search, or admin control panel.">
-  <title>Login – LifeLink</title>
+  <meta name="color-scheme" content="dark">
   <link rel="stylesheet" href="css/main.css">
   <style>
+    html, body, input, .form-input, select, textarea {
+      color-scheme: dark !important;
+    }
     body {
       background-color: #111422 !important;
       background-image: radial-gradient(circle at 10% 20%, rgba(229,57,53,0.08) 0%, transparent 40%), 
@@ -132,6 +135,90 @@
       color: #494c63 !important;
     }
 
+    /* Remove browser & Android autofill yellowish tone completely */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active,
+    input:-internal-autofill-selected,
+    input:-internal-autofill-previewed,
+    input:autofill,
+    .form-input:-webkit-autofill,
+    .form-input:-webkit-autofill:hover, 
+    .form-input:-webkit-autofill:focus, 
+    .form-input:-webkit-autofill:active,
+    .form-input:-internal-autofill-selected,
+    .form-input:-internal-autofill-previewed,
+    .form-input:autofill {
+      -webkit-box-shadow: 0 0 0 1000px #111422 inset !important;
+      box-shadow: 0 0 0 1000px #111422 inset !important;
+      -webkit-text-fill-color: #ffffff !important;
+      caret-color: #ffffff !important;
+      color: #ffffff !important;
+      background-color: #111422 !important;
+      background-image: none !important;
+      transition: background-color 50000s ease-in-out 0s, color 50000s ease-in-out 0s !important;
+      border-color: #242942 !important;
+    }
+    input:-webkit-autofill:focus,
+    input:autofill:focus,
+    .form-input:-webkit-autofill:focus,
+    .form-input:autofill:focus {
+      border-color: #e53935 !important;
+      -webkit-box-shadow: 0 0 0 1000px #151829 inset, 0 0 0 3px rgba(229, 57, 53, 0.25) !important;
+      box-shadow: 0 0 0 1000px #151829 inset, 0 0 0 3px rgba(229, 57, 53, 0.25) !important;
+    }
+    input.receiver-focus:-webkit-autofill,
+    input.receiver-focus:-webkit-autofill:hover,
+    input.receiver-focus:-webkit-autofill:focus,
+    input.receiver-focus:-webkit-autofill:active,
+    input.receiver-focus:autofill,
+    .form-input.receiver-focus:-webkit-autofill,
+    .form-input.receiver-focus:-webkit-autofill:hover,
+    .form-input.receiver-focus:-webkit-autofill:focus,
+    .form-input.receiver-focus:-webkit-autofill:active,
+    .form-input.receiver-focus:autofill {
+      -webkit-box-shadow: 0 0 0 1000px #111422 inset !important;
+      box-shadow: 0 0 0 1000px #111422 inset !important;
+      -webkit-text-fill-color: #ffffff !important;
+      caret-color: #ffffff !important;
+      color: #ffffff !important;
+      background-color: #111422 !important;
+    }
+    input.receiver-focus:-webkit-autofill:focus,
+    input.receiver-focus:autofill:focus,
+    .form-input.receiver-focus:-webkit-autofill:focus,
+    .form-input.receiver-focus:autofill:focus {
+      border-color: #43A047 !important;
+      -webkit-box-shadow: 0 0 0 1000px #151829 inset, 0 0 0 3px rgba(67, 160, 71, 0.25) !important;
+      box-shadow: 0 0 0 1000px #151829 inset, 0 0 0 3px rgba(67, 160, 71, 0.25) !important;
+    }
+    input.admin-focus:-webkit-autofill,
+    input.admin-focus:-webkit-autofill:hover,
+    input.admin-focus:-webkit-autofill:focus,
+    input.admin-focus:-webkit-autofill:active,
+    input.admin-focus:autofill,
+    .form-input.admin-focus:-webkit-autofill,
+    .form-input.admin-focus:-webkit-autofill:hover,
+    .form-input.admin-focus:-webkit-autofill:focus,
+    .form-input.admin-focus:-webkit-autofill:active,
+    .form-input.admin-focus:autofill {
+      -webkit-box-shadow: 0 0 0 1000px #111422 inset !important;
+      box-shadow: 0 0 0 1000px #111422 inset !important;
+      -webkit-text-fill-color: #ffffff !important;
+      caret-color: #ffffff !important;
+      color: #ffffff !important;
+      background-color: #111422 !important;
+    }
+    input.admin-focus:-webkit-autofill:focus,
+    input.admin-focus:autofill:focus,
+    .form-input.admin-focus:-webkit-autofill:focus,
+    .form-input.admin-focus:autofill:focus {
+      border-color: #1e88e5 !important;
+      -webkit-box-shadow: 0 0 0 1000px #151829 inset, 0 0 0 3px rgba(30, 136, 229, 0.25) !important;
+      box-shadow: 0 0 0 1000px #151829 inset, 0 0 0 3px rgba(30, 136, 229, 0.25) !important;
+    }
+
     /* Primary Login Button */
     .btn-login-main {
       background: #e53935 !important;
@@ -227,7 +314,7 @@
           
           <div class="form-group" style="margin-bottom:18px">
             <label for="loginPassword" id="passwordLabel">Password</label>
-            <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" required autocomplete="current-password">
+            <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" required minlength="8" maxlength="12" autocomplete="current-password">
           </div>
           
           <button type="submit" class="btn btn-login-main" id="submitLoginBtn">
@@ -326,6 +413,17 @@
         const email = document.getElementById('loginEmail').value.trim();
         const password = document.getElementById('loginPassword').value;
         const role = document.getElementById('loginRole').value;
+
+        if (password.length < 8 || password.length > 12) {
+          if (typeof App !== 'undefined' && App.showToast) {
+            App.showToast('Password must be between 8 and 12 characters.', 'error');
+          } else {
+            alert('Password must be between 8 and 12 characters.');
+          }
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+          return;
+        }
 
         const result = await Auth.login(email, password, role);
         if (!result) {

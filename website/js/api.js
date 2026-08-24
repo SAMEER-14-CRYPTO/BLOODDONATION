@@ -106,6 +106,19 @@ const LifeLinkAPI = {
     return this.request(`/api/emergency/requests/${id}/respond`, { method: 'PATCH' });
   },
 
+  async updateEmergencyRequest(id, updates) {
+    return this.request(`/api/emergency/requests/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(updates)
+    });
+  },
+
+  async deleteEmergencyRequest(id) {
+    return this.request(`/api/emergency/requests/${id}`, {
+      method: 'DELETE'
+    });
+  },
+
   async updateUser(uid, updates) {
     return this.request(`/api/users/${uid}`, {
       method: 'PATCH',

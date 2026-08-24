@@ -12,6 +12,7 @@ const App = {
     this.initScrollAnimations();
     this.initToggles();
     this.initClickFeedback();
+    this.initRealTimeStats();
     Auth.init();
   },
 
@@ -194,12 +195,43 @@ const App = {
     return `${Math.floor(diff / 86400)} days ago`;
   },
 
+  // --- Real-Time Live Stats Sync ---
+  async initRealTimeStats() {
+    try {
+      if (typeof DemoData === 'undefined') {
+        this.animateCounters();
+        return;
+      }
+      const [donors, hospitals, banks, reqs] = await Promise.all([
+        DemoData.getDonors(),
+        DemoData.getHospitals(),
+        DemoData.getBloodBanks(),
+        DemoData.getEmergencyRequests()
+      ]);
+
+      const donorsEl = document.getElementById('liveHeroDonors');
+      const hospEl = document.getElementById('liveHeroHospitals');
+      const banksEl = document.getElementById('liveHeroBanks');
+      const sosEl = document.getElementById('liveHeroSos');
+
+      if (donorsEl && donors) donorsEl.dataset.count = donors.length;
+      if (hospEl && hospitals) hospEl.dataset.count = hospitals.length;
+      if (banksEl && banks) banksEl.dataset.count = banks.length;
+      if (sosEl && reqs) sosEl.dataset.count = reqs.filter(r => r.status === 'active' || !r.status).length;
+
+      this.animateCounters();
+    } catch(e) {
+      console.log('Real-time stats load error:', e);
+      this.animateCounters();
+    }
+  },
+
   // --- Counter Animation ---
   animateCounters() {
     document.querySelectorAll('[data-count]').forEach(el => {
-      const target = parseInt(el.dataset.count);
+      const target = parseInt(el.dataset.count) || 0;
       let current = 0;
-      const step = Math.ceil(target / 50);
+      const step = Math.max(1, Math.ceil(target / 40));
       const timer = setInterval(() => {
         current += step;
         if (current >= target) { current = target; clearInterval(timer); }

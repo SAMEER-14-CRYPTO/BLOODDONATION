@@ -6,11 +6,15 @@ import {
 import { Colors } from '../constants/theme';
 import { CityCoordinates } from '../data/mockData';
 import InteractiveMap from '../components/InteractiveMap';
-import { fetchDonors } from '../services/api';
+import { fetchDonors, removeDonor } from '../services/api';
+import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 const BLOOD_GROUPS = ['ALL', 'A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
 
 export default function SearchDonorsScreen() {
+  const { user, token } = useAuth();
+  const { theme } = useTheme();
   const [donors, setDonors] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState('ALL');
@@ -22,6 +26,26 @@ export default function SearchDonorsScreen() {
     const data = await fetchDonors();
     setDonors(data);
     setLoading(false);
+  };
+
+  const handleDeleteDonorByAdmin = (item) => {
+    const dName = item.displayName || item.display_name || item.full_name || item.name || 'Donor';
+    Alert.alert(
+      'Remove Donor Record',
+      `Delete ${dName} from the database?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: '✕ Remove Donor', 
+          style: 'destructive', 
+          onPress: async () => {
+            setDonors(prev => prev.filter(d => d.uid !== item.uid && d.id !== item.id));
+            await removeDonor(token, item.uid || item.id);
+            Alert.alert('Donor Removed', `${dName} was removed from the database.`);
+          }
+        }
+      ]
+    );
   };
 
   useEffect(() => {
@@ -76,20 +100,20 @@ export default function SearchDonorsScreen() {
     const dDistance = item.distance || '2.4';
     const dVerified = item.isVerified || item.verified;
 
-    const theme = Colors.bloodThemes[bGroup] || Colors.bloodThemes['O+'];
+    const themeBadge = Colors.bloodThemes[bGroup] || Colors.bloodThemes['O+'];
     return (
-      <View style={styles.card}>
+      <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border }]}>
         <View style={styles.cardHeader}>
-          <View style={[styles.bloodBadge, { backgroundColor: theme.bg, borderColor: theme.border }]}>
-            <Text style={[styles.bloodText, { color: theme.text }]}>{bGroup}</Text>
+          <View style={[styles.bloodBadge, { backgroundColor: themeBadge.bg, borderColor: themeBadge.border }]}>
+            <Text style={[styles.bloodText, { color: themeBadge.text }]}>{bGroup}</Text>
           </View>
           <View style={styles.headerInfo}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              <Text style={styles.donorName}>{dName}</Text>
+              <Text style={[styles.donorName, { color: theme.text }]}>{dName}</Text>
               {dVerified ? <Text style={styles.verifiedBadge}>✓</Text> : null}
             </View>
-            <Text style={styles.locationText}>📍 {dAddress}</Text>
-            <Text style={styles.distanceText}>⚡ {dDistance} km away • Active</Text>
+            <Text style={[styles.locationText, { color: theme.textMuted }]}>📍 {dAddress}</Text>
+            <Text style={[styles.distanceText, { color: theme.textMuted }]}>⚡ {dDistance} km away • Active</Text>
           </View>
         </View>
 
@@ -107,18 +131,35 @@ export default function SearchDonorsScreen() {
             <Text style={styles.waBtnText}>💬 WhatsApp</Text>
           </TouchableOpacity>
         </View>
+
+        {user?.role === 'admin' ? (
+          <TouchableOpacity 
+            style={{ 
+              marginTop: 10, 
+              paddingVertical: 8, 
+              backgroundColor: 'rgba(229, 57, 53, 0.15)', 
+              borderWidth: 1, 
+              borderColor: 'rgba(229, 57, 53, 0.3)', 
+              borderRadius: 10, 
+              alignItems: 'center' 
+            }}
+            onPress={() => handleDeleteDonorByAdmin(item)}
+          >
+            <Text style={{ color: '#FF5252', fontSize: 11, fontWeight: '700' }}>✕ Remove Donor from Database</Text>
+          </TouchableOpacity>
+        ) : null}
       </View>
     );
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.bg }]}>
       {/* Search Input */}
-      <View style={styles.searchContainer}>
+      <View style={[styles.searchContainer, { backgroundColor: theme.card, borderColor: theme.border }]}>
         <TextInput
-          style={styles.searchInput}
+          style={[styles.searchInput, { color: theme.text }]}
           placeholder="Search by city or donor name (e.g. Chennai, Tirupati)…"
-          placeholderTextColor={Colors.textMuted}
+          placeholderTextColor={theme.textMuted}
           value={searchCity}
           onChangeText={setSearchCity}
         />

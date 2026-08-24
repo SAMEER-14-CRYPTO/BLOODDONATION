@@ -2,15 +2,17 @@ import React, { useRef, useEffect } from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { Colors } from '../constants/theme';
+import { useTheme } from '../context/ThemeContext';
 
 export default function InteractiveMap({ 
   markers = [], 
   center = { lat: 13.0827, lng: 79.8877 }, 
   zoom = 7, 
   height = 280,
-  focusedMarker = null
+  focusedMarker = null 
 }) {
   const webViewRef = useRef(null);
+  const { isDark, theme } = useTheme();
   const markersJSON = JSON.stringify(markers);
 
   useEffect(() => {
@@ -25,6 +27,15 @@ export default function InteractiveMap({
     }
   }, [focusedMarker]);
 
+  const mapBgColor = isDark ? '#111422' : '#F4F6FA';
+  const tileFilter = isDark 
+    ? 'brightness(0.85) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7)' 
+    : 'none';
+  const popupBg = isDark ? '#191C2E' : '#FFFFFF';
+  const popupBorder = isDark ? '#242942' : '#E2E8F0';
+  const popupText = isDark ? '#FFFFFF' : '#0F172A';
+  const popupSub = isDark ? '#8C90AA' : '#64748B';
+
   const htmlContent = `
     <!DOCTYPE html>
     <html>
@@ -36,26 +47,26 @@ export default function InteractiveMap({
         <style>
           html, body, #map {
             margin: 0; padding: 0; width: 100%; height: 100%;
-            background-color: #111422;
+            background-color: ${mapBgColor};
           }
           .leaflet-tile-pane {
-            filter: brightness(0.85) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
+            filter: ${tileFilter};
           }
           .custom-pin {
             display: flex; align-items: center; justify-content: center;
             border-radius: 50%; color: #fff; font-weight: 800; font-family: sans-serif;
-            font-size: 11px; box-shadow: 0 2px 8px rgba(0,0,0,0.5); border: 2px solid #fff;
+            font-size: 11px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); border: 2px solid #fff;
           }
           .pin-donor { background: #E53935; width: 30px; height: 30px; }
           .pin-hospital { background: #1E88E5; width: 30px; height: 30px; font-size: 14px; }
           .pin-bank { background: #7B1FA2; width: 30px; height: 30px; font-size: 14px; }
           .leaflet-popup-content-wrapper {
-            background: #191C2E; color: #fff; border-radius: 12px; border: 1px solid #242942;
-            font-family: sans-serif;
+            background: ${popupBg}; color: ${popupText}; border-radius: 12px; border: 1px solid ${popupBorder};
+            font-family: sans-serif; box-shadow: 0 6px 16px rgba(0,0,0,0.15);
           }
-          .leaflet-popup-tip { background: #191C2E; }
+          .leaflet-popup-tip { background: ${popupBg}; }
           .popup-title { font-weight: 800; font-size: 13px; margin-bottom: 2px; color: #E53935; }
-          .popup-sub { font-size: 11px; color: #8C90AA; }
+          .popup-sub { font-size: 11px; color: ${popupSub}; }
         </style>
       </head>
       <body>
@@ -111,17 +122,17 @@ export default function InteractiveMap({
   `;
 
   return (
-    <View style={[styles.mapContainer, { height }]}>
+    <View style={[styles.mapContainer, { height, borderColor: theme.border, backgroundColor: theme.card }]}>
       <WebView
         ref={webViewRef}
         originWhitelist={['*']}
         source={{ html: htmlContent }}
-        style={styles.webview}
+        style={[styles.webview, { backgroundColor: theme.bg }]}
         javaScriptEnabled={true}
         domStorageEnabled={true}
         startInLoadingState={true}
         renderLoading={() => (
-          <View style={styles.loader}>
+          <View style={[styles.loader, { backgroundColor: theme.bg }]}>
             <ActivityIndicator size="small" color={Colors.primary} />
           </View>
         )}
@@ -135,18 +146,14 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: Colors.borderDark,
-    backgroundColor: Colors.cardDark,
     marginBottom: 16,
   },
   webview: {
     flex: 1,
-    backgroundColor: Colors.bgDark,
   },
   loader: {
     position: 'absolute',
     top: 0, left: 0, right: 0, bottom: 0,
     justifyContent: 'center', alignItems: 'center',
-    backgroundColor: Colors.bgDark,
   }
 });

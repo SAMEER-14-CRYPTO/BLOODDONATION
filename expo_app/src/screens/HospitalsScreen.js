@@ -3,8 +3,10 @@ import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, Linking,
 import { Colors } from '../constants/theme';
 import { HospitalsList, CityCoordinates } from '../data/mockData';
 import InteractiveMap from '../components/InteractiveMap';
+import { useTheme } from '../context/ThemeContext';
 
 export default function HospitalsScreen() {
+  const { theme } = useTheme();
   const [search, setSearch] = useState('');
   const [showMap, setShowMap] = useState(true);
   const [focusedMarker, setFocusedMarker] = useState(null);
@@ -50,27 +52,27 @@ export default function HospitalsScreen() {
 
   const renderHospitalCard = ({ item }) => {
     return (
-      <View style={styles.card}>
+      <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border }]}>
         <View style={styles.headerRow}>
           <View style={{ flex: 1 }}>
-            <Text style={styles.hospName}>🏥 {item.name}</Text>
-            <Text style={styles.addressText}>📍 {item.address}</Text>
-            <Text style={styles.phoneText}>📞 {item.contact}</Text>
+            <Text style={[styles.hospName, { color: theme.text }]}>🏥 {item.name}</Text>
+            <Text style={[styles.addressText, { color: theme.textMuted }]}>📍 {item.address}</Text>
+            <Text style={[styles.phoneText, { color: theme.textMuted }]}>📞 {item.contact}</Text>
           </View>
         </View>
 
         {/* Live Blood Availability Badges */}
-        <Text style={styles.stockTitle}>Live Blood Availability:</Text>
+        <Text style={[styles.stockTitle, { color: theme.text }]}>Live Blood Availability:</Text>
         <View style={styles.stocksGrid}>
           {Object.entries(item.bloodAvailability || {}).map(([group, count]) => {
-            const theme = Colors.bloodThemes[group] || Colors.bloodThemes['O+'];
+            const themeBadge = Colors.bloodThemes[group] || Colors.bloodThemes['O+'];
             return (
               <View 
                 key={group} 
-                style={[styles.stockPill, { backgroundColor: theme.bg, borderColor: theme.border }]}
+                style={[styles.stockPill, { backgroundColor: themeBadge.bg, borderColor: themeBadge.border }]}
               >
-                <Text style={[styles.stockGroup, { color: theme.text }]}>{group}</Text>
-                <Text style={[styles.stockCount, { color: theme.text }]}>{count}u</Text>
+                <Text style={[styles.stockGroup, { color: themeBadge.text }]}>{group}</Text>
+                <Text style={[styles.stockCount, { color: themeBadge.text }]}>{count}u</Text>
               </View>
             );
           })}
@@ -96,12 +98,12 @@ export default function HospitalsScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.searchBar}>
+    <View style={[styles.container, { backgroundColor: theme.bg }]}>
+      <View style={[styles.searchBar, { backgroundColor: theme.card, borderColor: theme.border }]}>
         <TextInput
-          style={styles.input}
-          placeholder="Search hospital name or city (e.g. Chennai, Tirupati)…"
-          placeholderTextColor={Colors.textMuted}
+          style={[styles.searchInput, { color: theme.text }]}
+          placeholder="Search hospitals by name, city, address…"
+          placeholderTextColor={theme.textMuted}
           value={search}
           onChangeText={setSearch}
         />

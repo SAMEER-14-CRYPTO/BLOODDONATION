@@ -68,8 +68,8 @@ app.post('/api/auth/register', (req, res) => {
     if (!email || !password || !fullName) {
       return res.status(400).json({ error: 'Email, password, and full name are required.' });
     }
-    if (password.length < 6) {
-      return res.status(400).json({ error: 'Password must be at least 6 characters.' });
+    if (password.length < 8 || password.length > 12) {
+      return res.status(400).json({ error: 'Password must be between 8 and 12 characters.' });
     }
 
     const emailClean = email.trim().toLowerCase();
@@ -156,6 +156,9 @@ app.post('/api/auth/login', (req, res) => {
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required.' });
     }
+    if (password.length < 8 || password.length > 12) {
+      return res.status(400).json({ error: 'Password must be between 8 and 12 characters.' });
+    }
 
     const emailClean = email.trim().toLowerCase();
     const row = db.prepare('SELECT * FROM users WHERE email = ?').get(emailClean);
@@ -207,9 +210,27 @@ app.get('/api/emergency/requests', (_req, res) => {
   res.json({ requests: rows.map(rowToRequest) });
 });
 
-// Emergency requests – create (login required)
-app.post('/api/emergency/requests', authRequired, (req, res) => {
+// Emergency requests – create (optional auth)
+app.post('/api/emergency/requests', (req, res) => {
   try {
+    const header = req.headers.authorization || '';
+    const token = header.startsWith('Bearer ') ? header.slice(7) : null;
+    let userId = 'guest_' + Date.now();
+    let defaultRequesterName = 'Emergency Requester';
+    let defaultPhone = '';
+
+    if (token) {
+      try {
+        const payload = jwt.verify(token, JWT_SECRET);
+        const row = db.prepare('SELECT * FROM users WHERE uid = ?').get(payload.uid);
+        if (row) {
+          userId = row.uid;
+          defaultRequesterName = row.display_name || row.full_name;
+          defaultPhone = row.phone;
+        }
+      } catch (_) {}
+    }
+
     const {
       patientName, bloodGroupNeeded, unitsNeeded, hospitalName, location,
       requesterName, phone, notes, urgencyLevel, lat, lng
@@ -219,7 +240,7 @@ app.post('/api/emergency/requests', authRequired, (req, res) => {
       return res.status(400).json({ error: 'Patient name, blood group, hospital, and location are required.' });
     }
 
-    const id = 'req_' + Date.now();
+    const id = req.body.id || 'req_' + Date.now();
     const now = new Date().toISOString();
 
     db.prepare(`
@@ -229,14 +250,14 @@ app.post('/api/emergency/requests', authRequired, (req, res) => {
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', 0, ?)
     `).run(
       id,
-      req.user.uid,
-      requesterName || req.user.displayName,
+      userId,
+      requesterName || defaultRequesterName,
       patientName,
       bloodGroupNeeded,
       parseInt(unitsNeeded) || 1,
       hospitalName,
       location,
-      phone || req.user.phone || '',
+      phone || defaultPhone || '',
       notes || '',
       urgencyLevel || 'critical',
       lat ?? 20.5937,
@@ -252,17 +273,41 @@ app.post('/api/emergency/requests', authRequired, (req, res) => {
   }
 });
 
-// Respond to emergency request
-app.patch('/api/emergency/requests/:id/respond', authRequired, (req, res) => {
+// Respond to emergency request (optional auth)
+app.patch('/api/emergency/requests/:id/respond', (req, res) => {
   const { id } = req.params;
   const row = db.prepare('SELECT * FROM emergency_requests WHERE id = ?').get(id);
   if (!row) {
     return res.status(404).json({ error: 'Request not found.' });
   }
-  const responses = (row.responses || 0) + 1;
-  db.prepare('UPDATE emergency_requests SET responses = ? WHERE id = ?').run(responses, id);
+  db.prepare('UPDATE emergency_requests SET responses = responses + 1 WHERE id = ?').run(id);
   const updated = rowToRequest(db.prepare('SELECT * FROM emergency_requests WHERE id = ?').get(id));
-  res.json({ request: updated });
+  res.json({ request: updated, message: 'Thank you for stepping up to donate blood!' });
+});
+
+// Update emergency request status / fields
+app.patch('/api/emergency/requests/:id', (req, res) => {
+  const { id } = req.params;
+  const { status, responses } = req.body;
+  const row = db.prepare('SELECT * FROM emergency_requests WHERE id = ?').get(id);
+  if (!row) {
+    return res.status(404).json({ error: 'Request not found.' });
+  }
+  if (status !== undefined) {
+    db.prepare('UPDATE emergency_requests SET status = ? WHERE id = ?').run(status, id);
+  }
+  if (responses !== undefined) {
+    db.prepare('UPDATE emergency_requests SET responses = ? WHERE id = ?').run(responses, id);
+  }
+  const updated = rowToRequest(db.prepare('SELECT * FROM emergency_requests WHERE id = ?').get(id));
+  res.json({ request: updated, message: 'Request updated successfully.' });
+});
+
+// Delete emergency request
+app.delete('/api/emergency/requests/:id', (req, res) => {
+  const { id } = req.params;
+  db.prepare('DELETE FROM emergency_requests WHERE id = ?').run(id);
+  res.json({ success: true, message: 'Request deleted successfully.' });
 });
 
 // Update user profile

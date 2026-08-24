@@ -79,6 +79,43 @@
       font-size: 1.4rem;
       flex-shrink: 0;
     }
+
+    /* Remove browser & Android autofill yellowish tone completely */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active,
+    .form-input:-webkit-autofill,
+    .form-input:-webkit-autofill:hover, 
+    .form-input:-webkit-autofill:focus, 
+    .form-input:-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0 1000px var(--bg-card, #ffffff) inset !important;
+      box-shadow: 0 0 0 1000px var(--bg-card, #ffffff) inset !important;
+      -webkit-text-fill-color: var(--text, #212121) !important;
+      caret-color: var(--text, #212121) !important;
+      color: var(--text, #212121) !important;
+      transition: background-color 9999s ease-out 0s;
+    }
+    input:-webkit-autofill:focus,
+    .form-input:-webkit-autofill:focus {
+      border-color: var(--primary, #E53935) !important;
+      -webkit-box-shadow: 0 0 0 1000px var(--bg-card, #ffffff) inset, 0 0 0 4px var(--primary-glow, rgba(229,57,53,0.25)) !important;
+      box-shadow: 0 0 0 1000px var(--bg-card, #ffffff) inset, 0 0 0 4px var(--primary-glow, rgba(229,57,53,0.25)) !important;
+    }
+    [data-theme="dark"] input:-webkit-autofill,
+    [data-theme="dark"] input:-webkit-autofill:hover,
+    [data-theme="dark"] input:-webkit-autofill:focus,
+    [data-theme="dark"] input:-webkit-autofill:active,
+    [data-theme="dark"] .form-input:-webkit-autofill,
+    [data-theme="dark"] .form-input:-webkit-autofill:hover,
+    [data-theme="dark"] .form-input:-webkit-autofill:focus,
+    [data-theme="dark"] .form-input:-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0 1000px #1A1A2E inset !important;
+      box-shadow: 0 0 0 1000px #1A1A2E inset !important;
+      -webkit-text-fill-color: #E0E0E0 !important;
+      caret-color: #E0E0E0 !important;
+      color: #E0E0E0 !important;
+    }
   </style>
   <!-- PWA Meta Tags -->
   <link rel="manifest" href="manifest.json">
@@ -138,12 +175,12 @@
           </div>
           <div class="grid grid-2 gap-2">
             <div class="form-group">
-              <label for="regPassword">Password *</label>
-              <input type="password" id="regPassword" class="form-input" placeholder="Min 6 characters" required minlength="6">
+              <label for="regPassword">Password (8-12 chars) *</label>
+              <input type="password" id="regPassword" class="form-input" placeholder="8 to 12 characters" required minlength="8" maxlength="12">
             </div>
             <div class="form-group">
               <label for="regConfirm">Confirm Password *</label>
-              <input type="password" id="regConfirm" class="form-input" placeholder="Repeat password" required>
+              <input type="password" id="regConfirm" class="form-input" placeholder="Repeat password" required minlength="8" maxlength="12">
             </div>
           </div>
 
@@ -305,6 +342,11 @@
       if (pwd !== confirm) { 
         App.showToast('Passwords do not match. Please re-enter.', 'error'); 
         return; 
+      }
+
+      if (pwd.length < 8 || pwd.length > 12) {
+        App.showToast('Password must be between 8 and 12 characters long.', 'error');
+        return;
       }
       
       const submitBtn = document.getElementById('regSubmitBtn');

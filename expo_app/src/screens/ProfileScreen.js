@@ -3,11 +3,12 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, TextInput
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '../constants/theme';
 import { useAuth } from '../context/AuthContext';
-
+import { useTheme, ThemeToggleButton } from '../context/ThemeContext';
 import { updateUserProfileInDb } from '../services/api';
 
 export default function ProfileScreen({ navigation }) {
   const { user, token, isLoggedIn, logout, setUser } = useAuth();
+  const { isDark, theme } = useTheme();
   const [isAvailable, setIsAvailable] = useState(true);
   const [notifications, setNotifications] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -61,30 +62,17 @@ export default function ProfileScreen({ navigation }) {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
-      {/* Login Banner if not logged in */}
-      {!isLoggedIn && (
-        <View style={styles.guestBanner}>
-          <Text style={styles.guestText}>💡 You are browsing as a guest.</Text>
-          <TouchableOpacity 
-            style={styles.signInPill}
-            onPress={() => navigation.navigate('Login')}
-          >
-            <Text style={styles.signInPillText}>Sign In / Login</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-
-      {/* 💳 Digital Donor ID Card (Web-Style) */}
+    <ScrollView style={[styles.container, { backgroundColor: theme.bg }]} contentContainerStyle={styles.scrollContent}>
+      
+      {/* 💳 Digital Donor ID Card (Vibrant Gradient in both Light & Dark) */}
       <LinearGradient
-        colors={['#191C2E', '#232842', '#141724']}
+        colors={['#C62828', '#E53935', '#B71C1C']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
         style={styles.donorCard}
       >
         <View style={styles.cardTopRow}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <Text style={{ fontSize: 16 }}>🩸</Text>
-            <Text style={styles.cardBrand}>Life<Text style={{ color: Colors.primary }}>Link</Text> {profileData.role === 'admin' ? 'ADMIN CARD' : 'DONOR ID'}</Text>
-          </View>
+          <Text style={styles.cardBrand}>🩸 LifeLink Verified Donor ID</Text>
           <View style={styles.verifiedTag}>
             <Text style={styles.verifiedTagText}>✓ VERIFIED</Text>
           </View>
@@ -92,7 +80,7 @@ export default function ProfileScreen({ navigation }) {
 
         <View style={styles.cardMainRow}>
           <View style={styles.avatarBox}>
-            <Text style={styles.avatarLetter}>{profileData.name.charAt(0)}</Text>
+            <Text style={styles.avatarLetter}>{(profileData.name || 'U').charAt(0)}</Text>
           </View>
           <View style={{ flex: 1, marginLeft: 12 }}>
             <Text style={styles.cardName}>{profileData.name}</Text>
@@ -105,7 +93,7 @@ export default function ProfileScreen({ navigation }) {
         </View>
 
         <View style={styles.cardFooter}>
-          <Text style={styles.cardFooterText}>Emergency Contact: {profileData.phone || '+91-9184000000'}</Text>
+          <Text style={styles.cardFooterText}>Emergency: {profileData.phone || '+91-9184000000'}</Text>
           <TouchableOpacity onPress={handleDownloadCard}>
             <Text style={styles.cardDownloadText}>📥 Save Card</Text>
           </TouchableOpacity>
@@ -113,74 +101,74 @@ export default function ProfileScreen({ navigation }) {
       </LinearGradient>
 
       {/* Stats Overview */}
-      <View style={styles.statsCard}>
+      <View style={[styles.statsCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
         <View style={styles.statCol}>
           <Text style={styles.statNum}>{profileData.totalDonations || 4}</Text>
-          <Text style={styles.statLabel}>Donations</Text>
+          <Text style={[styles.statLabel, { color: theme.textMuted }]}>Donations</Text>
         </View>
         <View style={styles.statCol}>
           <Text style={[styles.statNum, { color: Colors.success }]}>{profileData.livesSaved || 12}</Text>
-          <Text style={styles.statLabel}>Lives Saved</Text>
+          <Text style={[styles.statLabel, { color: theme.textMuted }]}>Lives Saved</Text>
         </View>
         <View style={styles.statCol}>
           <Text style={[styles.statNum, { color: Colors.info }]}>Eligible</Text>
-          <Text style={styles.statLabel}>Readiness</Text>
+          <Text style={[styles.statLabel, { color: theme.textMuted }]}>Readiness</Text>
         </View>
       </View>
 
-      {/* Profile Details Information Grid */}
-      <View style={styles.sectionCard}>
+      {/* Profile Details Information Grid (High Contrast in Light & Dark Mode) */}
+      <View style={[styles.sectionCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
         <View style={styles.sectionHeaderRow}>
-          <Text style={styles.sectionTitle}>👤 Personal Details</Text>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>👤 Personal Details</Text>
           <TouchableOpacity onPress={() => { setEditForm({ ...profileData }); setIsEditing(true); }}>
-            <Text style={styles.editLinkText}>✏️ Edit</Text>
+            <Text style={styles.editLinkText}>✏️ Edit Profile</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.detailGrid}>
-          <View style={styles.detailItem}>
-            <Text style={styles.detailLabel}>Full Name</Text>
-            <Text style={styles.detailValue}>{profileData.name}</Text>
+          <View style={[styles.detailItem, { backgroundColor: isDark ? '#111422' : '#F8FAFC', borderColor: theme.border }]}>
+            <Text style={[styles.detailLabel, { color: theme.textMuted }]}>FULL NAME</Text>
+            <Text style={[styles.detailValue, { color: theme.text }]}>{profileData.name}</Text>
           </View>
-          <View style={styles.detailItem}>
-            <Text style={styles.detailLabel}>Blood Group</Text>
-            <Text style={[styles.detailValue, { color: Colors.primary, fontWeight: '800' }]}>{profileData.bloodGroup || 'B-'}</Text>
+          <View style={[styles.detailItem, { backgroundColor: isDark ? '#111422' : '#F8FAFC', borderColor: theme.border }]}>
+            <Text style={[styles.detailLabel, { color: theme.textMuted }]}>BLOOD GROUP</Text>
+            <Text style={[styles.detailValue, { color: Colors.primary, fontWeight: '900' }]}>{profileData.bloodGroup || 'B-'}</Text>
           </View>
-          <View style={styles.detailItem}>
-            <Text style={styles.detailLabel}>Contact Phone</Text>
-            <Text style={styles.detailValue}>{profileData.phone}</Text>
+          <View style={[styles.detailItem, { backgroundColor: isDark ? '#111422' : '#F8FAFC', borderColor: theme.border }]}>
+            <Text style={[styles.detailLabel, { color: theme.textMuted }]}>PHONE NUMBER</Text>
+            <Text style={[styles.detailValue, { color: theme.text }]}>{profileData.phone}</Text>
           </View>
-          <View style={styles.detailItem}>
-            <Text style={styles.detailLabel}>Email Address</Text>
-            <Text style={styles.detailValue}>{profileData.email}</Text>
+          <View style={[styles.detailItem, { backgroundColor: isDark ? '#111422' : '#F8FAFC', borderColor: theme.border }]}>
+            <Text style={[styles.detailLabel, { color: theme.textMuted }]}>EMAIL ADDRESS</Text>
+            <Text style={[styles.detailValue, { color: theme.text }]}>{profileData.email}</Text>
           </View>
-          <View style={styles.detailItem}>
-            <Text style={styles.detailLabel}>Age / Gender</Text>
-            <Text style={styles.detailValue}>{profileData.age || 21} yrs • {profileData.gender || 'Male'}</Text>
+          <View style={[styles.detailItem, { backgroundColor: isDark ? '#111422' : '#F8FAFC', borderColor: theme.border }]}>
+            <Text style={[styles.detailLabel, { color: theme.textMuted }]}>AGE / GENDER</Text>
+            <Text style={[styles.detailValue, { color: theme.text }]}>{profileData.age || 21} yrs • {profileData.gender || 'Male'}</Text>
           </View>
-          <View style={styles.detailItem}>
-            <Text style={styles.detailLabel}>City / Location</Text>
-            <Text style={styles.detailValue}>{profileData.city || 'Rly Kodur'}</Text>
+          <View style={[styles.detailItem, { backgroundColor: isDark ? '#111422' : '#F8FAFC', borderColor: theme.border }]}>
+            <Text style={[styles.detailLabel, { color: theme.textMuted }]}>CITY / LOCATION</Text>
+            <Text style={[styles.detailValue, { color: theme.text }]}>{profileData.city || 'Rly Kodur'}</Text>
           </View>
-          <View style={[styles.detailItem, { width: '100%' }]}>
-            <Text style={styles.detailLabel}>Full Residential Address</Text>
-            <Text style={styles.detailValue}>{profileData.address || 'Main Road, Railway Kodur'}</Text>
+          <View style={[styles.detailItem, { width: '100%', backgroundColor: isDark ? '#111422' : '#F8FAFC', borderColor: theme.border }]}>
+            <Text style={[styles.detailLabel, { color: theme.textMuted }]}>FULL RESIDENTIAL ADDRESS</Text>
+            <Text style={[styles.detailValue, { color: theme.text }]}>{profileData.address || 'Main Road, Railway Kodur'}</Text>
           </View>
-          <View style={[styles.detailItem, { width: '100%' }]}>
-            <Text style={styles.detailLabel}>Last Blood Donation</Text>
-            <Text style={styles.detailValue}>{profileData.lastDonation || '2026-08-20'} (Safe & eligible to donate)</Text>
+          <View style={[styles.detailItem, { width: '100%', backgroundColor: isDark ? '#111422' : '#F8FAFC', borderColor: theme.border }]}>
+            <Text style={[styles.detailLabel, { color: theme.textMuted }]}>LAST BLOOD DONATION</Text>
+            <Text style={[styles.detailValue, { color: theme.text }]}>{profileData.lastDonation || '2026-08-20'} (Safe & eligible to donate)</Text>
           </View>
         </View>
       </View>
 
       {/* Donor Controls & Availability Switch */}
-      <View style={styles.sectionCard}>
-        <Text style={styles.sectionTitle}>⚙️ Donor Settings</Text>
+      <View style={[styles.sectionCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
+        <Text style={[styles.sectionTitle, { color: theme.text }]}>⚙️ Donor Settings</Text>
 
-        <View style={styles.settingRow}>
+        <View style={[styles.settingRow, { borderBottomColor: theme.border }]}>
           <View style={{ flex: 1, paddingRight: 10 }}>
-            <Text style={styles.settingTitle}>Donor Availability Status</Text>
-            <Text style={styles.settingDesc}>
+            <Text style={[styles.settingTitle, { color: theme.text }]}>Donor Availability Status</Text>
+            <Text style={[styles.settingDesc, { color: theme.textMuted }]}>
               {isAvailable ? '🟢 You appear in active search for emergency patients' : '⚪ You are currently marked busy'}
             </Text>
           </View>
@@ -194,8 +182,8 @@ export default function ProfileScreen({ navigation }) {
 
         <View style={[styles.settingRow, { borderBottomWidth: 0 }]}>
           <View style={{ flex: 1, paddingRight: 10 }}>
-            <Text style={styles.settingTitle}>Emergency SMS & Broadcast Alerts</Text>
-            <Text style={styles.settingDesc}>Receive critical patient notifications within 15 km</Text>
+            <Text style={[styles.settingTitle, { color: theme.text }]}>Emergency SMS & Broadcast Alerts</Text>
+            <Text style={[styles.settingDesc, { color: theme.textMuted }]}>Receive critical patient notifications within 15 km</Text>
           </View>
           <Switch
             value={notifications}
@@ -222,50 +210,50 @@ export default function ProfileScreen({ navigation }) {
       {/* Edit Profile Modal */}
       <Modal visible={isEditing} animationType="slide" transparent={true}>
         <View style={styles.modalOverlay}>
-          <View style={styles.modalCard}>
-            <Text style={styles.modalTitle}>✏️ Edit Donor Profile</Text>
+          <View style={[styles.modalCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
+            <Text style={[styles.modalTitle, { color: theme.text }]}>✏️ Edit Donor Profile</Text>
 
             <ScrollView style={{ maxHeight: 380 }}>
-              <Text style={styles.inputLabel}>Full Name</Text>
+              <Text style={[styles.inputLabel, { color: theme.text }]}>Full Name</Text>
               <TextInput
-                style={styles.modalInput}
+                style={[styles.modalInput, { backgroundColor: isDark ? '#111422' : '#F8FAFC', borderColor: theme.border, color: theme.text }]}
                 value={editForm.name}
                 onChangeText={text => setEditForm({ ...editForm, name: text })}
               />
 
-              <Text style={styles.inputLabel}>Phone Number</Text>
+              <Text style={[styles.inputLabel, { color: theme.text }]}>Phone Number</Text>
               <TextInput
-                style={styles.modalInput}
+                style={[styles.modalInput, { backgroundColor: isDark ? '#111422' : '#F8FAFC', borderColor: theme.border, color: theme.text }]}
                 value={editForm.phone}
                 onChangeText={text => setEditForm({ ...editForm, phone: text })}
               />
 
-              <Text style={styles.inputLabel}>City</Text>
+              <Text style={[styles.inputLabel, { color: theme.text }]}>City</Text>
               <TextInput
-                style={styles.modalInput}
+                style={[styles.modalInput, { backgroundColor: isDark ? '#111422' : '#F8FAFC', borderColor: theme.border, color: theme.text }]}
                 value={editForm.city}
                 onChangeText={text => setEditForm({ ...editForm, city: text })}
               />
 
-              <Text style={styles.inputLabel}>Full Address</Text>
+              <Text style={[styles.inputLabel, { color: theme.text }]}>Full Address</Text>
               <TextInput
-                style={styles.modalInput}
+                style={[styles.modalInput, { backgroundColor: isDark ? '#111422' : '#F8FAFC', borderColor: theme.border, color: theme.text }]}
                 value={editForm.address}
                 onChangeText={text => setEditForm({ ...editForm, address: text })}
               />
 
-              <Text style={styles.inputLabel}>Age</Text>
+              <Text style={[styles.inputLabel, { color: theme.text }]}>Age</Text>
               <TextInput
-                style={styles.modalInput}
-                value={editForm.age}
+                style={[styles.modalInput, { backgroundColor: isDark ? '#111422' : '#F8FAFC', borderColor: theme.border, color: theme.text }]}
+                value={editForm.age ? String(editForm.age) : ''}
                 keyboardType="numeric"
                 onChangeText={text => setEditForm({ ...editForm, age: text })}
               />
             </ScrollView>
 
             <View style={styles.modalBtnRow}>
-              <TouchableOpacity style={styles.cancelBtn} onPress={() => setIsEditing(false)}>
-                <Text style={styles.cancelBtnText}>Cancel</Text>
+              <TouchableOpacity style={[styles.cancelBtn, { borderColor: theme.border }]} onPress={() => setIsEditing(false)}>
+                <Text style={[styles.cancelBtnText, { color: theme.textMuted }]}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.saveBtn} onPress={handleSaveProfile}>
                 <Text style={styles.saveBtnText}>Save Changes</Text>
@@ -281,48 +269,18 @@ export default function ProfileScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.bgDark,
   },
   scrollContent: {
     padding: 16,
     paddingBottom: 40,
   },
-  guestBanner: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: 'rgba(30, 136, 229, 0.15)',
-    borderWidth: 1,
-    borderColor: 'rgba(30, 136, 229, 0.3)',
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 16,
-  },
-  guestText: {
-    color: '#42A5F5',
-    fontSize: 12,
-    fontWeight: '700',
-  },
-  signInPill: {
-    backgroundColor: Colors.info,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-  },
-  signInPillText: {
-    color: '#FFFFFF',
-    fontWeight: '800',
-    fontSize: 11,
-  },
   donorCard: {
     borderRadius: 20,
     padding: 20,
-    borderWidth: 1,
-    borderColor: '#2D3452',
     marginBottom: 16,
-    shadowColor: '#000',
+    shadowColor: '#E53935',
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.4,
+    shadowOpacity: 0.35,
     shadowRadius: 10,
     elevation: 8,
   },
@@ -339,15 +297,13 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   verifiedTag: {
-    backgroundColor: 'rgba(67, 160, 71, 0.2)',
-    borderWidth: 1,
-    borderColor: 'rgba(67, 160, 71, 0.4)',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
   },
   verifiedTagText: {
-    color: Colors.success,
+    color: '#FFFFFF',
     fontWeight: '800',
     fontSize: 10,
   },
@@ -360,7 +316,9 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: Colors.primary,
+    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -371,31 +329,35 @@ const styles = StyleSheet.create({
   },
   cardName: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '900',
   },
   cardId: {
-    color: Colors.textMuted,
+    color: 'rgba(255, 255, 255, 0.85)',
     fontSize: 11,
     marginTop: 1,
+    fontWeight: '600',
   },
   cardLocation: {
-    color: Colors.textMuted,
+    color: 'rgba(255, 255, 255, 0.85)',
     fontSize: 11,
     marginTop: 1,
   },
   cardBloodBadge: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(229, 57, 53, 0.2)',
-    borderWidth: 1.5,
-    borderColor: Colors.primary,
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
   },
   cardBloodText: {
-    color: Colors.primary,
+    color: Colors.primaryDark,
     fontSize: 16,
     fontWeight: '900',
   },
@@ -405,22 +367,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.08)',
+    borderTopColor: 'rgba(255, 255, 255, 0.2)',
   },
   cardFooterText: {
-    color: Colors.textMuted,
+    color: 'rgba(255, 255, 255, 0.9)',
     fontSize: 11,
   },
   cardDownloadText: {
-    color: '#42A5F5',
-    fontWeight: '700',
+    color: '#FFFFFF',
+    fontWeight: '800',
     fontSize: 11,
+    textDecorationLine: 'underline',
   },
   statsCard: {
     flexDirection: 'row',
-    backgroundColor: Colors.cardDark,
     borderWidth: 1,
-    borderColor: Colors.borderDark,
     borderRadius: 16,
     padding: 16,
     marginBottom: 16,
@@ -436,13 +397,11 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 11,
-    color: Colors.textMuted,
     marginTop: 2,
+    fontWeight: '600',
   },
   sectionCard: {
-    backgroundColor: Colors.cardDark,
     borderWidth: 1,
-    borderColor: Colors.borderDark,
     borderRadius: 16,
     padding: 16,
     marginBottom: 16,
@@ -456,35 +415,32 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#FFFFFF',
   },
   editLinkText: {
-    color: '#42A5F5',
+    color: Colors.primary,
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: '800',
   },
   detailGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    gap: 10,
   },
   detailItem: {
     width: '48%',
-    backgroundColor: Colors.bgDark,
-    borderRadius: 10,
-    padding: 10,
+    borderRadius: 12,
+    padding: 12,
     borderWidth: 1,
-    borderColor: Colors.borderDark,
   },
   detailLabel: {
-    fontSize: 10,
-    color: Colors.textMuted,
-    marginBottom: 2,
+    fontSize: 9,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+    marginBottom: 4,
   },
   detailValue: {
-    fontSize: 12,
-    color: '#FFFFFF',
-    fontWeight: '600',
+    fontSize: 13,
+    fontWeight: '700',
   },
   settingRow: {
     flexDirection: 'row',
@@ -492,16 +448,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.06)',
   },
   settingTitle: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#FFFFFF',
   },
   settingDesc: {
     fontSize: 11,
-    color: Colors.textMuted,
     marginTop: 2,
   },
   loginBtn: {
@@ -516,7 +469,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   logoutBtn: {
-    backgroundColor: 'rgba(239, 83, 80, 0.15)',
+    backgroundColor: 'rgba(239, 83, 80, 0.12)',
     borderWidth: 1,
     borderColor: 'rgba(239, 83, 80, 0.3)',
     paddingVertical: 14,
@@ -535,30 +488,24 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   modalCard: {
-    backgroundColor: Colors.cardDark,
     borderWidth: 1,
-    borderColor: Colors.borderDark,
     borderRadius: 20,
     padding: 20,
   },
   modalTitle: {
     fontSize: 17,
     fontWeight: '900',
-    color: '#FFFFFF',
     marginBottom: 14,
   },
   inputLabel: {
-    fontSize: 11,
-    color: Colors.textMuted,
-    marginBottom: 4,
-    marginTop: 8,
+    fontSize: 12,
+    fontWeight: '700',
+    marginBottom: 6,
+    marginTop: 10,
   },
   modalInput: {
-    backgroundColor: Colors.bgDark,
     borderWidth: 1,
-    borderColor: Colors.borderDark,
     borderRadius: 10,
-    color: '#FFFFFF',
     paddingHorizontal: 12,
     paddingVertical: 8,
     fontSize: 13,
@@ -570,14 +517,14 @@ const styles = StyleSheet.create({
   },
   cancelBtn: {
     flex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: 'center',
+    borderWidth: 1,
   },
   cancelBtnText: {
-    color: '#FFFFFF',
-    fontWeight: '700',
+    fontWeight: '800',
+    fontSize: 13,
   },
   saveBtn: {
     flex: 1,
@@ -589,5 +536,6 @@ const styles = StyleSheet.create({
   saveBtnText: {
     color: '#FFFFFF',
     fontWeight: '800',
+    fontSize: 13,
   },
 });

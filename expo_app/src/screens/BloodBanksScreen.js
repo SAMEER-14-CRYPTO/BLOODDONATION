@@ -3,8 +3,10 @@ import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, Linking,
 import { Colors } from '../constants/theme';
 import { BloodBanksList, CityCoordinates } from '../data/mockData';
 import InteractiveMap from '../components/InteractiveMap';
+import { useTheme } from '../context/ThemeContext';
 
 export default function BloodBanksScreen() {
+  const { theme } = useTheme();
   const [search, setSearch] = useState('');
   const [showMap, setShowMap] = useState(true);
   const [focusedMarker, setFocusedMarker] = useState(null);
@@ -50,31 +52,31 @@ export default function BloodBanksScreen() {
 
   const renderBankCard = ({ item }) => {
     return (
-      <View style={styles.card}>
+      <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border }]}>
         <View style={styles.headerRow}>
           <View style={{ flex: 1 }}>
-            <Text style={styles.bankName}>🏦 {item.name}</Text>
-            <Text style={styles.addressText}>📍 {item.address}</Text>
-            <Text style={styles.phoneText}>📞 {item.contact}</Text>
+            <Text style={[styles.bankName, { color: theme.text }]}>🏦 {item.name}</Text>
+            <Text style={[styles.addressText, { color: theme.textMuted }]}>📍 {item.address}</Text>
+            <Text style={[styles.phoneText, { color: theme.textMuted }]}>📞 {item.contact}</Text>
           </View>
         </View>
 
         {/* Blood Stock Status Grid in Subtle Colors */}
-        <Text style={styles.stockTitle}>Blood Stock Units Status:</Text>
+        <Text style={[styles.stockTitle, { color: theme.text }]}>Blood Stock Units Status:</Text>
         <View style={styles.stocksGrid}>
           {Object.entries(item.stocks || {}).map(([group, count]) => {
-            const theme = Colors.bloodThemes[group] || Colors.bloodThemes['O+'];
+            const themeBadge = Colors.bloodThemes[group] || Colors.bloodThemes['O+'];
             const pct = Math.min(100, Math.round((count / 60) * 100));
             return (
               <View 
                 key={group} 
-                style={[styles.stockCard, { backgroundColor: theme.bg, borderColor: theme.border }]}
+                style={[styles.stockCard, { backgroundColor: themeBadge.bg, borderColor: themeBadge.border }]}
               >
-                <Text style={[styles.stockGroup, { color: theme.text }]}>{group}</Text>
+                <Text style={[styles.stockGroup, { color: themeBadge.text }]}>{group}</Text>
                 <View style={styles.progressTrack}>
-                  <View style={[styles.progressFill, { width: `${pct}%`, backgroundColor: theme.bar }]} />
+                  <View style={[styles.progressFill, { width: `${pct}%`, backgroundColor: themeBadge.bar }]} />
                 </View>
-                <Text style={[styles.stockUnits, { color: theme.text }]}>{count} units</Text>
+                <Text style={[styles.stockUnits, { color: themeBadge.text }]}>{count} units</Text>
               </View>
             );
           })}
@@ -92,7 +94,7 @@ export default function BloodBanksScreen() {
             style={styles.callBtn}
             onPress={() => handleCall(item.contact)}
           >
-            <Text style={styles.callBtnText}>📞 Contact Centre</Text>
+            <Text style={styles.callBtnText}>📞 Call Blood Bank</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -100,12 +102,12 @@ export default function BloodBanksScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.searchBar}>
+    <View style={[styles.container, { backgroundColor: theme.bg }]}>
+      <View style={[styles.searchBar, { backgroundColor: theme.card, borderColor: theme.border }]}>
         <TextInput
-          style={styles.input}
-          placeholder="Search blood bank or city (e.g. Chennai, Tirupati, Vizag)…"
-          placeholderTextColor={Colors.textMuted}
+          style={[styles.searchInput, { color: theme.text }]}
+          placeholder="Search blood banks by name, city, address…"
+          placeholderTextColor={theme.textMuted}
           value={search}
           onChangeText={setSearch}
         />

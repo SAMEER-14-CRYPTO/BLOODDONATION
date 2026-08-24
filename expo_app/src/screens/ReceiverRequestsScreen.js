@@ -7,7 +7,32 @@ import { Colors } from '../constants/theme';
 import { CityCoordinates } from '../data/mockData';
 import InteractiveMap from '../components/InteractiveMap';
 import { useAuth } from '../context/AuthContext';
-import { fetchEmergencyRequests, postEmergencyRequest, respondToEmergencyRequest } from '../services/api';
+import { useTheme } from '../context/ThemeContext';
+import { 
+  fetchEmergencyRequests, 
+  postEmergencyRequest, 
+  respondToEmergencyRequest, 
+  subscribeToLiveEmergencyRequests,
+  removeEmergencyRequest,
+  fulfillEmergencyRequest,
+  deduplicateRequests
+} from '../services/api';
+
+// Safely convert Firestore Timestamp / Date / string to displayable text
+function formatTimestamp(val) {
+  if (!val) return 'Recently';
+  if (typeof val === 'string') return val;
+  if (val.seconds) {
+    const d = new Date(val.seconds * 1000);
+    const mins = Math.floor((Date.now() - d.getTime()) / 60000);
+    if (mins < 1) return 'Just now';
+    if (mins < 60) return `${mins} min ago`;
+    if (mins < 1440) return `${Math.floor(mins / 60)}h ago`;
+    return d.toLocaleDateString();
+  }
+  if (val instanceof Date) return val.toLocaleDateString();
+  return String(val);
+}
 
 const DEFAULT_FALLBACK_REQUESTS = [
   {
@@ -61,6 +86,7 @@ export default function ReceiverRequestsScreen() {
   const [showNewModal, setShowNewModal] = useState(false);
   const [search, setSearch] = useState('');
   const { user, token } = useAuth();
+  const { theme } = useTheme();
 
   // Form State
   const [patientName, setPatientName] = useState('');
@@ -75,13 +101,24 @@ export default function ReceiverRequestsScreen() {
     setLoading(true);
     const dbRequests = await fetchEmergencyRequests();
     if (dbRequests && dbRequests.length > 0) {
-      setRequests(dbRequests);
+      setRequests(deduplicateRequests(dbRequests));
     }
     setLoading(false);
   };
 
   useEffect(() => {
     loadRequests();
+
+    // Real-time live Firestore listener across Web & Mobile (Deduplicated)
+    const unsubscribe = subscribeToLiveEmergencyRequests((liveRequests) => {
+      if (liveRequests && liveRequests.length > 0) {
+        setRequests(deduplicateRequests(liveRequests));
+      }
+    });
+
+    return () => {
+      if (typeof unsubscribe === 'function') unsubscribe();
+    };
   }, []);
 
   const mapMarkers = requests.map(r => ({
@@ -113,22 +150,22 @@ export default function ReceiverRequestsScreen() {
       lng: coords.lng
     };
 
-    // Save directly to the shared SQLite / Web backend database!
-    await postEmergencyRequest(token, newReqPayload);
+    // Save directly to shared Cloud Firestore & SQLite backend (Single clean insertion)
+    const res = await postEmergencyRequest(token, newReqPayload);
 
     const localNewReq = {
       ...newReqPayload,
-      id: 'req_' + Date.now(),
+      id: res?.id || ('req_' + Date.now()),
       createdAt: 'Just now'
     };
 
-    setRequests(prev => [localNewReq, ...prev]);
+    setRequests(prev => deduplicateRequests([localNewReq, ...prev]));
     setShowNewModal(false);
     setPatientName('');
     setHospitalName('');
     setLocation('');
     setNotes('');
-    Alert.alert('🚨 SOS Dispatched', `Emergency broadcast for ${bloodGroup} at ${hospitalName} is live in the database and visible across both Web & Mobile platforms!`);
+    Alert.alert('🚨 SOS Dispatched', `Emergency broadcast for ${bloodGroup} at ${hospitalName} is live in the database!`);
   };
 
   const handleRespond = async (req) => {
@@ -150,16 +187,14 @@ export default function ReceiverRequestsScreen() {
     );
   };
 
-  const filtered = requests.filter(r => {
-    const pName = r.patientName || r.patient_name || '';
-    const hName = r.hospitalName || r.hospital_name || '';
-    const loc = r.location || '';
-    const bGroup = r.bloodGroupNeeded || r.blood_group_needed || '';
-    return !search.trim() ||
-      pName.toLowerCase().includes(search.toLowerCase()) ||
-      hName.toLowerCase().includes(search.toLowerCase()) ||
-      loc.toLowerCase().includes(search.toLowerCase()) ||
-      bGroup.toLowerCase().includes(search.toLowerCase());
+  const filteredRequests = requests.filter(r => {
+    const q = search.toLowerCase().trim();
+    if (!q) return true;
+    const pName = (r.patientName || r.patient_name || '').toLowerCase();
+    const hName = (r.hospitalName || r.hospital_name || '').toLowerCase();
+    const loc = (r.location || '').toLowerCase();
+    const bg = (r.bloodGroupNeeded || r.blood_group_needed || '').toLowerCase();
+    return pName.includes(q) || hName.includes(q) || loc.includes(q) || bg.includes(q);
   });
 
   const renderRequestCard = ({ item }) => {
@@ -168,29 +203,29 @@ export default function ReceiverRequestsScreen() {
     const hName = item.hospitalName || item.hospital_name || 'Hospital';
     const urgency = item.urgencyLevel || item.urgency_level || 'critical';
     const unitsCount = item.unitsNeeded || item.units_needed || 1;
-    const timeStr = item.createdAt || item.created_at || 'Recently';
+    const timeStr = formatTimestamp(item.createdAt || item.created_at);
 
-    const theme = Colors.bloodThemes[bg] || Colors.bloodThemes['O+'];
+    const themeBadge = Colors.bloodThemes[bg] || Colors.bloodThemes['O+'];
     return (
-      <View style={styles.card}>
+      <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border }]}>
         <View style={styles.cardHeader}>
-          <View style={[styles.bloodBadge, { backgroundColor: theme.bg, borderColor: theme.border }]}>
-            <Text style={[styles.bloodBadgeText, { color: theme.text }]}>{bg}</Text>
+          <View style={[styles.bloodBadge, { backgroundColor: themeBadge.bg, borderColor: themeBadge.border }]}>
+            <Text style={[styles.bloodBadgeText, { color: themeBadge.text }]}>{bg}</Text>
           </View>
           <View style={{ flex: 1 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Text style={styles.patientName}>{pName}</Text>
+              <Text style={[styles.patientName, { color: theme.text }]}>{pName}</Text>
               <View style={[styles.urgencyBadge, urgency === 'critical' ? styles.urgencyCritical : styles.urgencyUrgent]}>
                 <Text style={styles.urgencyText}>{urgency.toUpperCase()}</Text>
               </View>
             </View>
-            <Text style={styles.metaText}>🏥 {hName}</Text>
-            <Text style={styles.metaText}>📍 {item.location} • 🩸 {unitsCount} unit(s) • ⏱️ {timeStr}</Text>
+            <Text style={[styles.metaText, { color: theme.textMuted }]}>🏥 {hName}</Text>
+            <Text style={[styles.metaText, { color: theme.textMuted }]}>📍 {item.location} • 🩸 {unitsCount} unit(s) • ⏱️ {timeStr}</Text>
           </View>
         </View>
 
         {item.notes ? (
-          <Text style={styles.notesText}>💬 "{item.notes}"</Text>
+          <Text style={[styles.notesText, { color: theme.text }]}>💬 "{item.notes}"</Text>
         ) : null}
 
         <View style={styles.actionRow}>
@@ -207,18 +242,59 @@ export default function ReceiverRequestsScreen() {
             <Text style={styles.callSmallBtnText}>📞 Call</Text>
           </TouchableOpacity>
         </View>
+
+        {user?.role === 'admin' ? (
+          <View style={{ flexDirection: 'row', gap: 8, marginTop: 10, paddingTop: 8, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.06)' }}>
+            <TouchableOpacity 
+              style={{ flex: 1, backgroundColor: 'rgba(67, 160, 71, 0.15)', borderWidth: 1, borderColor: 'rgba(67, 160, 71, 0.3)', paddingVertical: 6, borderRadius: 8, alignItems: 'center' }}
+              onPress={async () => {
+                await fulfillEmergencyRequest(token, item.id);
+                setRequests(prev => prev.map(r => r.id === item.id ? { ...r, status: 'fulfilled' } : r));
+                Alert.alert('Resolved', 'SOS marked as fulfilled.');
+              }}
+            >
+              <Text style={{ color: Colors.success, fontSize: 11, fontWeight: '700' }}>✓ Mark Fulfilled</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={{ flex: 1, backgroundColor: 'rgba(229, 57, 53, 0.15)', borderWidth: 1, borderColor: 'rgba(229, 57, 53, 0.3)', paddingVertical: 6, borderRadius: 8, alignItems: 'center' }}
+              onPress={() => {
+                Alert.alert(
+                  '🛑 Cancel Emergency SOS',
+                  `Permanently remove SOS broadcast for ${pName} (${bg}) from the database?`,
+                  [
+                    { text: 'Keep Active', style: 'cancel' },
+                    { 
+                      text: '🛑 Cancel SOS', 
+                      style: 'destructive', 
+                      onPress: async () => {
+                        setRequests(prev => prev.filter(r => r.id !== item.id));
+                        await removeEmergencyRequest(token, item.id);
+                        Alert.alert('Cancelled', 'Emergency SOS request has been cancelled and removed from database.');
+                      }
+                    }
+                  ]
+                );
+              }}
+            >
+              <Text style={{ color: '#FF5252', fontSize: 11, fontWeight: '700' }}>🛑 Cancel & Delete SOS</Text>
+            </TouchableOpacity>
+          </View>
+        ) : null}
       </View>
     );
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.bg }]}>
       {/* Top Search & Post Bar */}
       <View style={styles.topBar}>
         <TextInput
-          style={styles.searchInput}
+          style={[styles.searchInput, { backgroundColor: theme.card, borderColor: theme.border, color: theme.text }]}
           placeholder="Search requests by city, hospital, group…"
-          placeholderTextColor={Colors.textMuted}
+          placeholderTextColor={theme.textMuted}
+          underlineColorAndroid="transparent"
+          cursorColor={Colors.primary}
           value={search}
           onChangeText={setSearch}
         />
@@ -229,8 +305,8 @@ export default function ReceiverRequestsScreen() {
 
       {/* Map Header */}
       <View style={styles.countRow}>
-        <Text style={styles.countText}>
-          🚨 Active Patient Requests: <Text style={{ color: Colors.primary, fontWeight: '800' }}>{filtered.length}</Text>
+        <Text style={[styles.countText, { color: theme.text }]}>
+          🚨 Active Patient Requests: <Text style={{ color: Colors.primary, fontWeight: '800' }}>{filteredRequests.length}</Text>
         </Text>
         <TouchableOpacity onPress={() => setShowMap(!showMap)}>
           <Text style={styles.mapToggleBtn}>{showMap ? '🗺️ Hide Map' : '🗺️ Show Map'}</Text>
@@ -244,7 +320,7 @@ export default function ReceiverRequestsScreen() {
         ListHeaderComponent={
           showMap ? <InteractiveMap markers={mapMarkers} height={200} /> : null
         }
-        data={filtered}
+        data={filteredRequests}
         keyExtractor={item => item.id?.toString() || Math.random().toString()}
         renderItem={renderRequestCard}
         contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
@@ -253,35 +329,35 @@ export default function ReceiverRequestsScreen() {
       {/* New Request Modal */}
       <Modal visible={showNewModal} animationType="slide" transparent={true}>
         <View style={styles.modalOverlay}>
-          <View style={styles.modalCard}>
-            <Text style={styles.modalTitle}>🚨 Post Emergency Blood Request</Text>
+          <View style={[styles.modalCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
+            <Text style={[styles.modalTitle, { color: theme.text }]}>🚨 Post Emergency Blood Request</Text>
             <ScrollView style={{ maxHeight: 420 }}>
-              <Text style={styles.inputLabel}>Patient Name *</Text>
-              <TextInput style={styles.modalInput} value={patientName} onChangeText={setPatientName} placeholder="e.g. Ramesh Kumar" placeholderTextColor={Colors.textMuted} />
+              <Text style={[styles.inputLabel, { color: theme.text }]}>Patient Name *</Text>
+              <TextInput style={[styles.modalInput, { backgroundColor: theme.inputBg, borderColor: theme.border, color: theme.text }]} value={patientName} onChangeText={setPatientName} placeholder="e.g. Ramesh Kumar" placeholderTextColor={theme.textMuted} underlineColorAndroid="transparent" cursorColor={Colors.primary} />
 
-              <Text style={styles.inputLabel}>Blood Group Needed *</Text>
+              <Text style={[styles.inputLabel, { color: theme.text }]}>Blood Group Needed *</Text>
               <View style={styles.groupGrid}>
                 {['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'].map(g => (
-                  <TouchableOpacity key={g} style={[styles.groupBtn, bloodGroup === g && styles.groupBtnActive]} onPress={() => setBloodGroup(g)}>
-                    <Text style={[styles.groupBtnText, bloodGroup === g && styles.groupBtnTextActive]}>{g}</Text>
+                  <TouchableOpacity key={g} style={[styles.groupBtn, { backgroundColor: theme.inputBg, borderColor: theme.border }, bloodGroup === g && styles.groupBtnActive]} onPress={() => setBloodGroup(g)}>
+                    <Text style={[styles.groupBtnText, { color: bloodGroup === g ? '#FFFFFF' : theme.textMuted }]}>{g}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
 
-              <Text style={styles.inputLabel}>Hospital / Clinic *</Text>
-              <TextInput style={styles.modalInput} value={hospitalName} onChangeText={setHospitalName} placeholder="e.g. Apollo Hospital, Chennai" placeholderTextColor={Colors.textMuted} />
+              <Text style={[styles.inputLabel, { color: theme.text }]}>Hospital / Clinic *</Text>
+              <TextInput style={[styles.modalInput, { backgroundColor: theme.inputBg, borderColor: theme.border, color: theme.text }]} value={hospitalName} onChangeText={setHospitalName} placeholder="e.g. Apollo Hospital, Chennai" placeholderTextColor={theme.textMuted} underlineColorAndroid="transparent" cursorColor={Colors.primary} />
 
-              <Text style={styles.inputLabel}>City / Location *</Text>
-              <TextInput style={styles.modalInput} value={location} onChangeText={setLocation} placeholder="e.g. Chennai, Tirupati, Coimbatore" placeholderTextColor={Colors.textMuted} />
+              <Text style={[styles.inputLabel, { color: theme.text }]}>City / Location *</Text>
+              <TextInput style={[styles.modalInput, { backgroundColor: theme.inputBg, borderColor: theme.border, color: theme.text }]} value={location} onChangeText={setLocation} placeholder="e.g. Chennai, Tirupati, Coimbatore" placeholderTextColor={theme.textMuted} underlineColorAndroid="transparent" cursorColor={Colors.primary} />
 
-              <Text style={styles.inputLabel}>Contact Phone *</Text>
-              <TextInput style={styles.modalInput} value={phone} onChangeText={setPhone} keyboardType="phone-pad" placeholder="+91-9876543210" placeholderTextColor={Colors.textMuted} />
+              <Text style={[styles.inputLabel, { color: theme.text }]}>Contact Phone *</Text>
+              <TextInput style={[styles.modalInput, { backgroundColor: theme.inputBg, borderColor: theme.border, color: theme.text }]} value={phone} onChangeText={setPhone} keyboardType="phone-pad" placeholder="+91-9876543210" placeholderTextColor={theme.textMuted} underlineColorAndroid="transparent" cursorColor={Colors.primary} />
 
-              <Text style={styles.inputLabel}>Units Needed</Text>
-              <TextInput style={styles.modalInput} value={units} onChangeText={setUnits} keyboardType="numeric" placeholder="1" placeholderTextColor={Colors.textMuted} />
+              <Text style={[styles.inputLabel, { color: theme.text }]}>Units Needed</Text>
+              <TextInput style={[styles.modalInput, { backgroundColor: theme.inputBg, borderColor: theme.border, color: theme.text }]} value={units} onChangeText={setUnits} keyboardType="numeric" placeholder="1" placeholderTextColor={theme.textMuted} underlineColorAndroid="transparent" cursorColor={Colors.primary} />
 
-              <Text style={styles.inputLabel}>Additional Notes / Reason</Text>
-              <TextInput style={styles.modalInput} value={notes} onChangeText={setNotes} placeholder="e.g. Emergency surgery at 9 AM" placeholderTextColor={Colors.textMuted} />
+              <Text style={[styles.inputLabel, { color: theme.text }]}>Additional Notes / Reason</Text>
+              <TextInput style={[styles.modalInput, { backgroundColor: theme.inputBg, borderColor: theme.border, color: theme.text }]} value={notes} onChangeText={setNotes} placeholder="e.g. Emergency surgery at 9 AM" placeholderTextColor={theme.textMuted} underlineColorAndroid="transparent" cursorColor={Colors.primary} />
             </ScrollView>
 
             <View style={styles.modalBtnRow}>

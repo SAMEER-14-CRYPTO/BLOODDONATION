@@ -1,31 +1,55 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Alert, Linking } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Alert, Linking, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '../constants/theme';
+import { useAuth } from '../context/AuthContext';
+import { postEmergencyRequest } from '../services/api';
 
 const BLOOD_TYPES = ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'];
 
 export default function EmergencyScreen() {
+  const { user, token } = useAuth();
   const [patientName, setPatientName] = useState('');
   const [bloodGroup, setBloodGroup] = useState('O+');
   const [hospitalName, setHospitalName] = useState('');
   const [city, setCity] = useState('');
-  const [phone, setPhone] = useState('');
+  const [phone, setPhone] = useState(user?.phone || '');
   const [units, setUnits] = useState('1');
+  const [loading, setLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!patientName.trim() || !hospitalName.trim() || !city.trim() || !phone.trim()) {
       Alert.alert('Required Fields', 'Please fill in patient name, hospital, city, and phone number.');
       return;
     }
 
-    setIsSubmitted(true);
-    Alert.alert(
-      '🚨 SOS Alert Dispatched',
-      `Emergency broadcast for ${bloodGroup} blood at ${hospitalName}, ${city} has been sent to nearby verified donors!`,
-      [{ text: 'OK' }]
-    );
+    setLoading(true);
+    try {
+      await postEmergencyRequest(token, {
+        patientName,
+        bloodGroupNeeded: bloodGroup,
+        unitsNeeded: parseInt(units) || 1,
+        hospitalName,
+        location: city,
+        phone,
+        urgencyLevel: 'critical',
+        notes: 'Urgent emergency request dispatched via LifeLink Mobile'
+      });
+
+      setIsSubmitted(true);
+      Alert.alert(
+        '🚨 SOS Alert Dispatched',
+        `Emergency broadcast for ${bloodGroup} blood at ${hospitalName}, ${city} has been sent to nearby verified donors and synced to the database!`,
+        [{ text: 'OK' }]
+      );
+      setPatientName('');
+      setHospitalName('');
+      setCity('');
+    } catch (e) {
+      Alert.alert('Error', 'Failed to dispatch SOS alert. Please try again.');
+    }
+    setLoading(false);
   };
 
   const handleCallHelpline = () => {
@@ -62,6 +86,8 @@ export default function EmergencyScreen() {
           style={styles.input}
           placeholder="e.g. Ramesh Kumar"
           placeholderTextColor={Colors.textMuted}
+          underlineColorAndroid="transparent"
+          cursorColor={Colors.primary}
           value={patientName}
           onChangeText={setPatientName}
         />
@@ -86,6 +112,8 @@ export default function EmergencyScreen() {
           style={styles.input}
           placeholder="e.g. Apollo Hospital, Greams Road / SVIMS"
           placeholderTextColor={Colors.textMuted}
+          underlineColorAndroid="transparent"
+          cursorColor={Colors.primary}
           value={hospitalName}
           onChangeText={setHospitalName}
         />
@@ -96,6 +124,8 @@ export default function EmergencyScreen() {
           style={styles.input}
           placeholder="e.g. Chennai, Tirupati, Coimbatore, Vizag"
           placeholderTextColor={Colors.textMuted}
+          underlineColorAndroid="transparent"
+          cursorColor={Colors.primary}
           value={city}
           onChangeText={setCity}
         />
@@ -109,6 +139,8 @@ export default function EmergencyScreen() {
               placeholder="+91-9876543210"
               placeholderTextColor={Colors.textMuted}
               keyboardType="phone-pad"
+              underlineColorAndroid="transparent"
+              cursorColor={Colors.primary}
               value={phone}
               onChangeText={setPhone}
             />
@@ -120,6 +152,8 @@ export default function EmergencyScreen() {
               placeholder="1"
               placeholderTextColor={Colors.textMuted}
               keyboardType="numeric"
+              underlineColorAndroid="transparent"
+              cursorColor={Colors.primary}
               value={units}
               onChangeText={setUnits}
             />

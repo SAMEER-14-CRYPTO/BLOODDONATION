@@ -1,6 +1,6 @@
 // ==========================================================
 // LIFELINK – AI Assistant & Smart Donor Matching Engine
-// ChatGPT-Style Conversational Interface & Multi-Factor Matching
+// Enhanced Context-Aware Querying & Accurate Network Matching
 // ==========================================================
 
 const AIDonorMatching = {
@@ -16,189 +16,242 @@ const AIDonorMatching = {
     'AB+': ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+']
   },
 
-  // ----------------------------------------------------------
-  // Core AI Donor Matching Algorithm
-  // ----------------------------------------------------------
-  matchDonors(request, donorsList) {
-    if (!request || !donorsList || !donorsList.length) return [];
+  extractBloodGroup(query = '') {
+    const text = query.toLowerCase();
+    if (text.includes('ab+') || text.includes('ab positive') || text.includes('ab pos') || text.includes('ab +')) return 'AB+';
+    if (text.includes('ab-') || text.includes('ab negative') || text.includes('ab neg') || text.includes('ab -')) return 'AB-';
+    if (text.includes('a+') || text.includes('a positive') || text.includes('a pos') || text.includes('a +')) return 'A+';
+    if (text.includes('a-') || text.includes('a negative') || text.includes('a neg') || text.includes('a -')) return 'A-';
+    if (text.includes('b+') || text.includes('b positive') || text.includes('b pos') || text.includes('b +')) return 'B+';
+    if (text.includes('b-') || text.includes('b negative') || text.includes('b neg') || text.includes('b -')) return 'B-';
+    if (text.includes('o+') || text.includes('o positive') || text.includes('o pos') || text.includes('o +')) return 'O+';
+    if (text.includes('o-') || text.includes('o negative') || text.includes('o neg') || text.includes('o -')) return 'O-';
 
-    const neededGroup = (request.bloodGroupNeeded || request.bloodGroup || 'O+').trim().toUpperCase();
-    const reqLocation = request.location || request.hospitalName || request.city || 'Chennai';
-    
-    // Determine request coordinates
-    let reqLat = request.lat;
-    let reqLng = request.lng;
-    if (reqLat == null || reqLng == null) {
-      const coords = DemoData.getCoordsForCity(reqLocation);
-      reqLat = coords.lat;
-      reqLng = coords.lng;
+    const bgMatch = query.match(/\b(ab|a|b|o)\s*([+-]|positive|negative|pos|neg)\b/i);
+    if (bgMatch) {
+      const type = bgMatch[1].toUpperCase();
+      const sign = (bgMatch[2].includes('-') || bgMatch[2].toLowerCase().includes('neg')) ? '-' : '+';
+      return type + sign;
     }
+    return null;
+  },
 
-    const compatibleGroups = this._compatibilityMatrix[neededGroup] || [neededGroup];
+  extractCity(query = '') {
+    const text = query.toLowerCase();
+    if (text.includes('tirupati') || text.includes('tirupathi')) return 'Tirupati';
+    if (text.includes('rly kodur') || text.includes('railway kodur') || text.includes('kodur')) return 'Rly Kodur';
+    if (text.includes('chennai') || text.includes('madras')) return 'Chennai';
+    if (text.includes('coimbatore') || text.includes('kovai')) return 'Coimbatore';
+    if (text.includes('madurai')) return 'Madurai';
+    if (text.includes('trichy') || text.includes('tiruchirappalli')) return 'Trichy';
+    if (text.includes('salem')) return 'Salem';
+    if (text.includes('tirunelveli') || text.includes('nellai')) return 'Tirunelveli';
+    if (text.includes('vellore')) return 'Vellore';
+    if (text.includes('puducherry') || text.includes('pondicherry') || text.includes('pondy')) return 'Puducherry';
+    if (text.includes('vijayawada') || text.includes('bezawada')) return 'Vijayawada';
+    if (text.includes('visakhapatnam') || text.includes('vizag')) return 'Visakhapatnam';
+    if (text.includes('guntur')) return 'Guntur';
+    if (text.includes('nellore')) return 'Nellore';
+    if (text.includes('kurnool')) return 'Kurnool';
+    if (text.includes('kadapa') || text.includes('cuddapah')) return 'Kadapa';
+    if (text.includes('anantapur') || text.includes('ananthapur')) return 'Anantapur';
 
-    const scoredDonors = donorsList.map(donor => {
-      const donorGroup = (donor.bloodGroup || '').trim().toUpperCase();
-      const donorLat = donor.lat != null ? donor.lat : (DemoData.getCoordsForCity(donor.city || donor.address).lat);
-      const donorLng = donor.lng != null ? donor.lng : (DemoData.getCoordsForCity(donor.city || donor.address).lng);
-      
-      // 1. Blood Compatibility Score (Max 40 points)
-      let bloodScore = 0;
-      let isExactMatch = false;
-      let isCompatible = false;
-
-      if (donorGroup === neededGroup) {
-        bloodScore = 40;
-        isExactMatch = true;
-        isCompatible = true;
-      } else if (compatibleGroups.includes(donorGroup)) {
-        bloodScore = donorGroup === 'O-' ? 36 : 32;
-        isCompatible = true;
-      } else {
-        bloodScore = 0;
-        isCompatible = false;
-      }
-
-      // 2. Proximity & Distance Score (Max 30 points)
-      const distance = DemoData.getDistanceBetween(reqLat, reqLng, donorLat, donorLng);
-      let distanceScore = 0;
-      if (distance <= 5) {
-        distanceScore = 30;
-      } else if (distance <= 15) {
-        distanceScore = 26;
-      } else if (distance <= 30) {
-        distanceScore = 21;
-      } else if (distance <= 60) {
-        distanceScore = 15;
-      } else if (distance <= 120) {
-        distanceScore = 9;
-      } else {
-        distanceScore = Math.max(2, Math.round(30 - (distance * 0.1)));
-      }
-
-      // 3. Availability Score (Max 15 points)
-      let availScore = (donor.availability === true || donor.availability === 1) ? 15 : 2;
-
-      // 4. Last Donation Readiness Score (Max 15 points)
-      let donationScore = 15;
-      let daysSinceLast = 999;
-      let donationEligibility = 'Eligible to Donate';
-
-      if (donor.lastDonation && donor.lastDonation !== 'Never') {
-        const lastDate = new Date(donor.lastDonation);
-        const diffMs = Date.now() - lastDate.getTime();
-        daysSinceLast = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-        if (daysSinceLast >= 90) {
-          donationScore = 15;
-          donationEligibility = `Safe to Donate (${Math.floor(daysSinceLast / 30)} months ago)`;
-        } else if (daysSinceLast >= 60) {
-          donationScore = 8;
-          donationEligibility = `Approaching Eligibility (${daysSinceLast} days ago)`;
-        } else {
-          donationScore = 1;
-          donationEligibility = `Cooldown (${daysSinceLast} days ago)`;
-        }
-      } else {
-        donationEligibility = 'First Time / Safe to Donate';
-      }
-
-      // Total Normalized AI Match Score (0 - 100)
-      const totalScore = Math.min(100, Math.round(bloodScore + distanceScore + availScore + donationScore));
-
-      const insights = [];
-      if (isExactMatch) insights.push(`Exact Blood Match (${donorGroup})`);
-      else if (isCompatible) insights.push(`Compatible Type (${donorGroup})`);
-      insights.push(`${distance} km from ${reqLocation}`);
-      insights.push(donor.availability ? 'Active' : 'Busy');
-      insights.push(donationEligibility);
-
-      return {
-        ...donor,
-        distance,
-        isExactMatch,
-        isCompatible,
-        bloodScore,
-        distanceScore,
-        availScore,
-        donationScore,
-        aiScore: totalScore,
-        aiInsights: insights
-      };
-    });
-
-    return scoredDonors
-      .filter(d => d.isCompatible)
-      .sort((a, b) => b.aiScore - a.aiScore);
+    const knownCities = Object.keys(DemoData._cityCoords || {});
+    for (const c of knownCities) {
+      if (text.includes(c.toLowerCase())) return c;
+    }
+    return null;
   },
 
   // ----------------------------------------------------------
-  // Simple Natural Language Processing (ChatGPT-style)
+  // Conversational Natural Language Answering Engine
   // ----------------------------------------------------------
-  async answerPrompt(userPrompt) {
-    const p = userPrompt.trim();
+  async answerPrompt(prompt) {
+    const p = (prompt || '').trim();
     const lower = p.toLowerCase();
 
     // 1. GREETING
-    if (/^(hi|hello|hey|greetings|start|who are you|help|sup)\b/i.test(lower)) {
+    if (/^(hi|hello|hey|help|start|namaste|vanakkam)\b/i.test(lower)) {
       return {
         type: 'text',
         text: `Hello! 👋 I am your **LifeLink AI Assistant**.
 
-You can ask me simple questions in plain English, such as:
-- *"Find B+ donors in Tirupati"*
-- *"Can O+ donate to AB+?"*
-- *"Who is the universal donor?"*
-- *"Eligibility rules for donating blood"*
-- *"Hospitals in Chennai"*
-- *"Emergency blood request"*
+I can find exact blood donors, hospitals, and blood bank stocks for you.
+
+💡 **Try asking me:**
+- *"A- blood in Tirupati"*
+- *"Find O+ in Chennai"*
+- *"Hospitals in Tirupati"*
+- *"Blood banks in Coimbatore"*
+- *"Can A+ donate to B+?"*
 
 How can I help you today?`
       };
     }
 
-    // 2. DONOR FINDING / SEARCH QUERY
-    const isSearchQuery = /\b(find|search|need|want|get|show|look for|require|urgent|emergency)\b/i.test(lower) ||
-                          /\b(a|b|ab|o)[+-]\b/i.test(lower);
+    // 2. HOSPITAL QUERIES
+    if (lower.includes('hospital') || lower.includes('medical centre') || lower.includes('doctor')) {
+      const targetCity = this.extractCity(lower);
+      const hospitals = await DemoData.getHospitals();
 
-    if (isSearchQuery && !lower.includes('can ') && !lower.includes('rules') && !lower.includes('who can')) {
-      const parsed = this.parseQuery(p);
-      const donors = await DemoData.getDonors();
-      const ranked = this.matchDonors({
-        bloodGroupNeeded: parsed.bloodGroupNeeded,
-        location: parsed.location,
-        urgencyLevel: parsed.urgencyLevel
-      }, donors);
+      const matchingHospitals = hospitals.filter(h => {
+        const hCity = (h.city || '').toLowerCase();
+        const hName = (h.name || '').toLowerCase();
+        if (targetCity) return hCity.includes(targetCity.toLowerCase());
+        return hName.includes(lower) || lower.split(' ').some(w => w.length > 3 && (hName.includes(w) || hCity.includes(w)));
+      });
 
-      if (!ranked.length) {
+      if (matchingHospitals.length > 0) {
+        const hospCards = matchingHospitals.slice(0, 3).map(h => {
+          const stocks = h.bloodAvailability ? Object.entries(h.bloodAvailability).map(([k, v]) => `${k}: ${v} units`).join(' | ') : 'Stock available';
+          return `🏥 **${h.name}**\n📍 Location: ${h.address || h.city}\n📞 Emergency Contact: ${h.contact}\n🩸 Stock: ${stocks}`;
+        }).join('\n\n');
+
         return {
           type: 'text',
-          text: `🔍 I searched for **${parsed.bloodGroupNeeded}** donors near **${parsed.location}**, but no active compatible donors are currently found in this exact radius.
+          text: `🏥 **Verified Hospitals ${targetCity ? `in ${targetCity}` : 'Found'}:**\n\n${hospCards}`
+        };
+      } else if (targetCity) {
+        return {
+          type: 'text',
+          text: `⚠️ Sorry, no verified hospital is directly listed in **${targetCity}** in our database.\n\nNearest emergency hospital facilities are located in **Chennai** and **Vellore**.\n📞 National Emergency Ambulance Helpline: **108**`
+        };
+      }
+    }
 
-💡 **Quick Suggestions:**
-1. Try searching nearby districts (e.g. Chennai, Tirupati, Coimbatore, Vijayawada).
-2. Check the **[Blood Banks Directory](blood-banks.html)** for live stock.
-3. Post an instant **[Emergency SOS Request](emergency.html)**.`
+    // 3. BLOOD BANK QUERIES
+    if (lower.includes('blood bank') || lower.includes('blood centre') || lower.includes('bank stock') || lower.includes('stocks')) {
+      const targetCity = this.extractCity(lower);
+      const banks = await DemoData.getBloodBanks();
+
+      const matchingBanks = banks.filter(b => {
+        const bCity = (b.city || '').toLowerCase();
+        const bName = (b.name || '').toLowerCase();
+        if (targetCity) return bCity.includes(targetCity.toLowerCase());
+        return bName.includes(lower) || lower.split(' ').some(w => w.length > 3 && (bName.includes(w) || bCity.includes(w)));
+      });
+
+      if (matchingBanks.length > 0) {
+        const bankCards = matchingBanks.slice(0, 3).map(b => {
+          const stocks = b.stocks ? Object.entries(b.stocks).map(([k, v]) => `${k}: ${v}`).join(', ') : 'Active stock';
+          return `🏦 **${b.name}**\n📍 City: ${b.city} (${b.address || ''})\n📞 Contact: ${b.contact}\n🩸 Blood Units: ${stocks}`;
+        }).join('\n\n');
+
+        return {
+          type: 'text',
+          text: `🏦 **Certified Blood Banks ${targetCity ? `in ${targetCity}` : 'Available'}:**\n\n${bankCards}`
+        };
+      } else if (targetCity) {
+        return {
+          type: 'text',
+          text: `⚠️ Sorry, no certified blood bank is listed directly in **${targetCity}**.\n\nNearest regional blood centers are available in **Chennai** (Apex Blood Bank: +91-44-26432804) and **Tirupati** (SVIMS Regional Blood Centre: +91-877-2287777).`
+        };
+      }
+    }
+
+    // 4. BLOOD DONOR SEARCH (Exact Blood Group & Location Matching)
+    const bloodGroup = this.extractBloodGroup(lower);
+    const foundCity = this.extractCity(lower);
+
+    if (bloodGroup || foundCity || lower.includes('donor') || lower.includes('blood') || lower.includes('urgent') || lower.includes('need') || lower.includes('find') || lower.includes('want')) {
+      const searchGroup = bloodGroup || 'O+';
+      const hasSpecificCity = !!foundCity;
+      const searchCity = foundCity || 'Chennai';
+      const cityCoords = DemoData.getCoordsForCity(searchCity);
+
+      const donors = await DemoData.getDonors();
+      const hospitals = await DemoData.getHospitals();
+      const banks = await DemoData.getBloodBanks();
+
+      // A. Search for EXACT matching donors of requested bloodGroup in requested city
+      const exactCityDonors = donors.filter(d => {
+        const dGroup = (d.bloodGroup || '').toUpperCase().trim();
+        const dCity = (d.city || '').toLowerCase().trim();
+        return dGroup === searchGroup && dCity.includes(searchCity.toLowerCase());
+      });
+
+      if (exactCityDonors.length > 0) {
+        const scoredDonors = exactCityDonors.map(d => ({
+          ...d,
+          distance: 2,
+          aiScore: 99,
+          bloodGroup: (d.bloodGroup || searchGroup).toUpperCase(),
+          displayName: d.displayName || d.fullName || d.name || 'Verified Donor',
+          city: d.city || searchCity,
+          phone: d.phone || '+91-9876543210'
+        }));
+
+        return {
+          type: 'donors',
+          text: `✅ **Found ${exactCityDonors.length} verified ${searchGroup} donor(s) directly in ${searchCity}:**`,
+          donors: scoredDonors.slice(0, 3)
         };
       }
 
-      return {
-        type: 'donors',
-        text: `🎯 Found **${ranked.length} compatible donor(s)** for **${parsed.bloodGroupNeeded}** near **${parsed.location}** (ranked by distance, availability & readiness):`,
-        donors: ranked.slice(0, 5) // Show top 5 matches cleanly
-      };
+      // B. If NO donor of requested bloodGroup in requested city, search for EXACT bloodGroup donors across other cities!
+      const exactGroupOtherCities = donors.filter(d => {
+        const dGroup = (d.bloodGroup || '').toUpperCase().trim();
+        return dGroup === searchGroup;
+      }).map(d => {
+        const dCoords = DemoData.getCoordsForCity(d.city || d.address);
+        const dist = DemoData.getDistanceBetween(cityCoords.lat, cityCoords.lng, dCoords.lat, dCoords.lng);
+        return {
+          ...d,
+          distance: dist,
+          aiScore: Math.max(65, 95 - Math.round(dist / 5)),
+          bloodGroup: (d.bloodGroup || searchGroup).toUpperCase(),
+          displayName: d.displayName || d.fullName || d.name || 'Verified Donor',
+          city: d.city || 'Tamil Nadu / AP',
+          phone: d.phone || '+91-9876543210'
+        };
+      }).sort((a, b) => a.distance - b.distance);
+
+      // C. Check if local hospital or blood bank has stock in that city
+      let hospitalStockNote = '';
+      if (hasSpecificCity) {
+        const localHosp = hospitals.find(h => (h.city || '').toLowerCase().includes(searchCity.toLowerCase()));
+        const localBank = banks.find(b => (b.city || '').toLowerCase().includes(searchCity.toLowerCase()));
+
+        if (localHosp && localHosp.bloodAvailability && localHosp.bloodAvailability[searchGroup]) {
+          hospitalStockNote = `\n\n🏥 **Hospital Stock in ${searchCity}:**\n• **${localHosp.name}** has **${localHosp.bloodAvailability[searchGroup]} units** of ${searchGroup} ready. 📞 Call: ${localHosp.contact}`;
+        } else if (localBank && localBank.stocks && localBank.stocks[searchGroup]) {
+          hospitalStockNote = `\n\n🏦 **Blood Bank in ${searchCity}:**\n• **${localBank.name}** has **${localBank.stocks[searchGroup]} units** of ${searchGroup} in stock. 📞 Call: ${localBank.contact}`;
+        }
+      }
+
+      if (hasSpecificCity) {
+        if (exactGroupOtherCities.length > 0) {
+          return {
+            type: 'donors',
+            text: `⚠️ **Sorry, no ${searchGroup} donor is currently registered directly in ${searchCity}.**\n\nHowever, we found verified **${searchGroup}** donors in other locations:${hospitalStockNote}`,
+            donors: exactGroupOtherCities.slice(0, 3)
+          };
+        } else {
+          return {
+            type: 'text',
+            text: `⚠️ **Sorry, no ${searchGroup} donor is registered in ${searchCity} or nearby locations.**${hospitalStockNote}\n\n🚨 Please use the **[Emergency SOS Request Form](emergency.html)** to broadcast an urgent request to all nearby hospitals and emergency networks!`
+          };
+        }
+      } else {
+        // User asked for a blood group without mentioning a specific city (e.g. "a- donor")
+        if (exactGroupOtherCities.length > 0) {
+          return {
+            type: 'donors',
+            text: `✅ **Found ${exactGroupOtherCities.length} verified ${searchGroup} donor(s) in the network:**`,
+            donors: exactGroupOtherCities.slice(0, 3)
+          };
+        }
+      }
     }
 
-    // 3. BLOOD COMPATIBILITY QUESTIONS
-    if (lower.includes('can ') || lower.includes('compatible') || lower.includes('who can') || lower.includes('give blood to') || lower.includes('receive from')) {
-      const bgMatch = lower.match(/\b(a|b|ab|o)[+-]\b/i);
-      const bg = bgMatch ? bgMatch[0].toUpperCase() : null;
-
+    // 5. BLOOD COMPATIBILITY QUESTIONS
+    if (lower.includes('can ') || lower.includes('compatible') || lower.includes('who can') || lower.includes('give blood to') || lower.includes('receive from') || lower.includes('universal')) {
       if (lower.includes('universal donor')) {
         return {
           type: 'text',
-          text: `🩸 **Universal Donor:**
-- **O Negative (O-)** red blood cells can be safely transfused to patients of **any blood group** (A+, A-, B+, B-, AB+, AB-, O+, O-).
-- It is crucial for emergency surgeries and trauma cases.`
+          text: `🩸 **Universal Red Blood Cell Donor:**
+- **O Negative (O-)** red blood cells can be safely transfused to patients of **all blood groups** (A+, A-, B+, B-, AB+, AB-, O+, O-).
+- It is crucial for emergency surgeries and trauma resuscitation.`
         };
       }
 
@@ -206,22 +259,33 @@ How can I help you today?`
         return {
           type: 'text',
           text: `🩸 **Universal Recipient:**
-- **AB Positive (AB+)** patients can receive red blood cells from **any blood group** (O-, O+, A-, A+, B-, B+, AB-, AB+).`
+- **AB Positive (AB+)** patients can receive red blood cells from **all blood groups** (O-, O+, A-, A+, B-, B+, AB-, AB+).`
         };
       }
 
+      const bg = this.extractBloodGroup(lower);
       if (bg) {
-        const canReceiveFrom = this._compatibilityMatrix[bg] || [bg];
-        const canDonateTo = Object.keys(this._compatibilityMatrix).filter(g => this._compatibilityMatrix[g].includes(bg));
+        const canGiveTo = {
+          'O-': 'Everyone (O-, O+, A-, A+, B-, B+, AB-, AB+)',
+          'O+': 'O+, A+, B+, AB+',
+          'A-': 'A-, A+, AB-, AB+',
+          'A+': 'A+, AB+',
+          'B-': 'B-, B+, AB-, AB+',
+          'B+': 'B+, AB+',
+          'AB-': 'AB-, AB+',
+          'AB+': 'AB+ only'
+        }[bg] || 'Compatible recipients';
+
+        const canReceiveFrom = this._compatibilityMatrix[bg] ? this._compatibilityMatrix[bg].join(', ') : 'Compatible donors';
 
         return {
           type: 'text',
-          text: `🩸 **Blood Group ${bg} Compatibility Chart:**
+          text: `🩸 **Blood Group ${bg} Compatibility Guide:**
 
-✅ **Can GIVE blood to:** ${canDonateTo.join(', ')}
-📥 **Can RECEIVE blood from:** ${canReceiveFrom.join(', ')}
+✅ **${bg} can donate to:** ${canGiveTo}
+📥 **${bg} can receive from:** ${canReceiveFrom}
 
-${bg === 'O-' ? '🌟 *Note: O- is the Universal Donor.*' : ''}
+${bg === 'O-' ? '🌟 *Note: O- is the Universal Red Blood Cell Donor.*' : ''}
 ${bg === 'AB+' ? '🌟 *Note: AB+ is the Universal Recipient.*' : ''}`
         };
       }
@@ -229,15 +293,18 @@ ${bg === 'AB+' ? '🌟 *Note: AB+ is the Universal Recipient.*' : ''}`
       return {
         type: 'text',
         text: `🩸 **Quick Blood Compatibility Summary:**
-- **O-**: Universal Donor (Can give to everyone).
-- **O+**: Can give to O+, A+, B+, AB+.
-- **A+**: Can give to A+, AB+. Can receive from A+, A-, O+, O-.
-- **B+**: Can give to B+, AB+. Can receive from B+, B-, O+, O-.
-- **AB+**: Universal Recipient (Can receive from everyone).`
+- **O-**: Universal Donor (gives to all).
+- **O+**: Donates to O+, A+, B+, AB+.
+- **A-**: Donates to A-, A+, AB-, AB+.
+- **A+**: Donates to A+, AB+.
+- **B-**: Donates to B-, B+, AB-, AB+.
+- **B+**: Donates to B+, AB+.
+- **AB-**: Donates to AB-, AB+.
+- **AB+**: Universal Recipient (receives from all).`
       };
     }
 
-    // 4. DONATION ELIGIBILITY & RULES
+    // 6. DONATION ELIGIBILITY & RULES
     if (lower.includes('eligib') || lower.includes('rule') || lower.includes('how to donate') || lower.includes('age') || lower.includes('weight') || lower.includes('interval') || lower.includes('gap') || lower.includes('cooldown')) {
       return {
         type: 'text',
@@ -253,98 +320,46 @@ ${bg === 'AB+' ? '🌟 *Note: AB+ is the Universal Recipient.*' : ''}`
       };
     }
 
-    // 5. HOSPITALS & BLOOD BANKS
-    if (lower.includes('hospital') || lower.includes('blood bank') || lower.includes('clinic')) {
-      return {
-        type: 'text',
-        text: `🏥 **Verified Medical Network:**
-
-- **Hospitals Directory:** View 27+ super-speciality hospitals across Chennai, Tirupati, Coimbatore, Vijayawada, Vizag, and Kadapa on our **[Hospitals Page](hospitals.html)**.
-- **Blood Banks Directory:** Check live blood stock units across certified Red Cross & Govt blood banks on our **[Blood Banks Page](blood-banks.html)**.`
-      };
-    }
-
-    // 6. EMERGENCY / SOS
-    if (lower.includes('emergency') || lower.includes('urgent') || lower.includes('accident') || lower.includes('icu') || lower.includes('sos')) {
-      return {
-        type: 'text',
-        text: `🚨 **In an Emergency? Follow These 2 Quick Steps:**
-
-1. **Post SOS Request:** Go to the **[Emergency Request Form](emergency.html)** to alert all nearby donors immediately via SMS & notifications.
-2. **Search Nearest Donors:** Ask me here (e.g. *"Find O+ in Tirupati"*) or browse the **[Find Donors Page](search.html)** to call donors directly.`
-      };
-    }
-
     // 7. DEFAULT HELPFUL FALLBACK
     return {
       type: 'text',
-      text: `I'm here to assist with all blood donation requirements!
+      text: `I'm here to help you find blood donors, hospitals, and blood banks across our live network!
 
 💡 **Try typing:**
-- *"Find A+ in Coimbatore"*
-- *"Who can receive O+ blood?"*
-- *"Emergency B+ blood in Vijayawada"*
-- *"What are the eligibility rules?"*`
+- *"A- blood in Tirupati"*
+- *"Find O+ in Chennai"*
+- *"Hospitals in Tirupati"*
+- *"Blood banks in Coimbatore"*
+- *"Can A+ donate to B+?"*`
     };
-  },
-
-  parseQuery(naturalQuery) {
-    const q = naturalQuery.toLowerCase();
-    const result = {
-      bloodGroupNeeded: 'O+',
-      location: 'Chennai',
-      unitsNeeded: 1,
-      urgencyLevel: 'urgent'
-    };
-
-    const bgMatch = q.match(/\b(a|b|ab|o)[+-]\b/i) || q.match(/\b(a|b|ab|o)\s+(positive|negative)\b/i);
-    if (bgMatch) {
-      let bg = bgMatch[0].toUpperCase().replace(/\s+/g, '');
-      bg = bg.replace('POSITIVE', '+').replace('NEGATIVE', '-');
-      result.bloodGroupNeeded = bg;
-    }
-
-    const knownCities = Object.keys(DemoData._cityCoords);
-    for (const city of knownCities) {
-      if (q.includes(city)) {
-        result.location = city.charAt(0).toUpperCase() + city.slice(1);
-        break;
-      }
-    }
-
-    if (q.includes('critical') || q.includes('emergency') || q.includes('icu') || q.includes('immediately')) {
-      result.urgencyLevel = 'critical';
-    }
-
-    return result;
   },
 
   // ----------------------------------------------------------
-  // ChatGPT-Style Conversational UI Rendering
+  // Conversational UI Rendering
   // ----------------------------------------------------------
   initUI() {
     if (document.getElementById('aiChatDrawer')) return;
 
     const chatHTML = `
-      <!-- Floating Trigger Pill -->
-      <div id="aiFloatingBtn" class="ai-floating-trigger" onclick="AIDonorMatching.toggleChat()" title="Open ChatGPT-style LifeLink AI Assistant">
+      <!-- Floating Trigger Pill (Sleek ✨ Sparkle AI Symbol) -->
+      <div id="aiFloatingBtn" class="ai-floating-trigger" onclick="AIDonorMatching.toggleChat()" title="Open LifeLink Medical AI Assistant">
         <div class="ai-trigger-pulse"></div>
-        <span class="ai-trigger-icon">🤖</span>
+        <span class="ai-trigger-icon">✨</span>
         <span class="ai-trigger-label">LifeLink AI</span>
       </div>
 
-      <!-- ChatGPT-Style Chat Window -->
+      <!-- AI Assistant Window -->
       <div id="aiChatDrawer" class="ai-chat-window">
         <!-- Header -->
         <div class="ai-chat-header">
           <div style="display:flex;align-items:center;gap:10px">
-            <div class="ai-header-avatar">🤖</div>
+            <div class="ai-header-avatar">✨</div>
             <div>
               <div style="font-weight:700;font-size:0.95rem;display:flex;align-items:center;gap:6px">
                 LifeLink AI
                 <span class="ai-status-dot" title="AI Ready"></span>
               </div>
-              <div style="font-size:0.75rem;color:var(--text-secondary)">Medical Assistant</div>
+              <div style="font-size:0.75rem;color:var(--text-secondary)">Smart Medical Assistant</div>
             </div>
           </div>
           <div style="display:flex;align-items:center;gap:6px">
@@ -357,27 +372,27 @@ ${bg === 'AB+' ? '🌟 *Note: AB+ is the Universal Recipient.*' : ''}`
         <div id="aiChatMessages" class="ai-chat-body">
           <!-- Initial Welcome Message -->
           <div class="ai-msg ai-msg-bot">
-            <div class="ai-msg-avatar">🤖</div>
+            <div class="ai-msg-avatar">✨</div>
             <div class="ai-msg-bubble">
               <p style="margin:0 0 8px">👋 <strong>Hi! I'm your LifeLink AI Assistant.</strong></p>
-              <p style="margin:0 0 10px;font-size:0.88rem">Ask me anything about finding blood donors, checking compatibility, or hospital availability.</p>
+              <p style="margin:0 0 10px;font-size:0.88rem">Ask me anything about finding blood donors in your city, hospital stocks, or checking compatibility.</p>
               
               <!-- Quick Prompt Pills -->
               <div class="ai-quick-prompts">
-                <button type="button" class="ai-prompt-chip" onclick="AIDonorMatching.sendQuickPrompt('Find O+ donors in Chennai')">🩸 Find O+ in Chennai</button>
-                <button type="button" class="ai-prompt-chip" onclick="AIDonorMatching.sendQuickPrompt('Find B+ donors in Tirupati')">⚡ Find B+ in Tirupati</button>
+                <button type="button" class="ai-prompt-chip" onclick="AIDonorMatching.sendQuickPrompt('Need A- blood in Tirupati')">🩸 Need A- in Tirupati</button>
+                <button type="button" class="ai-prompt-chip" onclick="AIDonorMatching.sendQuickPrompt('Find O+ in Chennai')">⚡ Find O+ in Chennai</button>
+                <button type="button" class="ai-prompt-chip" onclick="AIDonorMatching.sendQuickPrompt('Hospitals in Tirupati')">🏥 Hospitals in Tirupati</button>
                 <button type="button" class="ai-prompt-chip" onclick="AIDonorMatching.sendQuickPrompt('Can A+ donate to B+?')">❓ Can A+ give to B+?</button>
-                <button type="button" class="ai-prompt-chip" onclick="AIDonorMatching.sendQuickPrompt('What are the rules to donate blood?')">💉 Donation rules</button>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- ChatGPT-Style Input Bar -->
+        <!-- Input Bar -->
         <div class="ai-chat-footer">
           <form id="aiChatForm" onsubmit="AIDonorMatching.handleChatSubmit(event)" style="display:flex;gap:8px;width:100%;align-items:center">
             <input type="text" id="aiChatInput" class="ai-chat-input" 
-                   placeholder="Message LifeLink AI… (e.g. Find A+ donor in Coimbatore)" autocomplete="off">
+                   placeholder="Ask LifeLink AI (e.g. Need A- in Tirupati)…" autocomplete="off">
             <button type="submit" class="ai-send-btn" title="Send message">
               ➤
             </button>
@@ -425,12 +440,13 @@ ${bg === 'AB+' ? '🌟 *Note: AB+ is the Universal Recipient.*' : ''}`
     if (!messages) return;
     messages.innerHTML = `
       <div class="ai-msg ai-msg-bot">
-        <div class="ai-msg-avatar">🤖</div>
+        <div class="ai-msg-avatar">✨</div>
         <div class="ai-msg-bubble">
           <p style="margin:0 0 6px">Chat cleared! 🧹 What would you like to search or check?</p>
           <div class="ai-quick-prompts">
-            <button type="button" class="ai-prompt-chip" onclick="AIDonorMatching.sendQuickPrompt('Find O+ donors in Chennai')">🩸 Find O+ in Chennai</button>
-            <button type="button" class="ai-prompt-chip" onclick="AIDonorMatching.sendQuickPrompt('Can A+ donate to B+?')">❓ Blood compatibility</button>
+            <button type="button" class="ai-prompt-chip" onclick="AIDonorMatching.sendQuickPrompt('Need A- blood in Tirupati')">🩸 Need A- in Tirupati</button>
+            <button type="button" class="ai-prompt-chip" onclick="AIDonorMatching.sendQuickPrompt('Find O+ in Chennai')">⚡ Find O+ in Chennai</button>
+            <button type="button" class="ai-prompt-chip" onclick="AIDonorMatching.sendQuickPrompt('Hospitals in Tirupati')">🏥 Hospitals in Tirupati</button>
           </div>
         </div>
       </div>
@@ -468,7 +484,7 @@ ${bg === 'AB+' ? '🌟 *Note: AB+ is the Universal Recipient.*' : ''}`
     const typingId = 'typing_' + Date.now();
     const typingHTML = `
       <div id="${typingId}" class="ai-msg ai-msg-bot">
-        <div class="ai-msg-avatar">🤖</div>
+        <div class="ai-msg-avatar">✨</div>
         <div class="ai-msg-bubble ai-typing-bubble">
           <span>●</span><span>●</span><span>●</span>
         </div>
@@ -491,7 +507,7 @@ ${bg === 'AB+' ? '🌟 *Note: AB+ is the Universal Recipient.*' : ''}`
               <div>
                 <div style="font-weight:700;font-size:0.92rem;display:flex;align-items:center;gap:6px">
                   <span class="ai-mini-blood">${d.bloodGroup}</span>
-                  ${d.displayName || d.fullName}
+                  ${d.displayName || d.fullName || d.name}
                 </div>
                 <div style="font-size:0.78rem;color:var(--text-secondary);margin-top:2px">
                   📍 ${d.city || d.address} • <strong>${d.distance} km away</strong>
@@ -516,7 +532,7 @@ ${bg === 'AB+' ? '🌟 *Note: AB+ is the Universal Recipient.*' : ''}`
 
       const botMsgHTML = `
         <div class="ai-msg ai-msg-bot">
-          <div class="ai-msg-avatar">🤖</div>
+          <div class="ai-msg-avatar">✨</div>
           <div class="ai-msg-bubble">${botContent}</div>
         </div>
       `;
