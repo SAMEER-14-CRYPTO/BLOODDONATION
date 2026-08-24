@@ -153,42 +153,35 @@ export default function LoginScreen() {
               </Text>
 
               <Text style={[styles.label, { color: theme.text }]}>{role === 'admin' ? 'Administrator Email' : 'Email Address'}</Text>
-              <View style={[styles.inputBox, { backgroundColor: theme.inputBg, borderColor: theme.border }]}>
-                <TextInput
-                  style={[styles.inputInner, { backgroundColor: theme.inputBg, color: theme.text }]}
-                  placeholder={role === 'admin' ? 'sameeradmin@lifelink.com' : 'Enter your email address'}
-                  placeholderTextColor={theme.textMuted}
-                  value={email}
-                  onChangeText={setEmail}
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                  autoComplete="off"
-                  textContentType="none"
-                  importantForAutofill="noExcludeDescendants"
-                  underlineColorAndroid="transparent"
-                  cursorColor={role === 'donor' ? Colors.primary : role === 'receiver' ? Colors.success : Colors.info}
-                  selectionColor={role === 'donor' ? 'rgba(229, 57, 53, 0.3)' : role === 'receiver' ? 'rgba(67, 160, 71, 0.3)' : 'rgba(30, 136, 229, 0.3)'}
-                />
-              </View>
+              <TextInput
+                style={[styles.input, { backgroundColor: theme.inputBg, borderColor: theme.border, color: theme.text }]}
+                placeholder={role === 'admin' ? 'sameeradmin@lifelink.com' : 'Enter your email address'}
+                placeholderTextColor={theme.textMuted}
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                autoCorrect={false}
+                spellCheck={false}
+                underlineColorAndroid="transparent"
+                cursorColor={role === 'donor' ? Colors.primary : role === 'receiver' ? Colors.success : Colors.info}
+                selectionColor={role === 'donor' ? 'rgba(229, 57, 53, 0.3)' : role === 'receiver' ? 'rgba(67, 160, 71, 0.3)' : 'rgba(30, 136, 229, 0.3)'}
+              />
 
               <Text style={[styles.label, { color: theme.text }]}>Password</Text>
-              <View style={[styles.inputBox, { backgroundColor: theme.inputBg, borderColor: theme.border }]}>
-                <TextInput
-                  style={[styles.inputInner, { backgroundColor: theme.inputBg, color: theme.text }]}
-                  placeholder="Enter password"
-                  placeholderTextColor={theme.textMuted}
-                  secureTextEntry
-                  maxLength={12}
-                  autoComplete="off"
-                  textContentType="none"
-                  importantForAutofill="noExcludeDescendants"
-                  underlineColorAndroid="transparent"
-                  cursorColor={role === 'donor' ? Colors.primary : role === 'receiver' ? Colors.success : Colors.info}
-                  selectionColor={role === 'donor' ? 'rgba(229, 57, 53, 0.3)' : role === 'receiver' ? 'rgba(67, 160, 71, 0.3)' : 'rgba(30, 136, 229, 0.3)'}
-                  value={password}
-                  onChangeText={setPassword}
-                />
-              </View>
+              <TextInput
+                style={[styles.input, { backgroundColor: theme.inputBg, borderColor: theme.border, color: theme.text }]}
+                placeholder="Enter password"
+                placeholderTextColor={theme.textMuted}
+                secureTextEntry
+                maxLength={12}
+                autoCorrect={false}
+                spellCheck={false}
+                underlineColorAndroid="transparent"
+                cursorColor={role === 'donor' ? Colors.primary : role === 'receiver' ? Colors.success : Colors.info}
+                selectionColor={role === 'donor' ? 'rgba(229, 57, 53, 0.3)' : role === 'receiver' ? 'rgba(67, 160, 71, 0.3)' : 'rgba(30, 136, 229, 0.3)'}
+                value={password}
+                onChangeText={setPassword}
+              />
 
               <TouchableOpacity 
                 activeOpacity={0.7}
@@ -261,71 +254,60 @@ export default function LoginScreen() {
               </Text>
 
               <Text style={[styles.label, { color: theme.text }]}>Full Name *</Text>
-              <View style={[styles.inputBox, { backgroundColor: theme.inputBg, borderColor: theme.border }]}>
-                <TextInput
-                  style={[styles.inputInner, { backgroundColor: theme.inputBg, color: theme.text }]}
-                  placeholder="e.g. Ramesh Kumar"
-                  placeholderTextColor={theme.textMuted}
-                  value={fullName}
-                  onChangeText={setFullName}
-                  autoComplete="off"
-                  importantForAutofill="noExcludeDescendants"
-                  underlineColorAndroid="transparent"
-                  cursorColor={role === 'donor' ? Colors.primary : Colors.success}
-                />
-              </View>
+              <TextInput
+                style={[styles.input, { backgroundColor: theme.inputBg, borderColor: theme.border, color: theme.text }]}
+                placeholder="e.g. Ramesh Kumar"
+                placeholderTextColor={theme.textMuted}
+                value={fullName}
+                onChangeText={setFullName}
+                autoCorrect={false}
+                spellCheck={false}
+                underlineColorAndroid="transparent"
+                cursorColor={role === 'donor' ? Colors.primary : Colors.success}
+              />
 
               <Text style={[styles.label, { color: theme.text }]}>Email Address *</Text>
-              <View style={[styles.inputBox, { backgroundColor: theme.inputBg, borderColor: theme.border }]}>
-                <TextInput
-                  style={[styles.inputInner, { backgroundColor: theme.inputBg, color: theme.text }]}
-                  placeholder="e.g. ramesh@example.com"
-                  placeholderTextColor={theme.textMuted}
-                  value={regEmail}
-                  onChangeText={setRegEmail}
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                  autoComplete="off"
-                  textContentType="none"
-                  importantForAutofill="noExcludeDescendants"
-                  underlineColorAndroid="transparent"
-                  cursorColor={role === 'donor' ? Colors.primary : Colors.success}
-                />
-              </View>
+              <TextInput
+                style={[styles.input, { backgroundColor: theme.inputBg, borderColor: theme.border, color: theme.text }]}
+                placeholder="e.g. ramesh@example.com"
+                placeholderTextColor={theme.textMuted}
+                value={regEmail}
+                onChangeText={setRegEmail}
+                autoCapitalize="none"
+                autoCorrect={false}
+                spellCheck={false}
+                underlineColorAndroid="transparent"
+                cursorColor={role === 'donor' ? Colors.primary : Colors.success}
+              />
 
               <Text style={[styles.label, { color: theme.text }]}>Password *</Text>
-              <View style={[styles.inputBox, { backgroundColor: theme.inputBg, borderColor: theme.border }]}>
-                <TextInput
-                  style={[styles.inputInner, { backgroundColor: theme.inputBg, color: theme.text }]}
-                  placeholder="Enter password (8 to 12 chars)"
-                  placeholderTextColor={theme.textMuted}
-                  secureTextEntry
-                  maxLength={12}
-                  autoComplete="off"
-                  textContentType="none"
-                  importantForAutofill="noExcludeDescendants"
-                  underlineColorAndroid="transparent"
-                  cursorColor={role === 'donor' ? Colors.primary : Colors.success}
-                  value={regPassword}
-                  onChangeText={setRegPassword}
-                />
-              </View>
+              <TextInput
+                style={[styles.input, { backgroundColor: theme.inputBg, borderColor: theme.border, color: theme.text }]}
+                placeholder="Enter password (8 to 12 chars)"
+                placeholderTextColor={theme.textMuted}
+                secureTextEntry
+                maxLength={12}
+                autoCorrect={false}
+                spellCheck={false}
+                underlineColorAndroid="transparent"
+                cursorColor={role === 'donor' ? Colors.primary : Colors.success}
+                value={regPassword}
+                onChangeText={setRegPassword}
+              />
 
               <Text style={[styles.label, { color: theme.text }]}>Contact Phone *</Text>
-              <View style={[styles.inputBox, { backgroundColor: theme.inputBg, borderColor: theme.border }]}>
-                <TextInput
-                  style={[styles.inputInner, { backgroundColor: theme.inputBg, color: theme.text }]}
-                  placeholder="+91-9876543210"
-                  placeholderTextColor={theme.textMuted}
-                  keyboardType="phone-pad"
-                  autoComplete="off"
-                  importantForAutofill="noExcludeDescendants"
-                  underlineColorAndroid="transparent"
-                  cursorColor={role === 'donor' ? Colors.primary : Colors.success}
-                  value={phone}
-                  onChangeText={setPhone}
-                />
-              </View>
+              <TextInput
+                style={[styles.input, { backgroundColor: theme.inputBg, borderColor: theme.border, color: theme.text }]}
+                placeholder="+91-9876543210"
+                placeholderTextColor={theme.textMuted}
+                keyboardType="phone-pad"
+                autoCorrect={false}
+                spellCheck={false}
+                underlineColorAndroid="transparent"
+                cursorColor={role === 'donor' ? Colors.primary : Colors.success}
+                value={phone}
+                onChangeText={setPhone}
+              />
 
               <Text style={[styles.label, { color: theme.text }]}>{role === 'donor' ? 'Blood Group (Donor) *' : 'Blood Group Needed *'}</Text>
               <View style={styles.bloodGrid}>
@@ -484,24 +466,11 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     marginTop: 10,
   },
-  inputBox: {
-    borderWidth: 1,
-    borderRadius: 12,
-    overflow: 'hidden',
-    marginBottom: 4,
-  },
-  inputInner: {
-    paddingHorizontal: 14,
-    paddingVertical: 11,
-    fontSize: 13,
-    backgroundColor: 'transparent',
-    borderWidth: 0,
-  },
   input: {
     borderWidth: 1,
     borderRadius: 12,
     paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingVertical: 12,
     fontSize: 13,
   },
   bloodGrid: {
