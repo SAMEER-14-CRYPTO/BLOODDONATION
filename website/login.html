@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -419,6 +419,20 @@
     document.addEventListener('DOMContentLoaded', async () => {
       if (typeof LifeLinkAPI !== 'undefined') LifeLinkAPI.init();
       if (typeof Auth !== 'undefined') Auth.init();
+
+      // Lock input styles against browser autofill yellow tone
+      const lockInputStyles = (input) => {
+        if (!input) return;
+        ['animationstart', 'input', 'change', 'focus', 'blur', 'mouseenter'].forEach(ev => {
+          input.addEventListener(ev, () => {
+            input.style.setProperty('background-color', '#111422', 'important');
+            input.style.setProperty('color', '#ffffff', 'important');
+            input.style.setProperty('-webkit-text-fill-color', '#ffffff', 'important');
+          });
+        });
+      };
+      lockInputStyles(document.getElementById('loginEmail'));
+      lockInputStyles(document.getElementById('loginPassword'));
 
       // Login form submission
       document.getElementById('loginForm').addEventListener('submit', async (e) => {
