@@ -6,6 +6,68 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme, ThemeToggleButton } from '../context/ThemeContext';
 import { updateUserProfileInDb } from '../services/api';
 
+const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+const GENDERS = ['Male', 'Female', 'Other'];
+
+export function getDonationEligibility(lastDateStr) {
+  if (!lastDateStr || lastDateStr === 'Never') {
+    return {
+      isEligible: true,
+      text: '🟢 Eligible to donate now',
+      subText: 'No recent donation on record',
+      color: Colors.success
+    };
+  }
+
+  const lastDate = new Date(lastDateStr);
+  if (isNaN(lastDate.getTime())) {
+    return {
+      isEligible: true,
+      text: '🟢 Eligible to donate',
+      subText: '',
+      color: Colors.success
+    };
+  }
+
+  const today = new Date();
+  today.setHours(23, 59, 59, 999);
+  if (lastDate > today) {
+    return {
+      isEligible: false,
+      isFuture: true,
+      text: '❌ Invalid Future Date',
+      subText: 'Donation date cannot be in the future',
+      color: Colors.primary
+    };
+  }
+
+  // 90 days required gap for whole blood donation
+  const diffTime = today.getTime() - lastDate.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  const requiredGap = 90;
+
+  if (diffDays >= requiredGap) {
+    return {
+      isEligible: true,
+      text: '🟢 Safe & Eligible to Donate',
+      subText: `${diffDays} days since last donation`,
+      color: Colors.success
+    };
+  } else {
+    const remaining = requiredGap - diffDays;
+    const nextDate = new Date(lastDate.getTime() + (requiredGap * 24 * 60 * 60 * 1000));
+    const formattedNext = nextDate.toISOString().split('T')[0];
+    return {
+      isEligible: false,
+      remainingDays: remaining,
+      nextDate: formattedNext,
+      text: `⏳ Next Eligible: ${formattedNext}`,
+      subText: `Recovery gap: ${remaining} days remaining`,
+      color: '#F59E0B'
+    };
+  }
+}
+
 export default function ProfileScreen({ navigation }) {
   const { user, token, isLoggedIn, logout, setUser } = useAuth();
   const { isDark, theme } = useTheme();
@@ -17,10 +79,12 @@ export default function ProfileScreen({ navigation }) {
   const profileData = user || {
     uid: 'donor_sameer_1',
     name: 'Sameer Shaik',
+    displayName: 'Sameer Shaik',
+    fullName: 'Sameer Shaik',
     email: 'sameershaik9184@gmail.com',
     phone: '+91-9184000000',
     bloodGroup: 'B-',
-    age: '21',
+    age: 21,
     gender: 'Male',
     city: 'Rly Kodur',
     address: 'Main Bazaar Road, Railway Kodur',
@@ -35,25 +99,75 @@ export default function ProfileScreen({ navigation }) {
 
   const [editForm, setEditForm] = useState({ ...profileData });
 
+  const eligibility = getDonationEligibility(profileData.lastDonation);
+  const liveFormEligibility = getDonationEligibility(editForm.lastDonation);
+
+  const handleOpenEdit = () => {
+    setEditForm({
+      ...profileData,
+      name: profileData.name || profileData.displayName || profileData.fullName || '',
+      phone: profileData.phone || profileData.phoneNumber || '',
+      bloodGroup: profileData.bloodGroup || 'B-',
+      gender: profileData.gender || 'Male',
+      age: profileData.age ? String(profileData.age) : '21',
+      city: profileData.city || 'Rly Kodur',
+      address: profileData.address || '',
+      lastDonation: (profileData.lastDonation && profileData.lastDonation !== 'Never') ? profileData.lastDonation : ''
+    });
+    setIsEditing(true);
+  };
+
   const handleSaveProfile = async () => {
-    const updated = { ...profileData, ...editForm };
-    setUser(updated);
-    if (token && profileData.uid) {
-      await updateUserProfileInDb(token, profileData.uid, editForm);
+    if (!editForm.name || !editForm.name.trim()) {
+      Alert.alert('Validation Error', 'Please enter your full name.');
+      return;
     }
+
+    if (editForm.lastDonation && editForm.lastDonation !== 'Never') {
+      const check = getDonationEligibility(editForm.lastDonation);
+      if (check.isFuture) {
+        Alert.alert('Validation Error', 'Last donation date cannot be in the future.');
+        return;
+      }
+    }
+
+    const updated = {
+      ...profileData,
+      ...editForm,
+      name: editForm.name.trim(),
+      displayName: editForm.name.trim(),
+      fullName: editForm.name.trim(),
+      phone: editForm.phone ? editForm.phone.trim() : profileData.phone,
+      bloodGroup: editForm.bloodGroup || 'B-',
+      gender: editForm.gender || 'Male',
+      age: parseInt(editForm.age) || 21,
+      city: editForm.city ? editForm.city.trim() : 'Rly Kodur',
+      address: editForm.address ? editForm.address.trim() : '',
+      lastDonation: editForm.lastDonation ? editForm.lastDonation.trim() : 'Never'
+    };
+
+    // 1. Update React Native Auth Context & local storage
+    setUser(updated);
+
+    // 2. Sync to Backend Database & Firestore
+    const targetUid = profileData.uid || 'donor_sameer_1';
+    await updateUserProfileInDb(token, targetUid, updated);
+
     setIsEditing(false);
-    Alert.alert('Profile Saved', 'Your details have been updated in the shared database.');
+    Alert.alert('Profile Saved ✅', 'Your details and donation records have been successfully updated in the shared database.');
   };
 
   const handleToggleAvailability = async (val) => {
     setIsAvailable(val);
-    if (token && profileData.uid) {
-      await updateUserProfileInDb(token, profileData.uid, { availability: val });
-    }
+    const targetUid = profileData.uid || 'donor_sameer_1';
+    await updateUserProfileInDb(token, targetUid, { availability: val });
   };
 
   const handleDownloadCard = () => {
-    Alert.alert('Digital Donor Card', `Donor ID: ${profileData.donorId || 'LL-IND-9184'}\nName: ${profileData.name}\nBlood Group: ${profileData.bloodGroup || 'B-'}\nStatus: Verified Active Donor`);
+    Alert.alert(
+      'Digital Donor ID Card',
+      `Donor ID: ${profileData.donorId || 'LL-IND-9184'}\nName: ${profileData.name || profileData.displayName}\nBlood Group: ${profileData.bloodGroup || 'B-'}\nLast Donation: ${profileData.lastDonation || 'Never'}\nStatus: Verified Active Donor`
+    );
   };
 
   const handleLogout = () => {
@@ -64,7 +178,7 @@ export default function ProfileScreen({ navigation }) {
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.bg }]} contentContainerStyle={styles.scrollContent}>
       
-      {/* 💳 Digital Donor ID Card (Vibrant Gradient in both Light & Dark) */}
+      {/* 💳 Digital Donor ID Card */}
       <LinearGradient
         colors={['#C62828', '#E53935', '#B71C1C']}
         start={{ x: 0, y: 0 }}
@@ -80,12 +194,12 @@ export default function ProfileScreen({ navigation }) {
 
         <View style={styles.cardMainRow}>
           <View style={styles.avatarBox}>
-            <Text style={styles.avatarLetter}>{(profileData.name || 'U').charAt(0)}</Text>
+            <Text style={styles.avatarLetter}>{(profileData.name || profileData.displayName || 'U').charAt(0)}</Text>
           </View>
           <View style={{ flex: 1, marginLeft: 12 }}>
-            <Text style={styles.cardName}>{profileData.name}</Text>
+            <Text style={styles.cardName}>{profileData.name || profileData.displayName || 'Sameer Shaik'}</Text>
             <Text style={styles.cardId}>ID: {profileData.donorId || 'LL-IND-9184'}</Text>
-            <Text style={styles.cardLocation}>📍 {profileData.city || 'Chennai'}, AP</Text>
+            <Text style={styles.cardLocation}>📍 {profileData.city || 'Rly Kodur'}, AP</Text>
           </View>
           <View style={styles.cardBloodBadge}>
             <Text style={styles.cardBloodText}>{profileData.bloodGroup || 'B-'}</Text>
@@ -111,16 +225,18 @@ export default function ProfileScreen({ navigation }) {
           <Text style={[styles.statLabel, { color: theme.textMuted }]}>Lives Saved</Text>
         </View>
         <View style={styles.statCol}>
-          <Text style={[styles.statNum, { color: Colors.info }]}>Eligible</Text>
-          <Text style={[styles.statLabel, { color: theme.textMuted }]}>Readiness</Text>
+          <Text style={[styles.statNum, { color: eligibility.isEligible ? Colors.success : '#F59E0B' }]}>
+            {eligibility.isEligible ? 'Ready' : 'Resting'}
+          </Text>
+          <Text style={[styles.statLabel, { color: theme.textMuted }]}>Eligibility</Text>
         </View>
       </View>
 
-      {/* Profile Details Information Grid (High Contrast in Light & Dark Mode) */}
+      {/* Profile Details Information Grid */}
       <View style={[styles.sectionCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
         <View style={styles.sectionHeaderRow}>
           <Text style={[styles.sectionTitle, { color: theme.text }]}>👤 Personal Details</Text>
-          <TouchableOpacity onPress={() => { setEditForm({ ...profileData }); setIsEditing(true); }}>
+          <TouchableOpacity onPress={handleOpenEdit}>
             <Text style={styles.editLinkText}>✏️ Edit Profile</Text>
           </TouchableOpacity>
         </View>
@@ -128,7 +244,7 @@ export default function ProfileScreen({ navigation }) {
         <View style={styles.detailGrid}>
           <View style={[styles.detailItem, { backgroundColor: isDark ? '#111422' : '#F8FAFC', borderColor: theme.border }]}>
             <Text style={[styles.detailLabel, { color: theme.textMuted }]}>FULL NAME</Text>
-            <Text style={[styles.detailValue, { color: theme.text }]}>{profileData.name}</Text>
+            <Text style={[styles.detailValue, { color: theme.text }]}>{profileData.name || profileData.displayName || 'Sameer Shaik'}</Text>
           </View>
           <View style={[styles.detailItem, { backgroundColor: isDark ? '#111422' : '#F8FAFC', borderColor: theme.border }]}>
             <Text style={[styles.detailLabel, { color: theme.textMuted }]}>BLOOD GROUP</Text>
@@ -136,11 +252,11 @@ export default function ProfileScreen({ navigation }) {
           </View>
           <View style={[styles.detailItem, { backgroundColor: isDark ? '#111422' : '#F8FAFC', borderColor: theme.border }]}>
             <Text style={[styles.detailLabel, { color: theme.textMuted }]}>PHONE NUMBER</Text>
-            <Text style={[styles.detailValue, { color: theme.text }]}>{profileData.phone}</Text>
+            <Text style={[styles.detailValue, { color: theme.text }]}>{profileData.phone || profileData.phoneNumber || '+91-9184000000'}</Text>
           </View>
           <View style={[styles.detailItem, { backgroundColor: isDark ? '#111422' : '#F8FAFC', borderColor: theme.border }]}>
             <Text style={[styles.detailLabel, { color: theme.textMuted }]}>EMAIL ADDRESS</Text>
-            <Text style={[styles.detailValue, { color: theme.text }]}>{profileData.email}</Text>
+            <Text style={[styles.detailValue, { color: theme.text }]}>{profileData.email || 'sameershaik9184@gmail.com'}</Text>
           </View>
           <View style={[styles.detailItem, { backgroundColor: isDark ? '#111422' : '#F8FAFC', borderColor: theme.border }]}>
             <Text style={[styles.detailLabel, { color: theme.textMuted }]}>AGE / GENDER</Text>
@@ -152,11 +268,25 @@ export default function ProfileScreen({ navigation }) {
           </View>
           <View style={[styles.detailItem, { width: '100%', backgroundColor: isDark ? '#111422' : '#F8FAFC', borderColor: theme.border }]}>
             <Text style={[styles.detailLabel, { color: theme.textMuted }]}>FULL RESIDENTIAL ADDRESS</Text>
-            <Text style={[styles.detailValue, { color: theme.text }]}>{profileData.address || 'Main Road, Railway Kodur'}</Text>
+            <Text style={[styles.detailValue, { color: theme.text }]}>{profileData.address || 'Main Road, Railway Kodur, AP'}</Text>
           </View>
+          
+          {/* Last Blood Donation with Live Eligibility */}
           <View style={[styles.detailItem, { width: '100%', backgroundColor: isDark ? '#111422' : '#F8FAFC', borderColor: theme.border }]}>
-            <Text style={[styles.detailLabel, { color: theme.textMuted }]}>LAST BLOOD DONATION</Text>
-            <Text style={[styles.detailValue, { color: theme.text }]}>{profileData.lastDonation || '2026-08-20'} (Safe & eligible to donate)</Text>
+            <Text style={[styles.detailLabel, { color: theme.textMuted }]}>LAST BLOOD DONATION & ELIGIBILITY</Text>
+            <Text style={[styles.detailValue, { color: theme.text }]}>
+              {profileData.lastDonation || 'Never'}
+            </Text>
+            <View style={{ marginTop: 4, flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={{ fontSize: 12, fontWeight: '700', color: eligibility.color }}>
+                {eligibility.text}
+              </Text>
+            </View>
+            {eligibility.subText ? (
+              <Text style={{ fontSize: 11, color: theme.textMuted, marginTop: 2 }}>
+                {eligibility.subText}
+              </Text>
+            ) : null}
           </View>
         </View>
       </View>
@@ -182,8 +312,8 @@ export default function ProfileScreen({ navigation }) {
 
         <View style={[styles.settingRow, { borderBottomWidth: 0 }]}>
           <View style={{ flex: 1, paddingRight: 10 }}>
-            <Text style={[styles.settingTitle, { color: theme.text }]}>Emergency SMS & Broadcast Alerts</Text>
-            <Text style={[styles.settingDesc, { color: theme.textMuted }]}>Receive critical patient notifications within 15 km</Text>
+            <Text style={[styles.settingTitle, { color: theme.text }]}>Emergency Alerts Broadcast</Text>
+            <Text style={[styles.settingDesc, { color: theme.textMuted }]}>Receive critical patient notifications nearby</Text>
           </View>
           <Switch
             value={notifications}
@@ -213,42 +343,153 @@ export default function ProfileScreen({ navigation }) {
           <View style={[styles.modalCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
             <Text style={[styles.modalTitle, { color: theme.text }]}>✏️ Edit Donor Profile</Text>
 
-            <ScrollView style={{ maxHeight: 380 }}>
-              <Text style={[styles.inputLabel, { color: theme.text }]}>Full Name</Text>
+            <ScrollView style={{ maxHeight: 420 }} showsVerticalScrollIndicator={false}>
+              
+              {/* Full Name */}
+              <Text style={[styles.inputLabel, { color: theme.text }]}>Full Name *</Text>
               <TextInput
                 style={[styles.modalInput, { backgroundColor: isDark ? '#111422' : '#F8FAFC', borderColor: theme.border, color: theme.text }]}
                 value={editForm.name}
+                placeholder="Enter full name"
+                placeholderTextColor={theme.textMuted}
                 onChangeText={text => setEditForm({ ...editForm, name: text })}
               />
 
+              {/* Phone */}
               <Text style={[styles.inputLabel, { color: theme.text }]}>Phone Number</Text>
               <TextInput
                 style={[styles.modalInput, { backgroundColor: isDark ? '#111422' : '#F8FAFC', borderColor: theme.border, color: theme.text }]}
                 value={editForm.phone}
+                placeholder="e.g. +91-9184000000"
+                placeholderTextColor={theme.textMuted}
+                keyboardType="phone-pad"
                 onChangeText={text => setEditForm({ ...editForm, phone: text })}
               />
 
+              {/* Blood Group Selector */}
+              <Text style={[styles.inputLabel, { color: theme.text }]}>Blood Group</Text>
+              <View style={styles.chipRow}>
+                {BLOOD_GROUPS.map(bg => (
+                  <TouchableOpacity
+                    key={bg}
+                    style={[
+                      styles.chip,
+                      { borderColor: theme.border },
+                      editForm.bloodGroup === bg && { backgroundColor: Colors.primary, borderColor: Colors.primary }
+                    ]}
+                    onPress={() => setEditForm({ ...editForm, bloodGroup: bg })}
+                  >
+                    <Text style={[styles.chipText, { color: editForm.bloodGroup === bg ? '#FFF' : theme.text }]}>
+                      {bg}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              {/* Gender Selector */}
+              <Text style={[styles.inputLabel, { color: theme.text }]}>Gender</Text>
+              <View style={styles.chipRow}>
+                {GENDERS.map(g => (
+                  <TouchableOpacity
+                    key={g}
+                    style={[
+                      styles.chip,
+                      { borderColor: theme.border },
+                      editForm.gender === g && { backgroundColor: Colors.primary, borderColor: Colors.primary }
+                    ]}
+                    onPress={() => setEditForm({ ...editForm, gender: g })}
+                  >
+                    <Text style={[styles.chipText, { color: editForm.gender === g ? '#FFF' : theme.text }]}>
+                      {g}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              {/* Age */}
+              <Text style={[styles.inputLabel, { color: theme.text }]}>Age (18 - 65 yrs)</Text>
+              <TextInput
+                style={[styles.modalInput, { backgroundColor: isDark ? '#111422' : '#F8FAFC', borderColor: theme.border, color: theme.text }]}
+                value={editForm.age ? String(editForm.age) : ''}
+                placeholder="e.g. 21"
+                placeholderTextColor={theme.textMuted}
+                keyboardType="numeric"
+                onChangeText={text => setEditForm({ ...editForm, age: text })}
+              />
+
+              {/* City */}
               <Text style={[styles.inputLabel, { color: theme.text }]}>City</Text>
               <TextInput
                 style={[styles.modalInput, { backgroundColor: isDark ? '#111422' : '#F8FAFC', borderColor: theme.border, color: theme.text }]}
                 value={editForm.city}
+                placeholder="e.g. Rly Kodur, Chennai"
+                placeholderTextColor={theme.textMuted}
                 onChangeText={text => setEditForm({ ...editForm, city: text })}
               />
 
-              <Text style={[styles.inputLabel, { color: theme.text }]}>Full Address</Text>
+              {/* Address */}
+              <Text style={[styles.inputLabel, { color: theme.text }]}>Full Residential Address</Text>
               <TextInput
                 style={[styles.modalInput, { backgroundColor: isDark ? '#111422' : '#F8FAFC', borderColor: theme.border, color: theme.text }]}
                 value={editForm.address}
+                placeholder="Street name, landmark, area"
+                placeholderTextColor={theme.textMuted}
                 onChangeText={text => setEditForm({ ...editForm, address: text })}
               />
 
-              <Text style={[styles.inputLabel, { color: theme.text }]}>Age</Text>
+              {/* Last Donation Date with Shortcuts & Live Validation */}
+              <Text style={[styles.inputLabel, { color: theme.text }]}>Last Blood Donation Date (YYYY-MM-DD)</Text>
               <TextInput
                 style={[styles.modalInput, { backgroundColor: isDark ? '#111422' : '#F8FAFC', borderColor: theme.border, color: theme.text }]}
-                value={editForm.age ? String(editForm.age) : ''}
-                keyboardType="numeric"
-                onChangeText={text => setEditForm({ ...editForm, age: text })}
+                value={editForm.lastDonation}
+                placeholder="YYYY-MM-DD (e.g. 2026-08-20)"
+                placeholderTextColor={theme.textMuted}
+                onChangeText={text => setEditForm({ ...editForm, lastDonation: text })}
               />
+
+              {/* Date Quick Shortcuts */}
+              <View style={[styles.chipRow, { marginTop: 6 }]}>
+                <TouchableOpacity
+                  style={[styles.quickChip, { borderColor: theme.border }]}
+                  onPress={() => setEditForm({ ...editForm, lastDonation: 'Never' })}
+                >
+                  <Text style={[styles.quickChipText, { color: theme.textMuted }]}>Never Donated</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.quickChip, { borderColor: theme.border }]}
+                  onPress={() => {
+                    const todayStr = new Date().toISOString().split('T')[0];
+                    setEditForm({ ...editForm, lastDonation: todayStr });
+                  }}
+                >
+                  <Text style={[styles.quickChipText, { color: theme.textMuted }]}>Today</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.quickChip, { borderColor: theme.border }]}
+                  onPress={() => {
+                    const d = new Date();
+                    d.setDate(d.getDate() - 95);
+                    setEditForm({ ...editForm, lastDonation: d.toISOString().split('T')[0] });
+                  }}
+                >
+                  <Text style={[styles.quickChipText, { color: theme.textMuted }]}>3+ Months Ago</Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Real-time Eligibility Helper inside Modal */}
+              {editForm.lastDonation ? (
+                <View style={[styles.hintCard, { backgroundColor: isDark ? '#111422' : '#F1F5F9', borderColor: theme.border }]}>
+                  <Text style={{ fontSize: 12, fontWeight: '800', color: liveFormEligibility.color }}>
+                    {liveFormEligibility.text}
+                  </Text>
+                  {liveFormEligibility.subText ? (
+                    <Text style={{ fontSize: 11, color: theme.textMuted, marginTop: 2 }}>
+                      {liveFormEligibility.subText}
+                    </Text>
+                  ) : null}
+                </View>
+              ) : null}
+
             </ScrollView>
 
             <View style={styles.modalBtnRow}>
@@ -304,8 +545,9 @@ const styles = StyleSheet.create({
   },
   verifiedTagText: {
     color: '#FFFFFF',
-    fontWeight: '800',
     fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 0.5,
   },
   cardMainRow: {
     flexDirection: 'row',
@@ -313,40 +555,38 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   avatarBox: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: 'rgba(255, 255, 255, 0.25)',
-    borderWidth: 2,
-    borderColor: '#FFFFFF',
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   avatarLetter: {
     color: '#FFFFFF',
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '900',
   },
   cardName: {
     color: '#FFFFFF',
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: '900',
   },
   cardId: {
-    color: 'rgba(255, 255, 255, 0.85)',
+    color: 'rgba(255, 255, 255, 0.8)',
     fontSize: 11,
-    marginTop: 1,
+    marginTop: 2,
     fontWeight: '600',
   },
   cardLocation: {
-    color: 'rgba(255, 255, 255, 0.85)',
+    color: 'rgba(255, 255, 255, 0.9)',
     fontSize: 11,
-    marginTop: 1,
+    marginTop: 2,
   },
   cardBloodBadge: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
@@ -509,6 +749,38 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     fontSize: 13,
+  },
+  chipRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginTop: 4,
+  },
+  chip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  chipText: {
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  quickChip: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 6,
+    borderWidth: 1,
+  },
+  quickChipText: {
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  hintCard: {
+    marginTop: 10,
+    padding: 10,
+    borderRadius: 8,
+    borderWidth: 1,
   },
   modalBtnRow: {
     flexDirection: 'row',

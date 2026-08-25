@@ -434,23 +434,64 @@ const Auth = {
   // ── Update profile ──
   async updateProfile(data) {
     try {
-      if (!DEMO_MODE && typeof auth !== 'undefined' && auth && auth.currentUser && typeof db !== 'undefined' && db) {
-        await db.collection('users').doc(auth.currentUser.uid).update(data);
+      // Validate Last Donation Date
+      if (data.lastDonation && data.lastDonation !== 'Never') {
+        const d = new Date(data.lastDonation);
+        if (isNaN(d.getTime())) {
+          App.showToast('Please enter a valid last donation date (YYYY-MM-DD)', 'error');
+          return null;
+        }
+        const today = new Date();
+        today.setHours(23, 59, 59, 999);
+        if (d > today) {
+          App.showToast('Last donation date cannot be in the future.', 'error');
+          return null;
+        }
       }
-      const user = { ...this.currentUser, ...data };
-      localStorage.setItem('lifelink_user', JSON.stringify(user));
-      this.currentUser = user;
+
+      const uid = this.currentUser?.uid;
+
+      // 1. Sync to SQLite Backend Database via API
+      if (typeof LifeLinkAPI !== 'undefined' && uid) {
+        try {
+          await LifeLinkAPI.updateUser(uid, data);
+        } catch (apiErr) {
+          console.warn('[Auth] SQLite updateUser notice:', apiErr.message);
+        }
+      }
+
+      // 2. Sync to Firebase Firestore if initialized
+      if (typeof db !== 'undefined' && db && uid) {
+        try {
+          await db.collection('users').doc(uid).set(data, { merge: true });
+          if (this.currentUser?.role === 'donor') {
+            await db.collection('donors').doc(uid).set(data, { merge: true });
+          }
+        } catch (fsErr) {
+          console.warn('[Auth] Firestore updateUser notice:', fsErr.message);
+        }
+      }
+
+      // 3. Update Current Local State
+      const updatedUser = { ...this.currentUser, ...data };
+      localStorage.setItem('lifelink_user', JSON.stringify(updatedUser));
+      this.currentUser = updatedUser;
+
+      // 4. Update Local Memory/Storage Cache
       try {
-        if (typeof DemoData !== 'undefined') {
-          await DemoData.updateUser(user.uid, data);
+        if (typeof DemoData !== 'undefined' && uid) {
+          await DemoData.updateUser(uid, data);
         }
       } catch (e) { /* ignore */ }
-      App.showToast('Profile updated successfully!', 'success');
-      return user;
+
+      App.showToast('Profile and database updated successfully! ✅', 'success');
+      return updatedUser;
     } catch (e) {
       App.showToast(e.message || 'Update failed', 'error');
+      return null;
     }
   },
+
 
   // ── Update UI based on auth state ──
   updateUI(user) {

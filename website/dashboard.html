@@ -148,14 +148,30 @@
           populateUserData(user);
         }
 
+        function calculateEligibility(lastDateStr) {
+          if (!lastDateStr || lastDateStr === 'Never') return { text: '🟢 Eligible to donate', color: '#10b981' };
+          const lastDate = new Date(lastDateStr);
+          if (isNaN(lastDate.getTime())) return { text: '🟢 Eligible to donate', color: '#10b981' };
+          const today = new Date();
+          if (lastDate > today) return { text: '❌ Invalid Future Date', color: '#ef4444' };
+          const diffDays = Math.floor((today.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
+          if (diffDays >= 90) return { text: `🟢 Eligible (${diffDays}d ago)`, color: '#10b981' };
+          const remaining = 90 - diffDays;
+          return { text: `⏳ Eligible in ${remaining}d`, color: '#f59e0b' };
+        }
+
         function populateUserData(userData) {
           const blood = document.getElementById('dashBlood');
           if (blood) blood.textContent = userData.bloodGroup || 'N/A';
           const city = document.getElementById('dashCity');
           if (city) city.textContent = userData.city || 'N/A';
           const ld = document.getElementById('dashLastDonation');
-          if (ld) ld.textContent = userData.lastDonation || 'Never';
+          if (ld) {
+            const elig = calculateEligibility(userData.lastDonation);
+            ld.innerHTML = `${userData.lastDonation || 'Never'} <br><small style="color:${elig.color};font-weight:700;font-size:0.75rem">${elig.text}</small>`;
+          }
         }
+
 
         // Load active requests
         const reqContainer = document.getElementById('dashActiveRequests');

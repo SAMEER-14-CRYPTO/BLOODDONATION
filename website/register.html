@@ -369,6 +369,18 @@
             role: 'receiver'
           });
         } else {
+          const lastDonDate = document.getElementById('regLastDonation').value;
+          if (lastDonDate) {
+            const d = new Date(lastDonDate);
+            const today = new Date();
+            today.setHours(23, 59, 59, 999);
+            if (d > today) {
+              App.showToast('Last donation date cannot be in the future.', 'error');
+              submitBtn.disabled = false;
+              submitBtn.textContent = '🩸 Create Donor Account';
+              return;
+            }
+          }
           await Auth.signup({
             fullName: document.getElementById('regName').value.trim(),
             email: document.getElementById('regEmail').value.trim(),
@@ -378,10 +390,11 @@
             gender: document.getElementById('regGender').value,
             age: parseInt(document.getElementById('regAge').value) || 21,
             city: document.getElementById('regCity').value.trim(),
-            lastDonation: document.getElementById('regLastDonation').value,
+            lastDonation: lastDonDate || 'Never',
             role: 'donor'
           });
         }
+
       } catch (err) {
         console.error('Registration error:', err);
         submitBtn.disabled = false;

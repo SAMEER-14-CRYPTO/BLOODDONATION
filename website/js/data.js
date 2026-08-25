@@ -329,6 +329,48 @@ const DemoData = {
     return [...donors, ...admins, ...receivers];
   },
 
+  // Update user in local cache and Firestore
+  async updateUser(uid, updates) {
+    if (!uid) return;
+    const data = this.getData();
+    let updated = false;
+
+    // Check donors
+    if (data.donors) {
+      const idx = data.donors.findIndex(d => d.uid === uid || d.email === updates.email);
+      if (idx !== -1) {
+        data.donors[idx] = { ...data.donors[idx], ...updates };
+        updated = true;
+      }
+    }
+
+    // Check receivers
+    if (data.receivers) {
+      const idx = data.receivers.findIndex(r => r.uid === uid || r.email === updates.email);
+      if (idx !== -1) {
+        data.receivers[idx] = { ...data.receivers[idx], ...updates };
+        updated = true;
+      }
+    }
+
+    if (updated) {
+      this.saveData(data);
+    }
+
+    // Also update Firestore if available
+    if (typeof db !== 'undefined' && db) {
+      try {
+        await db.collection('users').doc(uid).set(updates, { merge: true });
+        if (updates.role === 'donor' || (!updates.role && data.donors?.some(d => d.uid === uid))) {
+          await db.collection('donors').doc(uid).set(updates, { merge: true });
+        }
+      } catch (e) {
+        console.warn('Firestore updateUser sync notice:', e.message);
+      }
+    }
+  },
+
+
   // ────────────────────────────────────────────────────────────
   // Emergency Blood Requests Access (Unified Cloud Database)
   // ────────────────────────────────────────────────────────────

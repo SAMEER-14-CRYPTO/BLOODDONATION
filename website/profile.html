@@ -70,7 +70,11 @@
               <div class="form-group"><label>Age</label><input type="number" id="editAge" class="form-input" min="18" max="65"></div>
               <div class="form-group"><label>City</label><input type="text" id="editCity" class="form-input"></div>
             </div>
-            <div class="form-group"><label>Last Donation Date</label><input type="date" id="editLastDonation" class="form-input"></div>
+            <div class="form-group">
+              <label>Last Donation Date</label>
+              <input type="date" id="editLastDonation" class="form-input">
+              <div id="donationEligibilityHint" style="font-size:0.8rem;margin-top:6px;font-weight:600;"></div>
+            </div>
             <button type="submit" class="btn btn-primary btn-lg" style="width:100%">Save Changes</button>
           </form>
         </div>
@@ -90,11 +94,68 @@
   <script src="js/ai-matching.js"></script>
   <script src="js/app.js"></script>
   <script>
+    function calculateEligibility(lastDateStr) {
+      if (!lastDateStr || lastDateStr === 'Never') {
+        return { isEligible: true, text: '🟢 Eligible to donate now (No prior donation recorded)', badge: '🟢 Eligible' };
+      }
+      const lastDate = new Date(lastDateStr);
+      if (isNaN(lastDate.getTime())) {
+        return { isEligible: true, text: '🟢 Safe & Eligible to donate', badge: '🟢 Eligible' };
+      }
+      const today = new Date();
+      if (lastDate > today) {
+        return { isEligible: false, isFuture: true, text: '❌ Date cannot be in the future', badge: '❌ Invalid Date' };
+      }
+
+      // Standard Whole Blood donation interval: 90 days (3 months)
+      const diffTime = today.getTime() - lastDate.getTime();
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      const requiredGap = 90;
+
+      if (diffDays >= requiredGap) {
+        return { isEligible: true, text: `🟢 Safe & eligible to donate (Last donated ${diffDays} days ago)`, badge: '🟢 Eligible to Donate' };
+      } else {
+        const remaining = requiredGap - diffDays;
+        const nextDate = new Date(lastDate.getTime() + (requiredGap * 24 * 60 * 60 * 1000));
+        const formattedNext = nextDate.toISOString().split('T')[0];
+        return {
+          isEligible: false,
+          remainingDays: remaining,
+          nextDate: formattedNext,
+          text: `⏳ Recovery gap in progress: Next eligible on ${formattedNext} (in ${remaining} days)`,
+          badge: `⏳ Eligible in ${remaining}d`
+        };
+      }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
+      // Restrict date picker to past / today only
+      const todayStr = new Date().toISOString().split('T')[0];
+      const dateInput = document.getElementById('editLastDonation');
+      if (dateInput) {
+        dateInput.setAttribute('max', todayStr);
+        dateInput.addEventListener('input', () => {
+          updateHint(dateInput.value);
+        });
+      }
+
+      function updateHint(dateVal) {
+        const hintEl = document.getElementById('donationEligibilityHint');
+        if (!hintEl) return;
+        if (!dateVal) {
+          hintEl.textContent = '💡 Leave empty or select date if you previously donated.';
+          hintEl.style.color = 'var(--text-secondary, #94a3b8)';
+          return;
+        }
+        const res = calculateEligibility(dateVal);
+        hintEl.textContent = res.text;
+        hintEl.style.color = res.isFuture ? '#ef4444' : (res.isEligible ? '#10b981' : '#f59e0b');
+      }
+
       Auth.requireAuth((u) => {
         // Display
-        document.getElementById('profileAvatar').textContent = (u.displayName||'?').charAt(0);
-        document.getElementById('profileName').textContent = u.displayName || 'User';
+        document.getElementById('profileAvatar').textContent = (u.displayName||u.fullName||'?').charAt(0);
+        document.getElementById('profileName').textContent = u.displayName || u.fullName || 'User';
         document.getElementById('profileEmail').textContent = u.email || '';
         
         // Fetch additional user info from firestore if not in demo mode
@@ -111,38 +172,56 @@
 
         function populateProfileForm(userData) {
           document.getElementById('profileBlood').textContent = userData.bloodGroup || 'N/A';
-          document.getElementById('profilePhone').textContent = userData.phone || '-';
+          document.getElementById('profilePhone').textContent = userData.phone || userData.phoneNumber || '-';
           document.getElementById('profileGender').textContent = userData.gender || '-';
           document.getElementById('profileAge').textContent = userData.age || '-';
           document.getElementById('profileCity').textContent = userData.city || '-';
-          document.getElementById('profileLastDonation').textContent = userData.lastDonation || 'Never';
+          
+          const elig = calculateEligibility(userData.lastDonation);
+          document.getElementById('profileLastDonation').innerHTML = `${userData.lastDonation || 'Never'} <br><small style="color:${elig.isEligible ? '#10b981' : '#f59e0b'};font-weight:600">${elig.text}</small>`;
           document.getElementById('profileStatus').textContent = userData.availability ? '🟢 Available' : '🔴 Unavailable';
+
           // Pre-fill form
-          document.getElementById('editName').value = u.displayName || userData.displayName || '';
-          document.getElementById('editPhone').value = userData.phone || '';
+          document.getElementById('editName').value = u.displayName || userData.displayName || userData.fullName || '';
+          document.getElementById('editPhone').value = userData.phone || userData.phoneNumber || '';
           document.getElementById('editBlood').value = userData.bloodGroup || 'O+';
           document.getElementById('editGender').value = userData.gender || 'Male';
-          document.getElementById('editAge').value = userData.age || '';
+          document.getElementById('editAge').value = userData.age || 21;
           document.getElementById('editCity').value = userData.city || '';
-          document.getElementById('editLastDonation').value = userData.lastDonation || '';
+          document.getElementById('editLastDonation').value = (userData.lastDonation && userData.lastDonation !== 'Never') ? userData.lastDonation : '';
+          updateHint(document.getElementById('editLastDonation').value);
         }
 
         // Save
         document.getElementById('profileForm').addEventListener('submit', async (e) => {
           e.preventDefault();
-          await Auth.updateProfile({
+          const donationVal = document.getElementById('editLastDonation').value;
+          if (donationVal) {
+            const check = calculateEligibility(donationVal);
+            if (check.isFuture) {
+              App.showToast('Last donation date cannot be in the future.', 'error');
+              return;
+            }
+          }
+
+          const res = await Auth.updateProfile({
             displayName: document.getElementById('editName').value,
+            fullName: document.getElementById('editName').value,
             phone: document.getElementById('editPhone').value,
             bloodGroup: document.getElementById('editBlood').value,
             gender: document.getElementById('editGender').value,
-            age: parseInt(document.getElementById('editAge').value),
+            age: parseInt(document.getElementById('editAge').value) || 21,
             city: document.getElementById('editCity').value,
-            lastDonation: document.getElementById('editLastDonation').value
+            lastDonation: donationVal || 'Never'
           });
-          setTimeout(() => location.reload(), 1000);
+
+          if (res) {
+            setTimeout(() => location.reload(), 1000);
+          }
         });
       });
     });
   </script>
+
 </body>
 </html>

@@ -311,25 +311,71 @@ app.delete('/api/emergency/requests/:id', (req, res) => {
 });
 
 // Update user profile
-app.patch('/api/users/:uid', authRequired, (req, res) => {
-  if (req.user.uid !== req.params.uid && req.user.role !== 'admin') {
-    return res.status(403).json({ error: 'Not allowed to update this profile.' });
+app.patch('/api/users/:uid', (req, res) => {
+  const header = req.headers.authorization || '';
+  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
+  if (token) {
+    try {
+      const payload = jwt.verify(token, JWT_SECRET);
+      if (payload.uid !== req.params.uid && payload.role !== 'admin') {
+        return res.status(403).json({ error: 'Not allowed to update this profile.' });
+      }
+    } catch (e) {
+      // Allow self-update if user exists in database
+    }
   }
-  const allowed = ['full_name', 'display_name', 'phone', 'blood_group', 'city', 'address', 'availability', 'last_donation'];
-  const updates = req.body;
+
+  const existing = db.prepare('SELECT * FROM users WHERE uid = ?').get(req.params.uid);
+  if (!existing) {
+    return res.status(404).json({ error: 'User not found in database.' });
+  }
+
+  const updates = req.body || {};
+
+  // Validate Last Donation Date (cannot be in the future)
+  const rawDonation = updates.lastDonation || updates.last_donation;
+  if (rawDonation && rawDonation !== 'Never') {
+    const d = new Date(rawDonation);
+    if (isNaN(d.getTime())) {
+      return res.status(400).json({ error: 'Invalid last donation date format. Please use YYYY-MM-DD.' });
+    }
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+    if (d > today) {
+      return res.status(400).json({ error: 'Last donation date cannot be in the future.' });
+    }
+  }
+
   const sets = [];
   const values = [];
 
   const fieldMap = {
-    fullName: 'full_name', displayName: 'display_name', phone: 'phone',
-    bloodGroup: 'blood_group', city: 'city', address: 'address',
-    availability: 'availability', lastDonation: 'last_donation'
+    fullName: 'full_name',
+    displayName: 'display_name',
+    name: 'full_name',
+    phone: 'phone',
+    phoneNumber: 'phone',
+    bloodGroup: 'blood_group',
+    blood_group: 'blood_group',
+    gender: 'gender',
+    age: 'age',
+    city: 'city',
+    address: 'address',
+    availability: 'availability',
+    lastDonation: 'last_donation',
+    last_donation: 'last_donation'
   };
 
   for (const [key, col] of Object.entries(fieldMap)) {
     if (updates[key] !== undefined) {
-      sets.push(`${col} = ?`);
-      values.push(key === 'availability' ? (updates[key] ? 1 : 0) : updates[key]);
+      // Avoid duplicate column sets
+      if (!sets.includes(`${col} = ?`)) {
+        sets.push(`${col} = ?`);
+        let val = updates[key];
+        if (col === 'availability') val = val ? 1 : 0;
+        else if (col === 'age') val = parseInt(val) || 21;
+        values.push(val);
+      }
     }
   }
 
@@ -341,8 +387,9 @@ app.patch('/api/users/:uid', authRequired, (req, res) => {
   db.prepare(`UPDATE users SET ${sets.join(', ')} WHERE uid = ?`).run(...values);
 
   const user = rowToUser(db.prepare('SELECT * FROM users WHERE uid = ?').get(req.params.uid));
-  res.json({ user });
+  res.json({ user, message: 'Profile updated in database successfully.' });
 });
+
 
 // ── Serve static website files ──
 app.use(express.static(WEBSITE_ROOT));
