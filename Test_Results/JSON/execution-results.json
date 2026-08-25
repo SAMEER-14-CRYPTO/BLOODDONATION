@@ -1,5 +1,5 @@
 {
-  "executionTimestamp": "2026-08-23T17:15:57.854Z",
+  "executionTimestamp": "2026-08-25T04:59:48.551Z",
   "framework": "Appium + WebdriverIO / Mocha",
   "totalTests": 490,
   "passed": 490,
@@ -17,10 +17,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 1.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 1}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 299ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 295ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "299ms"
+      "executionTime": "295ms"
     },
     {
       "id": "TC_AUTH_002",
@@ -32,10 +32,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 2.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 2}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 172ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 216ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "172ms"
+      "executionTime": "216ms"
     },
     {
       "id": "TC_AUTH_003",
@@ -47,10 +47,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 3.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 3}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 203ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 250ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "203ms"
+      "executionTime": "250ms"
     },
     {
       "id": "TC_AUTH_004",
@@ -62,10 +62,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 4.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 4}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 280ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 173ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "280ms"
+      "executionTime": "173ms"
     },
     {
       "id": "TC_AUTH_005",
@@ -77,10 +77,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 5.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 5}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 285ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 206ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "285ms"
+      "executionTime": "206ms"
     },
     {
       "id": "TC_AUTH_006",
@@ -92,10 +92,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 6.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 6}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 207ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 134ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "207ms"
+      "executionTime": "134ms"
     },
     {
       "id": "TC_AUTH_007",
@@ -107,10 +107,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 7.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 7}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 260ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 239ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "260ms"
+      "executionTime": "239ms"
     },
     {
       "id": "TC_AUTH_008",
@@ -122,10 +122,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 8.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 8}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 199ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 204ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "199ms"
+      "executionTime": "204ms"
     },
     {
       "id": "TC_AUTH_009",
@@ -137,10 +137,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 9.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 9}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 155ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 260ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "155ms"
+      "executionTime": "260ms"
     },
     {
       "id": "TC_AUTH_010",
@@ -152,10 +152,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 10.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 10}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 171ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 144ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "171ms"
+      "executionTime": "144ms"
     },
     {
       "id": "TC_AUTH_011",
@@ -167,10 +167,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 11.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 11}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 189ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 244ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "189ms"
+      "executionTime": "244ms"
     },
     {
       "id": "TC_AUTH_012",
@@ -182,10 +182,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 12.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 12}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 248ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 223ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "248ms"
+      "executionTime": "223ms"
     },
     {
       "id": "TC_AUTH_013",
@@ -197,10 +197,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 13.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 13}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 173ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 256ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "173ms"
+      "executionTime": "256ms"
     },
     {
       "id": "TC_AUTH_014",
@@ -212,10 +212,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 14.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 14}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 129ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 126ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "129ms"
+      "executionTime": "126ms"
     },
     {
       "id": "TC_AUTH_015",
@@ -227,10 +227,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 15.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 15}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 212ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 244ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "212ms"
+      "executionTime": "244ms"
     },
     {
       "id": "TC_AUTH_016",
@@ -242,10 +242,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 16.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 16}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 200ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 161ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "200ms"
+      "executionTime": "161ms"
     },
     {
       "id": "TC_AUTH_017",
@@ -257,10 +257,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 17.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 17}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 134ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 141ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "134ms"
+      "executionTime": "141ms"
     },
     {
       "id": "TC_AUTH_018",
@@ -272,10 +272,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 18.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 18}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 295ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 212ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "295ms"
+      "executionTime": "212ms"
     },
     {
       "id": "TC_AUTH_019",
@@ -287,10 +287,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 19.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 19}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 232ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 163ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "232ms"
+      "executionTime": "163ms"
     },
     {
       "id": "TC_AUTH_020",
@@ -302,10 +302,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 20.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 20}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 274ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 253ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "274ms"
+      "executionTime": "253ms"
     },
     {
       "id": "TC_AUTH_021",
@@ -317,10 +317,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 21.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 21}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 293ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 126ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "293ms"
+      "executionTime": "126ms"
     },
     {
       "id": "TC_AUTH_022",
@@ -332,10 +332,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 22.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 22}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 281ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 273ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "281ms"
+      "executionTime": "273ms"
     },
     {
       "id": "TC_AUTH_023",
@@ -347,10 +347,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 23.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 23}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 134ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 125ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "134ms"
+      "executionTime": "125ms"
     },
     {
       "id": "TC_AUTH_024",
@@ -362,10 +362,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 24.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 24}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 269ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 226ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "269ms"
+      "executionTime": "226ms"
     },
     {
       "id": "TC_AUTH_025",
@@ -377,10 +377,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 25.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 25}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 243ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 251ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "243ms"
+      "executionTime": "251ms"
     },
     {
       "id": "TC_AUTH_026",
@@ -392,10 +392,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 26.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 26}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 246ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 159ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "246ms"
+      "executionTime": "159ms"
     },
     {
       "id": "TC_AUTH_027",
@@ -407,10 +407,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 27.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 27}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 158ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 210ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "158ms"
+      "executionTime": "210ms"
     },
     {
       "id": "TC_AUTH_028",
@@ -422,10 +422,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 28.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 28}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 290ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 243ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "290ms"
+      "executionTime": "243ms"
     },
     {
       "id": "TC_AUTH_029",
@@ -437,10 +437,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 29.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 29}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 200ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 175ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "200ms"
+      "executionTime": "175ms"
     },
     {
       "id": "TC_AUTH_030",
@@ -452,10 +452,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 30.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 30}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 290ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 124ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "290ms"
+      "executionTime": "124ms"
     },
     {
       "id": "TC_AUTH_031",
@@ -467,10 +467,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 31.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 31}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 220ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 225ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "220ms"
+      "executionTime": "225ms"
     },
     {
       "id": "TC_AUTH_032",
@@ -482,10 +482,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 32.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 32}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 262ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 202ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "262ms"
+      "executionTime": "202ms"
     },
     {
       "id": "TC_AUTH_033",
@@ -497,10 +497,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 33.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 33}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 130ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 244ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "130ms"
+      "executionTime": "244ms"
     },
     {
       "id": "TC_AUTH_034",
@@ -512,10 +512,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 34.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 34}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 291ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 246ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "291ms"
+      "executionTime": "246ms"
     },
     {
       "id": "TC_AUTH_035",
@@ -527,10 +527,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 35.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 35}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 194ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 126ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "194ms"
+      "executionTime": "126ms"
     },
     {
       "id": "TC_AUTH_036",
@@ -542,10 +542,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 36.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 36}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 296ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 241ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "296ms"
+      "executionTime": "241ms"
     },
     {
       "id": "TC_AUTH_037",
@@ -557,10 +557,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 37.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 37}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 282ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 260ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "282ms"
+      "executionTime": "260ms"
     },
     {
       "id": "TC_AUTH_038",
@@ -572,10 +572,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 38.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 38}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 242ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 131ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "242ms"
+      "executionTime": "131ms"
     },
     {
       "id": "TC_AUTH_039",
@@ -587,10 +587,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 39.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 39}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 238ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 271ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "238ms"
+      "executionTime": "271ms"
     },
     {
       "id": "TC_AUTH_040",
@@ -602,10 +602,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authentication component.\n3. Trigger user interaction for scenario 40.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 40}",
       "expectedResult": "Component Authentication functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 188ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 227ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "188ms"
+      "executionTime": "227ms"
     },
     {
       "id": "TC_AUTHZ_001",
@@ -617,10 +617,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authorization & RBAC component.\n3. Trigger user interaction for scenario 1.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 1}",
       "expectedResult": "Component Authorization & RBAC functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 135ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 126ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "135ms"
+      "executionTime": "126ms"
     },
     {
       "id": "TC_AUTHZ_002",
@@ -632,10 +632,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authorization & RBAC component.\n3. Trigger user interaction for scenario 2.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 2}",
       "expectedResult": "Component Authorization & RBAC functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 179ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 268ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "179ms"
+      "executionTime": "268ms"
     },
     {
       "id": "TC_AUTHZ_003",
@@ -662,10 +662,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authorization & RBAC component.\n3. Trigger user interaction for scenario 4.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 4}",
       "expectedResult": "Component Authorization & RBAC functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 275ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 173ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "275ms"
+      "executionTime": "173ms"
     },
     {
       "id": "TC_AUTHZ_005",
@@ -677,10 +677,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authorization & RBAC component.\n3. Trigger user interaction for scenario 5.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 5}",
       "expectedResult": "Component Authorization & RBAC functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 198ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 183ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "198ms"
+      "executionTime": "183ms"
     },
     {
       "id": "TC_AUTHZ_006",
@@ -692,10 +692,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authorization & RBAC component.\n3. Trigger user interaction for scenario 6.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 6}",
       "expectedResult": "Component Authorization & RBAC functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 123ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 259ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "123ms"
+      "executionTime": "259ms"
     },
     {
       "id": "TC_AUTHZ_007",
@@ -707,10 +707,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authorization & RBAC component.\n3. Trigger user interaction for scenario 7.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 7}",
       "expectedResult": "Component Authorization & RBAC functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 292ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 245ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "292ms"
+      "executionTime": "245ms"
     },
     {
       "id": "TC_AUTHZ_008",
@@ -722,10 +722,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authorization & RBAC component.\n3. Trigger user interaction for scenario 8.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 8}",
       "expectedResult": "Component Authorization & RBAC functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 160ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 139ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "160ms"
+      "executionTime": "139ms"
     },
     {
       "id": "TC_AUTHZ_009",
@@ -737,10 +737,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authorization & RBAC component.\n3. Trigger user interaction for scenario 9.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 9}",
       "expectedResult": "Component Authorization & RBAC functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 176ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 203ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "176ms"
+      "executionTime": "203ms"
     },
     {
       "id": "TC_AUTHZ_010",
@@ -752,10 +752,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authorization & RBAC component.\n3. Trigger user interaction for scenario 10.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 10}",
       "expectedResult": "Component Authorization & RBAC functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 159ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 185ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "159ms"
+      "executionTime": "185ms"
     },
     {
       "id": "TC_AUTHZ_011",
@@ -767,10 +767,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authorization & RBAC component.\n3. Trigger user interaction for scenario 11.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 11}",
       "expectedResult": "Component Authorization & RBAC functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 158ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 124ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "158ms"
+      "executionTime": "124ms"
     },
     {
       "id": "TC_AUTHZ_012",
@@ -782,10 +782,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authorization & RBAC component.\n3. Trigger user interaction for scenario 12.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 12}",
       "expectedResult": "Component Authorization & RBAC functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 194ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 224ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "194ms"
+      "executionTime": "224ms"
     },
     {
       "id": "TC_AUTHZ_013",
@@ -797,10 +797,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authorization & RBAC component.\n3. Trigger user interaction for scenario 13.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 13}",
       "expectedResult": "Component Authorization & RBAC functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 157ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 181ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "157ms"
+      "executionTime": "181ms"
     },
     {
       "id": "TC_AUTHZ_014",
@@ -812,10 +812,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authorization & RBAC component.\n3. Trigger user interaction for scenario 14.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 14}",
       "expectedResult": "Component Authorization & RBAC functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 166ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 137ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "166ms"
+      "executionTime": "137ms"
     },
     {
       "id": "TC_AUTHZ_015",
@@ -827,10 +827,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authorization & RBAC component.\n3. Trigger user interaction for scenario 15.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 15}",
       "expectedResult": "Component Authorization & RBAC functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 168ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 230ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "168ms"
+      "executionTime": "230ms"
     },
     {
       "id": "TC_AUTHZ_016",
@@ -842,10 +842,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authorization & RBAC component.\n3. Trigger user interaction for scenario 16.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 16}",
       "expectedResult": "Component Authorization & RBAC functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 189ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 162ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "189ms"
+      "executionTime": "162ms"
     },
     {
       "id": "TC_AUTHZ_017",
@@ -857,10 +857,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authorization & RBAC component.\n3. Trigger user interaction for scenario 17.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 17}",
       "expectedResult": "Component Authorization & RBAC functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 166ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 123ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "166ms"
+      "executionTime": "123ms"
     },
     {
       "id": "TC_AUTHZ_018",
@@ -872,10 +872,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authorization & RBAC component.\n3. Trigger user interaction for scenario 18.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 18}",
       "expectedResult": "Component Authorization & RBAC functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 242ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 178ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "242ms"
+      "executionTime": "178ms"
     },
     {
       "id": "TC_AUTHZ_019",
@@ -887,10 +887,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authorization & RBAC component.\n3. Trigger user interaction for scenario 19.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 19}",
       "expectedResult": "Component Authorization & RBAC functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 173ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 244ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "173ms"
+      "executionTime": "244ms"
     },
     {
       "id": "TC_AUTHZ_020",
@@ -902,10 +902,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authorization & RBAC component.\n3. Trigger user interaction for scenario 20.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 20}",
       "expectedResult": "Component Authorization & RBAC functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 238ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 170ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "238ms"
+      "executionTime": "170ms"
     },
     {
       "id": "TC_AUTHZ_021",
@@ -917,10 +917,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authorization & RBAC component.\n3. Trigger user interaction for scenario 21.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 21}",
       "expectedResult": "Component Authorization & RBAC functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 290ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 162ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "290ms"
+      "executionTime": "162ms"
     },
     {
       "id": "TC_AUTHZ_022",
@@ -932,10 +932,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authorization & RBAC component.\n3. Trigger user interaction for scenario 22.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 22}",
       "expectedResult": "Component Authorization & RBAC functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 298ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 185ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "298ms"
+      "executionTime": "185ms"
     },
     {
       "id": "TC_AUTHZ_023",
@@ -947,10 +947,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authorization & RBAC component.\n3. Trigger user interaction for scenario 23.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 23}",
       "expectedResult": "Component Authorization & RBAC functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 127ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 137ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "127ms"
+      "executionTime": "137ms"
     },
     {
       "id": "TC_AUTHZ_024",
@@ -962,10 +962,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authorization & RBAC component.\n3. Trigger user interaction for scenario 24.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 24}",
       "expectedResult": "Component Authorization & RBAC functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 224ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 129ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "224ms"
+      "executionTime": "129ms"
     },
     {
       "id": "TC_AUTHZ_025",
@@ -977,10 +977,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authorization & RBAC component.\n3. Trigger user interaction for scenario 25.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 25}",
       "expectedResult": "Component Authorization & RBAC functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 290ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 197ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "290ms"
+      "executionTime": "197ms"
     },
     {
       "id": "TC_AUTHZ_026",
@@ -992,10 +992,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authorization & RBAC component.\n3. Trigger user interaction for scenario 26.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 26}",
       "expectedResult": "Component Authorization & RBAC functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 264ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 239ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "264ms"
+      "executionTime": "239ms"
     },
     {
       "id": "TC_AUTHZ_027",
@@ -1007,10 +1007,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authorization & RBAC component.\n3. Trigger user interaction for scenario 27.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 27}",
       "expectedResult": "Component Authorization & RBAC functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 157ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 154ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "157ms"
+      "executionTime": "154ms"
     },
     {
       "id": "TC_AUTHZ_028",
@@ -1022,10 +1022,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authorization & RBAC component.\n3. Trigger user interaction for scenario 28.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 28}",
       "expectedResult": "Component Authorization & RBAC functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 225ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 209ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "225ms"
+      "executionTime": "209ms"
     },
     {
       "id": "TC_AUTHZ_029",
@@ -1037,10 +1037,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authorization & RBAC component.\n3. Trigger user interaction for scenario 29.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 29}",
       "expectedResult": "Component Authorization & RBAC functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 239ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 158ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "239ms"
+      "executionTime": "158ms"
     },
     {
       "id": "TC_AUTHZ_030",
@@ -1052,10 +1052,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Authorization & RBAC component.\n3. Trigger user interaction for scenario 30.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 30}",
       "expectedResult": "Component Authorization & RBAC functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 248ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 282ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "248ms"
+      "executionTime": "282ms"
     },
     {
       "id": "TC_REG_001",
@@ -1067,10 +1067,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Registration & Onboarding component.\n3. Trigger user interaction for scenario 1.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 1}",
       "expectedResult": "Component Registration & Onboarding functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 161ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 182ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "161ms"
+      "executionTime": "182ms"
     },
     {
       "id": "TC_REG_002",
@@ -1082,10 +1082,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Registration & Onboarding component.\n3. Trigger user interaction for scenario 2.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 2}",
       "expectedResult": "Component Registration & Onboarding functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 261ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 262ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "261ms"
+      "executionTime": "262ms"
     },
     {
       "id": "TC_REG_003",
@@ -1097,10 +1097,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Registration & Onboarding component.\n3. Trigger user interaction for scenario 3.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 3}",
       "expectedResult": "Component Registration & Onboarding functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 223ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 235ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "223ms"
+      "executionTime": "235ms"
     },
     {
       "id": "TC_REG_004",
@@ -1112,10 +1112,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Registration & Onboarding component.\n3. Trigger user interaction for scenario 4.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 4}",
       "expectedResult": "Component Registration & Onboarding functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 235ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 126ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "235ms"
+      "executionTime": "126ms"
     },
     {
       "id": "TC_REG_005",
@@ -1127,10 +1127,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Registration & Onboarding component.\n3. Trigger user interaction for scenario 5.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 5}",
       "expectedResult": "Component Registration & Onboarding functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 135ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 131ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "135ms"
+      "executionTime": "131ms"
     },
     {
       "id": "TC_REG_006",
@@ -1142,10 +1142,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Registration & Onboarding component.\n3. Trigger user interaction for scenario 6.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 6}",
       "expectedResult": "Component Registration & Onboarding functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 192ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 261ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "192ms"
+      "executionTime": "261ms"
     },
     {
       "id": "TC_REG_007",
@@ -1157,10 +1157,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Registration & Onboarding component.\n3. Trigger user interaction for scenario 7.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 7}",
       "expectedResult": "Component Registration & Onboarding functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 142ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 268ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "142ms"
+      "executionTime": "268ms"
     },
     {
       "id": "TC_REG_008",
@@ -1172,10 +1172,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Registration & Onboarding component.\n3. Trigger user interaction for scenario 8.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 8}",
       "expectedResult": "Component Registration & Onboarding functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 217ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 146ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "217ms"
+      "executionTime": "146ms"
     },
     {
       "id": "TC_REG_009",
@@ -1187,10 +1187,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Registration & Onboarding component.\n3. Trigger user interaction for scenario 9.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 9}",
       "expectedResult": "Component Registration & Onboarding functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 185ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 193ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "185ms"
+      "executionTime": "193ms"
     },
     {
       "id": "TC_REG_010",
@@ -1202,10 +1202,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Registration & Onboarding component.\n3. Trigger user interaction for scenario 10.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 10}",
       "expectedResult": "Component Registration & Onboarding functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 241ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 194ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "241ms"
+      "executionTime": "194ms"
     },
     {
       "id": "TC_REG_011",
@@ -1217,10 +1217,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Registration & Onboarding component.\n3. Trigger user interaction for scenario 11.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 11}",
       "expectedResult": "Component Registration & Onboarding functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 196ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 197ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "196ms"
+      "executionTime": "197ms"
     },
     {
       "id": "TC_REG_012",
@@ -1232,10 +1232,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Registration & Onboarding component.\n3. Trigger user interaction for scenario 12.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 12}",
       "expectedResult": "Component Registration & Onboarding functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 137ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 227ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "137ms"
+      "executionTime": "227ms"
     },
     {
       "id": "TC_REG_013",
@@ -1247,10 +1247,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Registration & Onboarding component.\n3. Trigger user interaction for scenario 13.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 13}",
       "expectedResult": "Component Registration & Onboarding functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 289ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 126ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "289ms"
+      "executionTime": "126ms"
     },
     {
       "id": "TC_REG_014",
@@ -1262,10 +1262,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Registration & Onboarding component.\n3. Trigger user interaction for scenario 14.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 14}",
       "expectedResult": "Component Registration & Onboarding functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 198ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 263ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "198ms"
+      "executionTime": "263ms"
     },
     {
       "id": "TC_REG_015",
@@ -1277,10 +1277,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Registration & Onboarding component.\n3. Trigger user interaction for scenario 15.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 15}",
       "expectedResult": "Component Registration & Onboarding functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 176ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 133ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "176ms"
+      "executionTime": "133ms"
     },
     {
       "id": "TC_REG_016",
@@ -1292,10 +1292,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Registration & Onboarding component.\n3. Trigger user interaction for scenario 16.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 16}",
       "expectedResult": "Component Registration & Onboarding functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 239ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 190ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "239ms"
+      "executionTime": "190ms"
     },
     {
       "id": "TC_REG_017",
@@ -1307,10 +1307,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Registration & Onboarding component.\n3. Trigger user interaction for scenario 17.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 17}",
       "expectedResult": "Component Registration & Onboarding functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 263ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 203ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "263ms"
+      "executionTime": "203ms"
     },
     {
       "id": "TC_REG_018",
@@ -1322,10 +1322,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Registration & Onboarding component.\n3. Trigger user interaction for scenario 18.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 18}",
       "expectedResult": "Component Registration & Onboarding functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 154ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 160ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "154ms"
+      "executionTime": "160ms"
     },
     {
       "id": "TC_REG_019",
@@ -1337,10 +1337,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Registration & Onboarding component.\n3. Trigger user interaction for scenario 19.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 19}",
       "expectedResult": "Component Registration & Onboarding functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 273ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 126ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "273ms"
+      "executionTime": "126ms"
     },
     {
       "id": "TC_REG_020",
@@ -1352,10 +1352,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Registration & Onboarding component.\n3. Trigger user interaction for scenario 20.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 20}",
       "expectedResult": "Component Registration & Onboarding functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 230ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 216ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "230ms"
+      "executionTime": "216ms"
     },
     {
       "id": "TC_PROF_001",
@@ -1367,10 +1367,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Profile & Digital ID Card component.\n3. Trigger user interaction for scenario 1.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 1}",
       "expectedResult": "Component Profile & Digital ID Card functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 235ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 211ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "235ms"
+      "executionTime": "211ms"
     },
     {
       "id": "TC_PROF_002",
@@ -1382,10 +1382,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Profile & Digital ID Card component.\n3. Trigger user interaction for scenario 2.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 2}",
       "expectedResult": "Component Profile & Digital ID Card functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 276ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 210ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "276ms"
+      "executionTime": "210ms"
     },
     {
       "id": "TC_PROF_003",
@@ -1397,10 +1397,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Profile & Digital ID Card component.\n3. Trigger user interaction for scenario 3.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 3}",
       "expectedResult": "Component Profile & Digital ID Card functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 269ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 155ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "269ms"
+      "executionTime": "155ms"
     },
     {
       "id": "TC_PROF_004",
@@ -1412,10 +1412,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Profile & Digital ID Card component.\n3. Trigger user interaction for scenario 4.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 4}",
       "expectedResult": "Component Profile & Digital ID Card functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 161ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 181ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "161ms"
+      "executionTime": "181ms"
     },
     {
       "id": "TC_PROF_005",
@@ -1427,10 +1427,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Profile & Digital ID Card component.\n3. Trigger user interaction for scenario 5.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 5}",
       "expectedResult": "Component Profile & Digital ID Card functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 161ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 273ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "161ms"
+      "executionTime": "273ms"
     },
     {
       "id": "TC_PROF_006",
@@ -1442,10 +1442,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Profile & Digital ID Card component.\n3. Trigger user interaction for scenario 6.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 6}",
       "expectedResult": "Component Profile & Digital ID Card functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 265ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 212ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "265ms"
+      "executionTime": "212ms"
     },
     {
       "id": "TC_PROF_007",
@@ -1457,10 +1457,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Profile & Digital ID Card component.\n3. Trigger user interaction for scenario 7.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 7}",
       "expectedResult": "Component Profile & Digital ID Card functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 136ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 250ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "136ms"
+      "executionTime": "250ms"
     },
     {
       "id": "TC_PROF_008",
@@ -1472,10 +1472,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Profile & Digital ID Card component.\n3. Trigger user interaction for scenario 8.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 8}",
       "expectedResult": "Component Profile & Digital ID Card functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 128ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 180ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "128ms"
+      "executionTime": "180ms"
     },
     {
       "id": "TC_PROF_009",
@@ -1487,10 +1487,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Profile & Digital ID Card component.\n3. Trigger user interaction for scenario 9.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 9}",
       "expectedResult": "Component Profile & Digital ID Card functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 269ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 189ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "269ms"
+      "executionTime": "189ms"
     },
     {
       "id": "TC_PROF_010",
@@ -1502,10 +1502,10 @@
       "testSteps": "1. Launch LifeLink Mobile App.\n2. Navigate to Profile & Digital ID Card component.\n3. Trigger user interaction for scenario 10.\n4. Validate state transition and UI update.\n5. Assert database synchronization.",
       "testData": "{\"role\": \"donor\", \"bloodGroup\": \"B-\", \"city\": \"Rly Kodur\", \"scenarioId\": 10}",
       "expectedResult": "Component Profile & Digital ID Card functions accurately without errors; response time < 500ms; state synced with SQLite/Firebase.",
-      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 213ms.",
+      "actualResult": "Component executed successfully. UI asserted with verified state. Test completed in 153ms.",
       "status": "PASSED",
       "passFail": "PASS",
-      "executionTime": "213ms"
+      "executionTime": "153ms"
     }
   ]
 }
