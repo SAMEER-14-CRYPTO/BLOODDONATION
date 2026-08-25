@@ -1,0 +1,174 @@
+name: LifeLink CI/CD & Automated Quality Assurance
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  setup-node:
+    name: setup-node
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20 Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: |
+          npm install --no-audit
+
+      - name: Build Web Application
+        run: |
+          node scripts/ci_test_runner.js web-build
+
+      - name: Upload Web Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: dist/
+          retention-days: 30
+
+  selenium-tests:
+    name: selenium-tests
+    needs: setup-node
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Report Dependencies
+        run: |
+          npm install exceljs --no-audit
+
+      - name: Run Selenium Web E2E Suite
+        run: |
+          node scripts/ci_test_runner.js selenium
+
+      - name: Upload Selenium Report Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: selenium-report
+          path: reports/selenium/
+          retention-days: 30
+
+  appium-tests:
+    name: appium-tests
+    needs: setup-node
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Report Dependencies
+        run: |
+          npm install exceljs --no-audit
+
+      - name: Run Appium Mobile E2E Suite
+        run: |
+          node scripts/ci_test_runner.js appium
+
+      - name: Upload Appium Report Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: appium-report
+          path: reports/appium/
+          retention-days: 30
+
+  load-tests:
+    name: load-tests
+    needs: setup-node
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Report Dependencies
+        run: |
+          npm install exceljs --no-audit
+
+      - name: Run Performance & Load Tests
+        run: |
+          node scripts/ci_test_runner.js load
+
+      - name: Upload Load Report Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: load-report
+          path: reports/load/
+          retention-days: 30
+
+  security-assessment:
+    name: security-assessment
+    needs: setup-node
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Report Dependencies
+        run: |
+          npm install exceljs --no-audit
+
+      - name: Run SAST Security Review & Audit
+        run: |
+          node scripts/ci_test_runner.js security
+
+      - name: Upload Security Report Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-report
+          path: reports/security/
+          retention-days: 30
+
+  summary:
+    name: summary
+    needs: [selenium-tests, appium-tests, load-tests, security-assessment]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: |
+          npm install exceljs --no-audit
+
+      - name: Generate Unified Pipeline Summary
+        run: |
+          node scripts/ci_test_runner.js summary
+
+      - name: Publish Step Summary to GitHub Actions
+        run: |
+          cat reports/summary/step-summary.md >> $GITHUB_STEP_SUMMARY

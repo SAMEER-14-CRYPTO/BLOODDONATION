@@ -42,4 +42,6 @@ package-lock.json
 *.db-shm
 *.db-wal
 *.sqlite
-*.sqlite3
+# Generated build & reports
+/dist/
+/reports/
