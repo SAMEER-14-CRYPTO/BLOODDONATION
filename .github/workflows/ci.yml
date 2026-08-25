@@ -8,6 +8,12 @@ on:
   workflow_dispatch:
 
 jobs:
+
+  # ─────────────────────────────────────────────
+  # JOB 1 — setup-node
+  # Installs dependencies and builds the web app.
+  # Uploads dist/ as the web-build artifact.
+  # ─────────────────────────────────────────────
   setup-node:
     name: setup-node
     runs-on: ubuntu-latest
@@ -15,26 +21,47 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 20 Environment
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
-      - name: Install Dependencies
+      - name: Install Root Dependencies
+        run: npm install --no-audit --no-package-lock
+
+      - name: Verify ci_test_runner.js exists
         run: |
-          npm install --no-audit --no-package-lock
+          if [ ! -f scripts/ci_test_runner.js ]; then
+            echo "❌ scripts/ci_test_runner.js not found"
+            exit 1
+          fi
+          echo "✅ scripts/ci_test_runner.js found"
 
       - name: Build Web Application
-        run: |
-          node scripts/ci_test_runner.js web-build
+        run: node scripts/ci_test_runner.js web-build
 
-      - name: Upload Web Build Artifact
+      - name: Verify dist/ output
+        run: |
+          if [ ! -d dist ]; then
+            echo "❌ dist/ directory was not created"
+            exit 1
+          fi
+          echo "✅ dist/ directory created"
+          ls -la dist/
+
+      - name: Upload web-build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: web-build
           path: dist/
           retention-days: 30
 
+  # ─────────────────────────────────────────────
+  # JOB 2 — selenium-tests
+  # Runs the Selenium Web E2E suite via
+  # ci_test_runner.js selenium, then uploads
+  # reports/selenium/ as selenium-report.
+  # ─────────────────────────────────────────────
   selenium-tests:
     name: selenium-tests
     needs: setup-node
@@ -43,26 +70,39 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
-      - name: Install Report Dependencies
-        run: |
-          npm install exceljs --no-audit
+      - name: Install Dependencies
+        run: npm install --no-audit --no-package-lock
 
       - name: Run Selenium Web E2E Suite
-        run: |
-          node scripts/ci_test_runner.js selenium
+        run: node scripts/ci_test_runner.js selenium
 
-      - name: Upload Selenium Report Artifact
+      - name: Verify Selenium Report Output
+        run: |
+          if [ ! -d reports/selenium ]; then
+            echo "❌ reports/selenium/ was not created"
+            exit 1
+          fi
+          echo "✅ Selenium reports generated:"
+          ls -la reports/selenium/
+
+      - name: Upload selenium-report Artifact
         uses: actions/upload-artifact@v4
         with:
           name: selenium-report
           path: reports/selenium/
           retention-days: 30
 
+  # ─────────────────────────────────────────────
+  # JOB 3 — appium-tests
+  # Runs the Appium Mobile E2E suite via
+  # ci_test_runner.js appium, then uploads
+  # reports/appium/ as appium-report.
+  # ─────────────────────────────────────────────
   appium-tests:
     name: appium-tests
     needs: setup-node
@@ -71,26 +111,39 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
-      - name: Install Report Dependencies
-        run: |
-          npm install exceljs --no-audit
+      - name: Install Dependencies
+        run: npm install --no-audit --no-package-lock
 
       - name: Run Appium Mobile E2E Suite
-        run: |
-          node scripts/ci_test_runner.js appium
+        run: node scripts/ci_test_runner.js appium
 
-      - name: Upload Appium Report Artifact
+      - name: Verify Appium Report Output
+        run: |
+          if [ ! -d reports/appium ]; then
+            echo "❌ reports/appium/ was not created"
+            exit 1
+          fi
+          echo "✅ Appium reports generated:"
+          ls -la reports/appium/
+
+      - name: Upload appium-report Artifact
         uses: actions/upload-artifact@v4
         with:
           name: appium-report
           path: reports/appium/
           retention-days: 30
 
+  # ─────────────────────────────────────────────
+  # JOB 4 — load-tests
+  # Runs the load/performance suite via
+  # ci_test_runner.js load, then uploads
+  # reports/load/ as load-report.
+  # ─────────────────────────────────────────────
   load-tests:
     name: load-tests
     needs: setup-node
@@ -99,26 +152,39 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
-      - name: Install Report Dependencies
-        run: |
-          npm install exceljs --no-audit
+      - name: Install Dependencies
+        run: npm install --no-audit --no-package-lock
 
       - name: Run Performance & Load Tests
-        run: |
-          node scripts/ci_test_runner.js load
+        run: node scripts/ci_test_runner.js load
 
-      - name: Upload Load Report Artifact
+      - name: Verify Load Report Output
+        run: |
+          if [ ! -d reports/load ]; then
+            echo "❌ reports/load/ was not created"
+            exit 1
+          fi
+          echo "✅ Load test reports generated:"
+          ls -la reports/load/
+
+      - name: Upload load-report Artifact
         uses: actions/upload-artifact@v4
         with:
           name: load-report
           path: reports/load/
           retention-days: 30
 
+  # ─────────────────────────────────────────────
+  # JOB 5 — security-assessment
+  # Runs the SAST/OWASP security audit via
+  # ci_test_runner.js security, then uploads
+  # reports/security/ as security-report.
+  # ─────────────────────────────────────────────
   security-assessment:
     name: security-assessment
     needs: setup-node
@@ -127,47 +193,57 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
-      - name: Install Report Dependencies
-        run: |
-          npm install exceljs --no-audit
+      - name: Install Dependencies
+        run: npm install --no-audit --no-package-lock
 
       - name: Run SAST Security Review & Audit
-        run: |
-          node scripts/ci_test_runner.js security
+        run: node scripts/ci_test_runner.js security
 
-      - name: Upload Security Report Artifact
+      - name: Verify Security Report Output
+        run: |
+          if [ ! -d reports/security ]; then
+            echo "❌ reports/security/ was not created"
+            exit 1
+          fi
+          echo "✅ Security assessment reports generated:"
+          ls -la reports/security/
+
+      - name: Upload security-report Artifact
         uses: actions/upload-artifact@v4
         with:
           name: security-report
           path: reports/security/
           retention-days: 30
 
+  # ─────────────────────────────────────────────
+  # JOB 6 — summary
+  # Runs after all test jobs complete.
+  # Generates the pipeline summary and publishes
+  # it to the GitHub Actions Step Summary page.
+  # ─────────────────────────────────────────────
   summary:
     name: summary
-    needs: [selenium-tests, appium-tests, load-tests, security-assessment]
+    needs: [ selenium-tests, appium-tests, load-tests, security-assessment ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Install Dependencies
-        run: |
-          npm install exceljs --no-audit
+        run: npm install --no-audit --no-package-lock
 
-      - name: Generate Unified Pipeline Summary
-        run: |
-          node scripts/ci_test_runner.js summary
+      - name: Generate Pipeline Summary
+        run: node scripts/ci_test_runner.js summary
 
       - name: Publish Step Summary to GitHub Actions
-        run: |
-          cat reports/summary/step-summary.md >> $GITHUB_STEP_SUMMARY
+        run: cat reports/summary/step-summary.md >> $GITHUB_STEP_SUMMARY
